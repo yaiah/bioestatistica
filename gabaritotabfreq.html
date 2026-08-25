@@ -1,1 +1,130 @@
-1
+html_gabarito_final = """<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gabarito Completo - Bioestatística Aplicada</title>
+    <style>
+        :root { --primary-color: #27ae60; --bg-color: #F4F7F6; --text-color: #333333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; margin: 0; padding: 0; }
+        header { background-color: var(--primary-color); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .answer-card { background: white; border-radius: 8px; padding: 25px; margin-bottom: 20px; border-left: 5px solid var(--primary-color); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .answer-card h3 { margin-top: 0; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 20px; margin-bottom: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #27ae60; color: white; }
+        tr:nth-child(even) {background-color: #f9f9f9;}
+        .total-row { font-weight: bold; background-color: #e2e8f0 !important; }
+        ul { margin-bottom: 0; }
+        li { margin-bottom: 10px; }
+        .rol-box { color: #555; background: #eee; padding: 15px; border-radius: 4px; font-family: monospace; font-size: 1.1em; text-align: center; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Gabarito do Professor</h1>
+    <p>Aula Inicial: Amostragem e Distribuição de Frequências</p>
+</header>
+
+<div class="container">
+    <h2>Parte 1: Vigilância Epidemiológica (Leishmaniose Visceral)</h2>
+    
+    <div class="answer-card">
+        <h3>Desafio 1 & 2: Natureza das Variáveis, Universo e Amostra</h3>
+        <ul>
+            <li><strong>Variáveis:</strong> <em>Faixa Etária</em> é uma variável Quantitativa Contínua (aqui agrupada em classes). <em>Escolaridade</em> é uma variável Qualitativa Ordinal.</li>
+            <li><strong>Universo Amostral:</strong> Os 1.106 casos confirmados e notificados no SINAN no ano de 2025.</li>
+            <li><strong>Constituição da Amostra:</strong> Indivíduos que adoeceram, tiveram acesso aos serviços de saúde, receberam o diagnóstico e tiveram suas fichas devidamente preenchidas e digitadas no sistema.</li>
+        </ul>
+    </div>
+    
+    <div class="answer-card">
+        <h3>Desafio 3 & 4: Censo vs Amostra e Distribuição</h3>
+        <ul>
+            <li><strong>Censo ou Amostra:</strong> Do ponto de vista da base de dados, é um censo (todos os registros estão ali). Do ponto de vista epidemiológico, é uma <strong>Amostra de conveniência/oportunidade</strong>, pois sofre do viés de subnotificação (pacientes sem acesso à saúde não entraram na estatística).</li>
+            <li><strong>Maior Concentração:</strong> A faixa de <strong>40-59 anos</strong> concentra a maior frequência absoluta (340 casos). Em termos de frequência relativa, ela representa <strong>30,74%</strong> (340 ÷ 1106 × 100) do total.</li>
+        </ul>
+    </div>
+
+    <div class="answer-card">
+        <h3>Desafio 5 & 6: O Impacto dos Dados Faltantes (Ign/Branco)</h3>
+        <ul>
+            <li><strong>Qualidade da Informação:</strong> Os 317 casos (29%) sem informação de escolaridade representam um <strong>viés de informação (falha de preenchimento)</strong> e não um erro de amostragem.</li>
+            <li><strong>Impacto nas Conclusões:</strong> Esse volume de dados faltantes mascara a verdadeira vulnerabilidade socioeconômica dos pacientes. O sanitarista deve idealmente calcular a "Frequência Relativa Válida", excluindo os 317 casos do denominador para obter o percentual real da escolaridade dos demais.</li>
+        </ul>
+    </div>
+
+    <div class="answer-card">
+        <h3>Tabela 1 Resolvida: Distribuição por Faixa Etária</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Faixa Etária</th>
+                    <th>fi</th>
+                    <th>fr</th>
+                    <th>Fi</th>
+                    <th>Fr</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>< 1 Ano</td><td>40</td><td>3,62%</td><td>40</td><td>3,62%</td></tr>
+                <tr><td>1-4</td><td>126</td><td>11,39%</td><td>166</td><td>15,01%</td></tr>
+                <tr><td>5-9</td><td>58</td><td>5,24%</td><td>224</td><td>20,25%</td></tr>
+                <tr><td>10-14</td><td>32</td><td>2,89%</td><td>256</td><td>23,15%</td></tr>
+                <tr><td>15-19</td><td>37</td><td>3,35%</td><td>293</td><td>26,49%</td></tr>
+                <tr><td>20-39</td><td>311</td><td>28,12%</td><td>604</td><td>54,61%</td></tr>
+                <tr><td>40-59</td><td>340</td><td>30,74%</td><td>944</td><td>85,35%</td></tr>
+                <tr><td>60-64</td><td>62</td><td>5,61%</td><td>1006</td><td>90,96%</td></tr>
+                <tr><td>65-69</td><td>34</td><td>3,07%</td><td>1040</td><td>94,03%</td></tr>
+                <tr><td>70-79</td><td>48</td><td>4,34%</td><td>1088</td><td>98,37%</td></tr>
+                <tr><td>80 e +</td><td>18</td><td>1,63%</td><td>1106</td><td>100,00%</td></tr>
+                <tr class="total-row"><td>Total</td><td>1.106</td><td>100,00%</td><td>-</td><td>-</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Parte 2: Dados Antropométricos de Campo (Altura)</h2>
+    
+    <div class="answer-card">
+        <h3>Organização dos Dados (Rol)</h3>
+        <p>O primeiro passo para o aluno é organizar os 23 registros de altura capturados na lousa, do menor para o maior:</p>
+        <div class="rol-box">
+            1,50 - 1,53 - 1,54 - 1,55 - 1,58 - 1,58 - 1,59 - 1,59 - 1,60 - 1,60 - 1,61 - 1,62 - 1,63 - 1,65 - 1,65 - 1,67 - 1,67 - 1,67 - 1,68 - 1,70 - 1,70 - 1,70 - 1,75
+        </div>
+    </div>
+
+    <div class="answer-card">
+        <h3>Tabela 2 Resolvida: Distribuição em Intervalos de Classe (0,05m)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Classes de Altura (m)</th>
+                    <th>fi</th>
+                    <th>fr</th>
+                    <th>Fi</th>
+                    <th>Fr</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1,50 |- 1,55</td><td>3</td><td>13,04%</td><td>3</td><td>13,04%</td></tr>
+                <tr><td>1,55 |- 1,60</td><td>5</td><td>21,74%</td><td>8</td><td>34,78%</td></tr>
+                <tr><td>1,60 |- 1,65</td><td>5</td><td>21,74%</td><td>13</td><td>56,52%</td></tr>
+                <tr><td>1,65 |- 1,70</td><td>6</td><td>26,09%</td><td>19</td><td>82,61%</td></tr>
+                <tr><td>1,70 |- 1,75</td><td>3</td><td>13,04%</td><td>22</td><td>95,65%</td></tr>
+                <tr><td>1,75 |- 1,80</td><td>1</td><td>4,35%</td><td>23</td><td>100,00%</td></tr>
+                <tr class="total-row"><td>Total</td><td>23</td><td>100,00%</td><td>-</td><td>-</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
+"""
+
+with open("gabarito_definitivo.html", "w", encoding="utf-8") as f:
+    f.write(html_gabarito_final)
+
+print("Arquivo de gabarito gerado com sucesso!")
