@@ -1,1 +1,278 @@
+html_content = """<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bioestatística Aplicada - Leishmaniose Visceral</title>
+    <style>
+        :root {
+            --primary-color: #4A6984;
+            --secondary-color: #6C8EAD;
+            --bg-color: #F4F7F6;
+            --text-color: #333333;
+            --accent-color: #E67E22;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .context-box {
+            background-color: white;
+            border-left: 5px solid var(--accent-color);
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-radius: 4px;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #6C8EAD;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {background-color: #f2f2f2;}
+        .total-row {
+            font-weight: bold;
+            background-color: #e2e8f0 !important;
+        }
+        .challenge-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .challenge-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+        }
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #3A5368;
+        }
+        .answer {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #E8F0FE;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0 4px 4px 0;
+        }
+        .freq-table th { background-color: var(--primary-color); }
+    </style>
+</head>
+<body>
 
+<header>
+    <h1>Laboratório de Bioestatística Aplicada</h1>
+    <p>Aula Inicial: Amostragem e Distribuição de Frequências na Prática Epidemiológica</p>
+</header>
+
+<div class="container">
+    <div class="context-box">
+        <h2>Contexto Prático: O Desafio do Sanitarista</h2>
+        <p>Você é um <strong>biomédico atuando na vigilância epidemiológica</strong>. Sua missão é analisar uma base de dados reais para identificar o perfil etário e educacional dos pacientes acometidos por Leishmaniose Visceral no Brasil em 2025.</p>
+        <p>Abaixo estão os dados crus extraídos do SINAN (Sistema de Informação de Agravos de Notificação). <strong>Explore a tabela e resolva os desafios propostos junto com o seu grupo.</strong></p>
+    </div>
+
+    <h2>1. Dados Crus: Casos de Leishmaniose Visceral (Brasil, 2025)</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Faixa Etária</th>
+                    <th>Ign/Branco</th>
+                    <th>Analfabeto</th>
+                    <th>1ª a 4ª série incompleta do EF</th>
+                    <th>4ª série completa do EF</th>
+                    <th>5ª a 8ª série incompleta do EF</th>
+                    <th>Ensino fundamental completo</th>
+                    <th>Ensino médio incompleto</th>
+                    <th>Ensino médio completo</th>
+                    <th>Educação superior incompleta</th>
+                    <th>Educação superior completa</th>
+                    <th>Não se aplica</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="total-row">
+                    <td>TOTAL</td><td>317</td><td>36</td><td>81</td><td>38</td><td>138</td><td>71</td><td>57</td><td>144</td><td>7</td><td>21</td><td>196</td><td>1.106</td>
+                </tr>
+                <tr><td><1 Ano</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>40</td><td>40</td></tr>
+                <tr><td>1-4</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>126</td><td>126</td></tr>
+                <tr><td>5-9</td><td>13</td><td>-</td><td>12</td><td>1</td><td>2</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>30</td><td>58</td></tr>
+                <tr><td>10-14</td><td>11</td><td>-</td><td>3</td><td>1</td><td>16</td><td>1</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>32</td></tr>
+                <tr><td>15-19</td><td>13</td><td>-</td><td>1</td><td>-</td><td>5</td><td>5</td><td>12</td><td>1</td><td>-</td><td>-</td><td>-</td><td>37</td></tr>
+                <tr><td>20-39</td><td>100</td><td>9</td><td>16</td><td>7</td><td>56</td><td>19</td><td>19</td><td>72</td><td>5</td><td>8</td><td>-</td><td>311</td></tr>
+                <tr><td>40-59</td><td>121</td><td>13</td><td>35</td><td>14</td><td>46</td><td>30</td><td>18</td><td>53</td><td>-</td><td>10</td><td>-</td><td>340</td></tr>
+                <tr><td>60-64</td><td>18</td><td>4</td><td>6</td><td>6</td><td>7</td><td>7</td><td>4</td><td>9</td><td>1</td><td>-</td><td>-</td><td>62</td></tr>
+                <tr><td>65-69</td><td>12</td><td>1</td><td>-</td><td>3</td><td>2</td><td>6</td><td>3</td><td>5</td><td>1</td><td>1</td><td>-</td><td>34</td></tr>
+                <tr><td>70-79</td><td>23</td><td>8</td><td>5</td><td>2</td><td>3</td><td>1</td><td>1</td><td>3</td><td>-</td><td>2</td><td>-</td><td>48</td></tr>
+                <tr><td>80 e +</td><td>6</td><td>1</td><td>3</td><td>4</td><td>1</td><td>2</td><td>-</td><td>1</td><td>-</td><td>-</td><td>-</td><td>18</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>2. Desafios Analíticos</h2>
+
+    <div class="challenge-card">
+        <h3>Desafio 1: Natureza das Variáveis</h3>
+        <p>Quais são as variáveis analisadas nesta tabela? Relacione e classifique a natureza de cada uma delas.</p>
+        <button class="btn" onclick="toggleAnswer('ans1')">Ver Discussão / Gabarito</button>
+        <div id="ans1" class="answer">
+            <strong>Gabarito:</strong><br>
+            <ul>
+                <li><strong>Faixa Etária:</strong> Variável Quantitativa Contínua, porém aqui está categorizada em grupos (classes de idade).</li>
+                <li><strong>Escolaridade:</strong> Variável Qualitativa Ordinal (existe uma hierarquia clara do analfabeto até o ensino superior).</li>
+                <li><em>Nota Sanitarista:</em> A categoria "Não se aplica" abriga as crianças menores de 4 anos, mostrando a importância da limpeza e adequação dos dados.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="challenge-card">
+        <h3>Desafio 2: O Desenho do Estudo</h3>
+        <p>Qual é o universo amostral desta análise? Como está constituída essa amostra?</p>
+        <button class="btn" onclick="toggleAnswer('ans2')">Ver Discussão / Gabarito</button>
+        <div id="ans2" class="answer">
+            <strong>Gabarito:</strong><br>
+            <ul>
+                <li><strong>Universo Amostral:</strong> Os 1.106 casos confirmados de Leishmaniose Visceral notificados no SINAN no ano de 2025.</li>
+                <li><strong>Constituição da Amostra:</strong> Pacientes que adoeceram, tiveram acesso ao sistema de saúde, foram diagnosticados e tiveram suas fichas epidemiológicas preenchidas e digitadas no sistema, estratificados por nível de escolaridade e recortes etários.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="challenge-card">
+        <h3>Desafio 3: A Lente Epidemiológica</h3>
+        <p>Isso se trata de um censo ou de uma amostra da realidade brasileira?</p>
+        <button class="btn" onclick="toggleAnswer('ans3')">Ver Discussão / Gabarito</button>
+        <div id="ans3" class="answer">
+            <strong>Gabarito:</strong><br>
+            Depende da perspectiva!<br>
+            - <strong>Visão de Sistema (Censo):</strong> É um censo se considerarmos a população como "todos os dados inseridos no SINAN em 2025". Todos os registros estão aí.<br>
+            - <strong>Visão Sanitária (Amostra - A resposta ideal):</strong> É apenas uma AMOSTRA de oportunidade de todas as pessoas que adoeceram. Ela sofre de "Viés de Seleção". Muitos pacientes (especialmente os mais vulneráveis) podem ter adoecido e morrido sem diagnóstico, ou seja, ficaram de fora da notificação e, consequentemente, dessa estatística.
+        </div>
+    </div>
+
+    <div class="challenge-card">
+        <h3>Desafio 4: Distribuição Intuitiva de Frequências</h3>
+        <p>Mostre qual(is) faixa(s) etária(s) concentra(m) o maior número de casos. Como vocês demonstrariam isso matematicamente?</p>
+        <button class="btn" onclick="toggleAnswer('ans4')">Ver Discussão / Gabarito</button>
+        <div id="ans4" class="answer">
+            <strong>Gabarito:</strong><br>
+            A faixa de <strong>40-59 anos (340 casos)</strong> seguida da faixa de <strong>20-39 anos (311 casos)</strong> concentram a maioria absoluta.<br><br>
+            <strong>Na linguagem bioestatística:</strong><br>
+            Esses números (340 e 311) são a <strong>Frequência Absoluta ($f_i$)</strong>. Se somarmos (651) e dividirmos pelo total (1.106), encontramos a <strong>Frequência Relativa ($f_r$)</strong>, que mostra que quase 59% dos casos se concentram em adultos em idade produtiva.
+        </div>
+    </div>
+
+    <div class="challenge-card">
+        <h3>Desafio 5 e 6: Qualidade da Informação & Dados Faltantes</h3>
+        <p>A coluna "Ign/Branco" tem 317 casos (29%). Como a ausência desse dado compromete conclusões? Isso é falha de amostragem ou do preenchimento da notificação?</p>
+        <button class="btn" onclick="toggleAnswer('ans5')">Ver Discussão / Gabarito</button>
+        <div id="ans5" class="answer">
+            <strong>Gabarito:</strong><br>
+            <ul>
+                <li><strong>Origem do Problema:</strong> É um viés de informação/preenchimento (falha na coleta no posto de saúde ou na digitação), não um erro de amostragem. O paciente entrou no sistema, mas o dado foi negligenciado.</li>
+                <li><strong>Impacto:</strong> Compromete severamente a análise social da doença. Quem costuma ter a escolaridade ignorada são frequentemente os mais vulneráveis ou em situação de urgência. Se não removermos esses casos do cálculo (usando a <em>Frequência Relativa Válida</em>), subestimaremos as reais proporções de escolaridade dos acometidos.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>3. Formalizando o Conhecimento: Tabela de Frequência</h2>
+    <p>Veja como o sanitarista organiza matematicamente a variável "Faixa Etária" após a análise bruta, gerando a tabela formal de distribuição de frequências que será usada em publicações e boletins:</p>
+    
+    <div class="table-container">
+        <table class="freq-table">
+            <thead>
+                <tr>
+                    <th>Faixa Etária (Anos)</th>
+                    <th>Freq. Absoluta (fi)</th>
+                    <th>Freq. Relativa (fr)</th>
+                    <th>Freq. Absoluta Acumulada (Fi)</th>
+                    <th>Freq. Relativa Acumulada (Fr)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>< 1 Ano</td><td>40</td><td>3,62%</td><td>40</td><td>3,62%</td></tr>
+                <tr><td>1-4</td><td>126</td><td>11,39%</td><td>166</td><td>15,01%</td></tr>
+                <tr><td>5-9</td><td>58</td><td>5,24%</td><td>224</td><td>20,25%</td></tr>
+                <tr><td>10-14</td><td>32</td><td>2,89%</td><td>256</td><td>23,15%</td></tr>
+                <tr><td>15-19</td><td>37</td><td>3,35%</td><td>293</td><td>26,49%</td></tr>
+                <tr><td>20-39</td><td>311</td><td>28,12%</td><td>604</td><td>54,61%</td></tr>
+                <tr><td>40-59</td><td>340</td><td>30,74%</td><td>944</td><td>85,35%</td></tr>
+                <tr><td>60-64</td><td>62</td><td>5,61%</td><td>1.006</td><td>90,96%</td></tr>
+                <tr><td>65-69</td><td>34</td><td>3,07%</td><td>1.040</td><td>94,03%</td></tr>
+                <tr><td>70-79</td><td>48</td><td>4,34%</td><td>1.088</td><td>98,37%</td></tr>
+                <tr><td>80 e +</td><td>18</td><td>1,63%</td><td>1.106</td><td>100,00%</td></tr>
+                <tr class="total-row"><td>Total</td><td>1.106</td><td>100,00%</td><td>-</td><td>-</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    function toggleAnswer(id) {
+        var element = document.getElementById(id);
+        if (element.style.display === "block") {
+            element.style.display = "none";
+        } else {
+            element.style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>
+"""
+
+with open("webapp_aula_bioestatistica.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("HTML gerado com sucesso!")
