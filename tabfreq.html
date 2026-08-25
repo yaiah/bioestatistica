@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+html_atividade_final = """<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bioestatística Aplicada - WebApp Completo</title>
+    <title>Bioestatística Aplicada - WebApp</title>
     <style>
         :root { --primary-color: #4A6984; --secondary-color: #6C8EAD; --bg-color: #F4F7F6; --text-color: #333333; --accent-color: #E67E22; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; margin: 0; padding: 0; }
@@ -33,6 +33,7 @@
         .img-container { text-align: center; margin-bottom: 20px; }
         .img-container img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: 2px solid #ddd; }
         .note { font-size: 0.9em; color: #666; margin-top: -10px; margin-bottom: 20px; text-align: center; }
+        .task-instruction { background-color: #e8f4f8; padding: 15px; border-radius: 8px; border-left: 5px solid var(--secondary-color); font-weight: bold; color: var(--primary-color); }
     </style>
 </head>
 <body>
@@ -124,33 +125,18 @@
     <h2 class="section-title">Parte 2: Dados de Campo - Antropometria e Distribuição Contínua</h2>
     <div class="context-box">
         <p>Durante uma aula prática, a turma registrou dados antropométricos na lousa. O seu desafio agora é tratar a variável <strong>Altura (m)</strong>.</p>
-        <p>Por se tratar de uma variável contínua, construa uma distribuição de frequências utilizando <strong>intervalos de classe de 0,05m</strong>.</p>
     </div>
 
     <div class="img-container">
         <img src="tabelaaula.png" alt="Dados coletados na lousa (Idade, Sexo, Altura, Massa, Horas de sono)">
     </div>
-    <p class="note"><em>*Nota: O menor valor é 1,50m e o maior é 1,75m. Utilize classes fechadas à esquerda e abertas à direita (|-).</em></p>
-
-    <h3>Atividade Interativa 2: Altura (m)</h3>
-    <p>Conte os valores na imagem da lousa e preencha a coluna <strong>Frequência Absoluta (fi)</strong>.</p>
-    <div class="table-container">
-        <table class="freq-table">
-            <thead>
-                <tr>
-                    <th>Classes de Altura (m)</th>
-                    <th>Freq. Absoluta (fi)</th>
-                    <th>Freq. Relativa (fr)</th>
-                    <th>Freq. Absol. Acumulada (Fi)</th>
-                    <th>Freq. Rel. Acumulada (Fr)</th>
-                </tr>
-            </thead>
-            <tbody id="interactive-body-2">
-                <!-- Gerado via JS -->
-            </tbody>
-        </table>
-        <button id="btn-next-2" class="btn-interative" onclick="nextStep2()">Verificar Frequências Absolutas (fi)</button>
+    
+    <div class="task-instruction">
+        <p>📍 <strong>Tarefa Prática (No caderno ou planilha):</strong></p>
+        <p>Com base na imagem acima, construa a tabela de distribuição de frequências para a variável Altura, utilizando <strong>intervalos de classe de 0,05m</strong>.</p>
+        <p style="font-weight: normal; font-size: 0.9em; margin-top: 5px;"><em>*Dica: Identifique o menor valor (1,50m) e o maior valor (1,75m). Utilize classes fechadas à esquerda e abertas à direita (|-).</em></p>
     </div>
+
 </div>
 
 <script>
@@ -231,93 +217,9 @@
         }
         step1++;
     }
-
-    // --- LÓGICA DA TABELA 2 (Altura) ---
-    const data2 = [
-        { id: "1,50 |- 1,55", fi: 3, fr: "13,04%", Fi: 3, Fr: "13,04%" },
-        { id: "1,55 |- 1,60", fi: 5, fr: "21,74%", Fi: 8, Fr: "34,78%" },
-        { id: "1,60 |- 1,65", fi: 5, fr: "21,74%", Fi: 13, Fr: "56,52%" },
-        { id: "1,65 |- 1,70", fi: 6, fr: "26,09%", Fi: 19, Fr: "82,61%" },
-        { id: "1,70 |- 1,75", fi: 3, fr: "13,04%", Fi: 22, Fr: "95,65%" },
-        { id: "1,75 |- 1,80", fi: 1, fr: "4,35%", Fi: 23, Fr: "100,00%" }
-    ];
-    const total_fi2 = 23;
-    const tbody2 = document.getElementById('interactive-body-2');
-    
-    data2.forEach((row, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${row.id}</td>
-            <td><input type="number" id="fi2-input-${index}" class="fi-input"></td>
-            <td id="fr2-${index}"></td>
-            <td id="Fi2-${index}"></td>
-            <td id="Fr2-${index}"></td>
-        `;
-        tbody2.appendChild(tr);
-    });
-    
-    const trTotal2 = document.createElement('tr');
-    trTotal2.className = "total-row";
-    trTotal2.innerHTML = `<td>Total</td><td id="total-fi2">23</td><td id="total-fr2"></td><td>-</td><td>-</td>`;
-    tbody2.appendChild(trTotal2);
-
-    let step2 = 0;
-    const btnNext2 = document.getElementById('btn-next-2');
-
-    function nextStep2() {
-        if (step2 === 0) {
-            data2.forEach((row, i) => {
-                const input = document.getElementById(`fi2-input-${i}`);
-                if(parseInt(input.value) === row.fi) { input.classList.add('correct'); } 
-                else { input.classList.add('incorrect'); input.value = row.fi; }
-                input.disabled = true;
-            });
-            btnNext2.innerText = "Próximo: Calcular fr (1ª Linha)";
-        } 
-        else if (step2 === 1) {
-            document.getElementById(`fr2-0`).innerHTML = `${data2[0].fr} <span class="calc-hint">(${data2[0].fi} ÷ ${total_fi2}) × 100</span>`;
-            btnNext2.innerText = "Próximo: Preencher coluna fr";
-        }
-        else if (step2 === 2) {
-            for(let i=1; i<data2.length; i++) { document.getElementById(`fr2-${i}`).innerText = data2[i].fr; }
-            document.getElementById(`total-fr2`).innerText = "100,00%";
-            btnNext2.innerText = "Próximo: Calcular Fi (Acumulada Absoluta)";
-        }
-        else if (step2 === 3) {
-            document.getElementById(`Fi2-0`).innerHTML = `${data2[0].Fi} <span class="calc-hint">Repete fi</span>`;
-            document.getElementById(`Fi2-1`).innerHTML = `${data2[1].Fi} <span class="calc-hint">${data2[0].Fi} + ${data2[1].fi}</span>`;
-            btnNext2.innerText = "Próximo: Preencher coluna Fi";
-        }
-        else if (step2 === 4) {
-            for(let i=2; i<data2.length; i++) { document.getElementById(`Fi2-${i}`).innerText = data2[i].Fi; }
-            btnNext2.innerText = "Próximo: Calcular Fr (Acumulada Relativa)";
-        }
-        else if (step2 === 5) {
-            document.getElementById(`Fr2-0`).innerHTML = `${data2[0].Fr} <span class="calc-hint">Repete fr</span>`;
-            document.getElementById(`Fr2-1`).innerHTML = `${data2[1].Fr} <span class="calc-hint">${data2[0].Fr} + ${data2[1].fr}</span>`;
-            btnNext2.innerText = "Próximo: Preencher coluna Fr";
-        }
-        else if (step2 === 6) {
-            for(let i=2; i<data2.length; i++) { document.getElementById(`Fr2-${i}`).innerText = data2[i].Fr; }
-            btnNext2.innerText = "Tabela 2 Concluída!";
-            btnNext2.disabled = true;
-        }
-        step2++;
-    }
 </script>
 
 </body>
+
+
 </html>
-
-
-
-</body>
-</html>
-
-with open("webapp_atividade_completa.html", "w", encoding="utf-8") as f:
-    f.write(html_atividade_completa)
-
-with open("webapp_gabarito_completo.html", "w", encoding="utf-8") as f:
-    f.write(html_gabarito_completo)
-
-print("WebApp Completo Unificado gerado com sucesso!")
