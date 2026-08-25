@@ -1,59 +1,141 @@
-html_exercicio_altura = """<!DOCTYPE html>
+html_atividade_completa = """<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exercício 2 - Distribuição Contínua</title>
+    <title>Bioestatística Aplicada - WebApp Completo</title>
     <style>
         :root { --primary-color: #4A6984; --secondary-color: #6C8EAD; --bg-color: #F4F7F6; --text-color: #333333; --accent-color: #E67E22; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; margin: 0; padding: 0; }
         header { background-color: var(--primary-color); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
-        .context-box { background-color: white; border-left: 5px solid var(--accent-color); padding: 15px 20px; margin-bottom: 30px; border-radius: 4px; }
-        .img-container { text-align: center; margin-bottom: 20px; }
-        .img-container img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: 2px solid #ddd; }
-        .table-container { overflow-x: auto; margin-bottom: 30px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        .section-title { color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; margin-top: 40px; }
+        .context-box { background-color: white; border-left: 5px solid var(--accent-color); padding: 15px 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .table-container { overflow-x: auto; margin-bottom: 30px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         th { background-color: #6C8EAD; color: white; }
         tr:nth-child(even) {background-color: #f9f9f9;}
         .total-row { font-weight: bold; background-color: #e2e8f0 !important; }
+        .challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .challenge-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .challenge-card h3 { margin-top: 0; color: var(--primary-color); border-bottom: 2px solid var(--bg-color); padding-bottom: 10px; }
+        
+        .freq-table th { background-color: var(--primary-color); }
         .fi-input { width: 60px; padding: 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px; }
         .fi-input.correct { background-color: #d4edda; border-color: #c3e6cb; }
         .fi-input.incorrect { background-color: #f8d7da; border-color: #f5c6cb; }
         .btn-interative { background-color: var(--accent-color); color: white; border: none; padding: 12px 20px; font-size: 16px; cursor: pointer; border-radius: 4px; font-weight: bold; display: block; margin: 20px auto; transition: 0.3s; }
         .btn-interative:hover { background-color: #d35400; }
         .btn-interative:disabled { background-color: #ccc; cursor: not-allowed; }
-        .calc-hint { font-size: 12px; color: #d35400; font-weight: bold; display: block; margin-top: 4px;}
-        .note { font-size: 0.9em; color: #666; margin-top: -10px; margin-bottom: 20px; }
+        .calc-hint { font-size: 11px; color: #d35400; font-weight: bold; display: block; margin-top: 4px;}
+        
+        .img-container { text-align: center; margin-bottom: 20px; }
+        .img-container img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: 2px solid #ddd; }
+        .note { font-size: 0.9em; color: #666; margin-top: -10px; margin-bottom: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Laboratório de Bioestatística Aplicada</h1>
-    <p>Exercício 2: Variáveis Contínuas e Intervalos de Classe</p>
+    <p>Caderno de Exercícios Interativos: Da Notificação ao Campo</p>
 </header>
 
 <div class="container">
+    <!-- PARTE 1: LEISHMANIOSE VISCERAL -->
+    <h2 class="section-title">Parte 1: Vigilância Epidemiológica - Leishmaniose Visceral</h2>
     <div class="context-box">
-        <h2>Contexto Prático: Dados de uma Coleta de Campo</h2>
-        <p>Durante uma aula prática, a turma registrou dados antropométricos e fisiológicos na lousa. O seu desafio agora é tratar a variável <strong>Altura (m)</strong>.</p>
-        <p>Por se tratar de uma variável contínua, você deve construir uma distribuição de frequências utilizando <strong>intervalos de classe de 0,05m</strong> (ex: 1,50 |- 1,55).</p>
+        <p>Você é um <strong>biomédico atuando na vigilância epidemiológica</strong>. Analise a base de dados abaixo para identificar o perfil etário e educacional dos pacientes acometidos por Leishmaniose Visceral no Brasil em 2025.</p>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Faixa Etária</th>
+                    <th>Ign/Branco</th>
+                    <th>Analfabeto</th>
+                    <th>1ª a 4ª série inc.</th>
+                    <th>4ª série comp.</th>
+                    <th>5ª a 8ª série inc.</th>
+                    <th>Fund. comp.</th>
+                    <th>Médio inc.</th>
+                    <th>Médio comp.</th>
+                    <th>Sup. inc.</th>
+                    <th>Sup. comp.</th>
+                    <th>Não se aplica</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="total-row"><td>TOTAL</td><td>317</td><td>36</td><td>81</td><td>38</td><td>138</td><td>71</td><td>57</td><td>144</td><td>7</td><td>21</td><td>196</td><td>1.106</td></tr>
+                <tr><td><1 Ano</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>40</td><td>40</td></tr>
+                <tr><td>1-4</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>126</td><td>126</td></tr>
+                <tr><td>5-9</td><td>13</td><td>-</td><td>12</td><td>1</td><td>2</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>30</td><td>58</td></tr>
+                <tr><td>10-14</td><td>11</td><td>-</td><td>3</td><td>1</td><td>16</td><td>1</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>32</td></tr>
+                <tr><td>15-19</td><td>13</td><td>-</td><td>1</td><td>-</td><td>5</td><td>5</td><td>12</td><td>1</td><td>-</td><td>-</td><td>-</td><td>37</td></tr>
+                <tr><td>20-39</td><td>100</td><td>9</td><td>16</td><td>7</td><td>56</td><td>19</td><td>19</td><td>72</td><td>5</td><td>8</td><td>-</td><td>311</td></tr>
+                <tr><td>40-59</td><td>121</td><td>13</td><td>35</td><td>14</td><td>46</td><td>30</td><td>18</td><td>53</td><td>-</td><td>10</td><td>-</td><td>340</td></tr>
+                <tr><td>60-64</td><td>18</td><td>4</td><td>6</td><td>6</td><td>7</td><td>7</td><td>4</td><td>9</td><td>1</td><td>-</td><td>-</td><td>62</td></tr>
+                <tr><td>65-69</td><td>12</td><td>1</td><td>-</td><td>3</td><td>2</td><td>6</td><td>3</td><td>5</td><td>1</td><td>1</td><td>-</td><td>34</td></tr>
+                <tr><td>70-79</td><td>23</td><td>8</td><td>5</td><td>2</td><td>3</td><td>1</td><td>1</td><td>3</td><td>-</td><td>2</td><td>-</td><td>48</td></tr>
+                <tr><td>80 e +</td><td>6</td><td>1</td><td>3</td><td>4</td><td>1</td><td>2</td><td>-</td><td>1</td><td>-</td><td>-</td><td>-</td><td>18</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="challenge-grid">
+        <div class="challenge-card">
+            <h3>Desafio 1 & 2: Variáveis e Amostra</h3>
+            <p>Classifique as variáveis da tabela. Qual é o universo amostral e como a amostra está constituída?</p>
+        </div>
+        <div class="challenge-card">
+            <h3>Desafio 3 & 4: Censo e Distribuição</h3>
+            <p>Isso é um censo ou amostra? Qual(is) faixa(s) etária(s) concentra(m) o maior número de casos?</p>
+        </div>
+        <div class="challenge-card">
+            <h3>Desafio 5 & 6: Dados Faltantes</h3>
+            <p>Como a coluna "Ign/Branco" (317 casos) compromete conclusões? É falha de amostragem ou de notificação?</p>
+        </div>
+    </div>
+
+    <h3>Atividade Interativa 1: Distribuição de Frequências (Faixa Etária)</h3>
+    <p>Preencha a <strong>Frequência Absoluta (fi)</strong> usando a coluna "Total" da tabela acima e avance os passos.</p>
+    <div class="table-container">
+        <table class="freq-table">
+            <thead>
+                <tr>
+                    <th>Faixa Etária (Anos)</th>
+                    <th>Freq. Absoluta (fi)</th>
+                    <th>Freq. Relativa (fr)</th>
+                    <th>Freq. Absoluta Acumulada (Fi)</th>
+                    <th>Freq. Relativa Acumulada (Fr)</th>
+                </tr>
+            </thead>
+            <tbody id="interactive-body-1">
+                <!-- Gerado via JS -->
+            </tbody>
+        </table>
+        <button id="btn-next-1" class="btn-interative" onclick="nextStep1()">Verificar Frequências Absolutas (fi)</button>
+    </div>
+
+    <!-- PARTE 2: ANTROPOMETRIA -->
+    <h2 class="section-title">Parte 2: Dados de Campo - Antropometria e Distribuição Contínua</h2>
+    <div class="context-box">
+        <p>Durante uma aula prática, a turma registrou dados antropométricos na lousa. O seu desafio agora é tratar a variável <strong>Altura (m)</strong>.</p>
+        <p>Por se tratar de uma variável contínua, construa uma distribuição de frequências utilizando <strong>intervalos de classe de 0,05m</strong>.</p>
     </div>
 
     <div class="img-container">
-        <!-- A imagem é referenciada exatamente como solicitado -->
-        <img src="tabelaaula.png" alt="Dados coletados na lousa">
+        <img src="tabelaaula.png" alt="Dados coletados na lousa (Idade, Sexo, Altura, Massa, Horas de sono)">
     </div>
-    
-    <p class="note"><em>*Nota: Para montar as classes, identifique o menor valor (1,50m) e o maior valor (1,75m). Utilizaremos o padrão de intervalo fechado à esquerda e aberto à direita (|-).</em></p>
+    <p class="note"><em>*Nota: O menor valor é 1,50m e o maior é 1,75m. Utilize classes fechadas à esquerda e abertas à direita (|-).</em></p>
 
-    <h2>Construção Interativa: Altura (m)</h2>
-    <p>Conte os valores na imagem, preencha a coluna <strong>Frequência Absoluta (fi)</strong> e utilize o botão para avançar na construção matemática.</p>
-    
+    <h3>Atividade Interativa 2: Altura (m)</h3>
+    <p>Conte os valores na imagem da lousa e preencha a coluna <strong>Frequência Absoluta (fi)</strong>.</p>
     <div class="table-container">
-        <table>
+        <table class="freq-table">
             <thead>
                 <tr>
                     <th>Classes de Altura (m)</th>
@@ -63,16 +145,95 @@ html_exercicio_altura = """<!DOCTYPE html>
                     <th>Freq. Rel. Acumulada (Fr)</th>
                 </tr>
             </thead>
-            <tbody id="interactive-body">
-                <!-- JS injetará as linhas aqui -->
+            <tbody id="interactive-body-2">
+                <!-- Gerado via JS -->
             </tbody>
         </table>
-        <button id="btn-next" class="btn-interative" onclick="nextStep()">Verificar Frequências Absolutas (fi)</button>
+        <button id="btn-next-2" class="btn-interative" onclick="nextStep2()">Verificar Frequências Absolutas (fi)</button>
     </div>
 </div>
 
 <script>
-    const data = [
+    // --- LÓGICA DA TABELA 1 (Leishmaniose) ---
+    const data1 = [
+        { id: "< 1 Ano", fi: 40, fr: "3,62%", Fi: 40, Fr: "3,62%" },
+        { id: "1-4", fi: 126, fr: "11,39%", Fi: 166, Fr: "15,01%" },
+        { id: "5-9", fi: 58, fr: "5,24%", Fi: 224, Fr: "20,25%" },
+        { id: "10-14", fi: 32, fr: "2,89%", Fi: 256, Fr: "23,15%" },
+        { id: "15-19", fi: 37, fr: "3,35%", Fi: 293, Fr: "26,49%" },
+        { id: "20-39", fi: 311, fr: "28,12%", Fi: 604, Fr: "54,61%" },
+        { id: "40-59", fi: 340, fr: "30,74%", Fi: 944, Fr: "85,35%" },
+        { id: "60-64", fi: 62, fr: "5,61%", Fi: 1006, Fr: "90,96%" },
+        { id: "65-69", fi: 34, fr: "3,07%", Fi: 1040, Fr: "94,03%" },
+        { id: "70-79", fi: 48, fr: "4,34%", Fi: 1088, Fr: "98,37%" },
+        { id: "80 e +", fi: 18, fr: "1,63%", Fi: 1106, Fr: "100,00%" }
+    ];
+    const total_fi1 = 1106;
+    const tbody1 = document.getElementById('interactive-body-1');
+    
+    data1.forEach((row, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${row.id}</td>
+            <td><input type="number" id="fi1-input-${index}" class="fi-input"></td>
+            <td id="fr1-${index}"></td>
+            <td id="Fi1-${index}"></td>
+            <td id="Fr1-${index}"></td>
+        `;
+        tbody1.appendChild(tr);
+    });
+    
+    const trTotal1 = document.createElement('tr');
+    trTotal1.className = "total-row";
+    trTotal1.innerHTML = `<td>Total</td><td id="total-fi1">1.106</td><td id="total-fr1"></td><td>-</td><td>-</td>`;
+    tbody1.appendChild(trTotal1);
+
+    let step1 = 0;
+    const btnNext1 = document.getElementById('btn-next-1');
+
+    function nextStep1() {
+        if (step1 === 0) {
+            data1.forEach((row, i) => {
+                const input = document.getElementById(`fi1-input-${i}`);
+                if(parseInt(input.value) === row.fi) { input.classList.add('correct'); } 
+                else { input.classList.add('incorrect'); input.value = row.fi; }
+                input.disabled = true;
+            });
+            btnNext1.innerText = "Próximo: Calcular fr (1ª Linha)";
+        } 
+        else if (step1 === 1) {
+            document.getElementById(`fr1-0`).innerHTML = `${data1[0].fr} <span class="calc-hint">(${data1[0].fi} ÷ ${total_fi1}) × 100</span>`;
+            btnNext1.innerText = "Próximo: Preencher coluna fr";
+        }
+        else if (step1 === 2) {
+            for(let i=1; i<data1.length; i++) { document.getElementById(`fr1-${i}`).innerText = data1[i].fr; }
+            document.getElementById(`total-fr1`).innerText = "100,00%";
+            btnNext1.innerText = "Próximo: Calcular Fi (Acumulada Absoluta)";
+        }
+        else if (step1 === 3) {
+            document.getElementById(`Fi1-0`).innerHTML = `${data1[0].Fi} <span class="calc-hint">Repete fi</span>`;
+            document.getElementById(`Fi1-1`).innerHTML = `${data1[1].Fi} <span class="calc-hint">${data1[0].Fi} + ${data1[1].fi}</span>`;
+            btnNext1.innerText = "Próximo: Preencher coluna Fi";
+        }
+        else if (step1 === 4) {
+            for(let i=2; i<data1.length; i++) { document.getElementById(`Fi1-${i}`).innerText = data1[i].Fi; }
+            btnNext1.innerText = "Próximo: Calcular Fr (Acumulada Relativa)";
+        }
+        else if (step1 === 5) {
+            document.getElementById(`Fr1-0`).innerHTML = `${data1[0].Fr} <span class="calc-hint">Repete fr</span>`;
+            document.getElementById(`Fr1-1`).innerHTML = `${data1[1].Fr} <span class="calc-hint">${data1[0].Fr} + ${data1[1].fr}</span>`;
+            btnNext1.innerText = "Próximo: Preencher coluna Fr";
+        }
+        else if (step1 === 6) {
+            for(let i=2; i<data1.length; i++) { document.getElementById(`Fr1-${i}`).innerText = data1[i].Fr; }
+            btnNext1.innerText = "Tabela 1 Concluída!";
+            btnNext1.disabled = true;
+        }
+        step1++;
+    }
+
+    // --- LÓGICA DA TABELA 2 (Altura) ---
+    const data2 = [
         { id: "1,50 |- 1,55", fi: 3, fr: "13,04%", Fi: 3, Fr: "13,04%" },
         { id: "1,55 |- 1,60", fi: 5, fr: "21,74%", Fi: 8, Fr: "34,78%" },
         { id: "1,60 |- 1,65", fi: 5, fr: "21,74%", Fi: 13, Fr: "56,52%" },
@@ -80,79 +241,68 @@ html_exercicio_altura = """<!DOCTYPE html>
         { id: "1,70 |- 1,75", fi: 3, fr: "13,04%", Fi: 22, Fr: "95,65%" },
         { id: "1,75 |- 1,80", fi: 1, fr: "4,35%", Fi: 23, Fr: "100,00%" }
     ];
-
-    const total_fi = 23;
-    const tbody = document.getElementById('interactive-body');
+    const total_fi2 = 23;
+    const tbody2 = document.getElementById('interactive-body-2');
     
-    data.forEach((row, index) => {
+    data2.forEach((row, index) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${row.id}</td>
-            <td><input type="number" id="fi-input-${index}" class="fi-input"></td>
-            <td id="fr-${index}"></td>
-            <td id="Fi-${index}"></td>
-            <td id="Fr-${index}"></td>
+            <td><input type="number" id="fi2-input-${index}" class="fi-input"></td>
+            <td id="fr2-${index}"></td>
+            <td id="Fi2-${index}"></td>
+            <td id="Fr2-${index}"></td>
         `;
-        tbody.appendChild(tr);
+        tbody2.appendChild(tr);
     });
     
-    const trTotal = document.createElement('tr');
-    trTotal.className = "total-row";
-    trTotal.innerHTML = `<td>Total</td><td id="total-fi">23</td><td id="total-fr"></td><td>-</td><td>-</td>`;
-    tbody.appendChild(trTotal);
+    const trTotal2 = document.createElement('tr');
+    trTotal2.className = "total-row";
+    trTotal2.innerHTML = `<td>Total</td><td id="total-fi2">23</td><td id="total-fr2"></td><td>-</td><td>-</td>`;
+    tbody2.appendChild(trTotal2);
 
-    let step = 0;
-    const btnNext = document.getElementById('btn-next');
+    let step2 = 0;
+    const btnNext2 = document.getElementById('btn-next-2');
 
-    function nextStep() {
-        if (step === 0) {
-            data.forEach((row, i) => {
-                const input = document.getElementById(`fi-input-${i}`);
-                if(parseInt(input.value) === row.fi) {
-                    input.classList.add('correct');
-                } else {
-                    input.classList.add('incorrect');
-                    input.value = row.fi;
-                }
+    function nextStep2() {
+        if (step2 === 0) {
+            data2.forEach((row, i) => {
+                const input = document.getElementById(`fi2-input-${i}`);
+                if(parseInt(input.value) === row.fi) { input.classList.add('correct'); } 
+                else { input.classList.add('incorrect'); input.value = row.fi; }
                 input.disabled = true;
             });
-            btnNext.innerText = "Próximo: Calcular fr (1ª Linha)";
+            btnNext2.innerText = "Próximo: Calcular fr (1ª Linha)";
         } 
-        else if (step === 1) {
-            document.getElementById(`fr-0`).innerHTML = `${data[0].fr} <span class="calc-hint">(${data[0].fi} ÷ ${total_fi}) × 100</span>`;
-            btnNext.innerText = "Próximo: Preencher coluna fr";
+        else if (step2 === 1) {
+            document.getElementById(`fr2-0`).innerHTML = `${data2[0].fr} <span class="calc-hint">(${data2[0].fi} ÷ ${total_fi2}) × 100</span>`;
+            btnNext2.innerText = "Próximo: Preencher coluna fr";
         }
-        else if (step === 2) {
-            for(let i=1; i<data.length; i++){
-                document.getElementById(`fr-${i}`).innerText = data[i].fr;
-            }
-            document.getElementById(`total-fr`).innerText = "100,00%";
-            btnNext.innerText = "Próximo: Calcular Fi (Acumulada Absoluta)";
+        else if (step2 === 2) {
+            for(let i=1; i<data2.length; i++) { document.getElementById(`fr2-${i}`).innerText = data2[i].fr; }
+            document.getElementById(`total-fr2`).innerText = "100,00%";
+            btnNext2.innerText = "Próximo: Calcular Fi (Acumulada Absoluta)";
         }
-        else if (step === 3) {
-            document.getElementById(`Fi-0`).innerHTML = `${data[0].Fi} <span class="calc-hint">Repete fi</span>`;
-            document.getElementById(`Fi-1`).innerHTML = `${data[1].Fi} <span class="calc-hint">${data[0].Fi} + ${data[1].fi}</span>`;
-            btnNext.innerText = "Próximo: Preencher coluna Fi";
+        else if (step2 === 3) {
+            document.getElementById(`Fi2-0`).innerHTML = `${data2[0].Fi} <span class="calc-hint">Repete fi</span>`;
+            document.getElementById(`Fi2-1`).innerHTML = `${data2[1].Fi} <span class="calc-hint">${data2[0].Fi} + ${data2[1].fi}</span>`;
+            btnNext2.innerText = "Próximo: Preencher coluna Fi";
         }
-        else if (step === 4) {
-            for(let i=2; i<data.length; i++){
-                document.getElementById(`Fi-${i}`).innerText = data[i].Fi;
-            }
-            btnNext.innerText = "Próximo: Calcular Fr (Acumulada Relativa)";
+        else if (step2 === 4) {
+            for(let i=2; i<data2.length; i++) { document.getElementById(`Fi2-${i}`).innerText = data2[i].Fi; }
+            btnNext2.innerText = "Próximo: Calcular Fr (Acumulada Relativa)";
         }
-        else if (step === 5) {
-            document.getElementById(`Fr-0`).innerHTML = `${data[0].Fr} <span class="calc-hint">Repete fr</span>`;
-            document.getElementById(`Fr-1`).innerHTML = `${data[1].Fr} <span class="calc-hint">${data[0].Fr} + ${data[1].fr}</span>`;
-            btnNext.innerText = "Próximo: Preencher coluna Fr";
+        else if (step2 === 5) {
+            document.getElementById(`Fr2-0`).innerHTML = `${data2[0].Fr} <span class="calc-hint">Repete fr</span>`;
+            document.getElementById(`Fr2-1`).innerHTML = `${data2[1].Fr} <span class="calc-hint">${data2[0].Fr} + ${data2[1].fr}</span>`;
+            btnNext2.innerText = "Próximo: Preencher coluna Fr";
         }
-        else if (step === 6) {
-            for(let i=2; i<data.length; i++){
-                document.getElementById(`Fr-${i}`).innerText = data[i].Fr;
-            }
-            btnNext.innerText = "Tabela de Intervalos Concluída!";
-            btnNext.disabled = true;
+        else if (step2 === 6) {
+            for(let i=2; i<data2.length; i++) { document.getElementById(`Fr2-${i}`).innerText = data2[i].Fr; }
+            btnNext2.innerText = "Tabela 2 Concluída!";
+            btnNext2.disabled = true;
         }
-        step++;
+        step2++;
     }
 </script>
 
@@ -160,42 +310,67 @@ html_exercicio_altura = """<!DOCTYPE html>
 </html>
 """
 
-html_gabarito_altura = """<!DOCTYPE html>
+# Criando também o Gabarito Unificado
+html_gabarito_completo = """<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gabarito - Distribuição Contínua</title>
+    <title>Gabarito Completo - Bioestatística Aplicada</title>
     <style>
         :root { --primary-color: #27ae60; --bg-color: #F4F7F6; --text-color: #333333; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; margin: 0; padding: 0; }
         header { background-color: var(--primary-color); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
         .answer-card { background: white; border-radius: 8px; padding: 25px; margin-bottom: 20px; border-left: 5px solid var(--primary-color); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .answer-card h3 { margin-top: 0; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         th { background-color: #27ae60; color: white; }
         tr:nth-child(even) {background-color: #f9f9f9;}
         .total-row { font-weight: bold; background-color: #e2e8f0 !important; }
+        ul { margin-bottom: 0; }
+        li { margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Gabarito: Variável Contínua (Altura)</h1>
-    <p>Tabela de Frequências em Intervalos de Classe</p>
+    <h1>Gabarito e Discussão (Completo)</h1>
+    <p>Aula Inicial: Amostragem e Distribuição de Frequências</p>
 </header>
 
 <div class="container">
+    <h2>Parte 1: Leishmaniose Visceral</h2>
     <div class="answer-card">
-        <h3>Rol de Dados (Organização)</h3>
-        <p>Para construir a tabela, o primeiro passo é ordenar as 23 alturas registradas na lousa (do menor para o maior):</p>
-        <p style="color: #555; background: #eee; padding: 10px; border-radius: 4px;">
-            1,50 - 1,53 - 1,54 - 1,55 - 1,58 - 1,58 - 1,59 - 1,59 - 1,60 - 1,60 - 1,61 - 1,62 - 1,63 - 1,65 - 1,65 - 1,67 - 1,67 - 1,67 - 1,68 - 1,70 - 1,70 - 1,70 - 1,75
-        </p>
-        <p><em>*O menor valor é 1,50m e o maior é 1,75m. Como o exercício pede um intervalo de 0,05m, criamos as classes fechadas à esquerda e abertas à direita (símbolo |- ).</em></p>
+        <h3>Desafio 1 & 2: Natureza, Universo e Amostra</h3>
+        <ul>
+            <li><strong>Variáveis:</strong> Faixa Etária (Quantitativa Contínua em classes); Escolaridade (Qualitativa Ordinal).</li>
+            <li><strong>Universo:</strong> Os 1.106 casos notificados no SINAN em 2025.</li>
+            <li><strong>Amostra:</strong> Indivíduos que adoeceram, tiveram acesso ao SUS, foram diagnosticados e registrados.</li>
+        </ul>
+    </div>
+    
+    <div class="answer-card">
+        <h3>Desafio 3 & 4: Censo e Distribuição</h3>
+        <ul>
+            <li><strong>Censo vs Amostra:</strong> É uma Amostra de oportunidade (sofre viés de seleção), pois nem todos que adoecem entram no sistema.</li>
+            <li><strong>Maior Frequência:</strong> A faixa de 40-59 anos concentra a maior frequência absoluta (340 casos), que se traduz em aproximadamente 30,74% de Frequência Relativa.</li>
+        </ul>
+    </div>
+
+    <div class="answer-card">
+        <h3>Desafio 5 & 6: Dados Faltantes</h3>
+        <ul>
+            <li><strong>Impacto:</strong> O viés de informação/preenchimento (29% de Ignorado/Branco) mascara a real vulnerabilidade social. É uma falha no preenchimento da notificação, não do método de amostragem.</li>
+        </ul>
+    </div>
+
+    <h2>Parte 2: Dados Antropométricos (Altura)</h2>
+    <div class="answer-card">
+        <h3>Rol de Dados e Tabela</h3>
+        <p>Dados organizados (Rol): 1,50 - 1,53 - 1,54 - 1,55 - 1,58 - 1,58 - 1,59 - 1,59 - 1,60 - 1,60 - 1,61 - 1,62 - 1,63 - 1,65 - 1,65 - 1,67 - 1,67 - 1,67 - 1,68 - 1,70 - 1,70 - 1,70 - 1,75</p>
         
-        <h3>Tabela Final (Gabarito)</h3>
         <table>
             <thead>
                 <tr>
@@ -223,10 +398,10 @@ html_gabarito_altura = """<!DOCTYPE html>
 </html>
 """
 
-with open("exercicio_altura.html", "w", encoding="utf-8") as f:
-    f.write(html_exercicio_altura)
+with open("webapp_atividade_completa.html", "w", encoding="utf-8") as f:
+    f.write(html_atividade_completa)
 
-with open("gabarito_altura.html", "w", encoding="utf-8") as f:
-    f.write(html_gabarito_altura)
+with open("webapp_gabarito_completo.html", "w", encoding="utf-8") as f:
+    f.write(html_gabarito_completo)
 
-print("Arquivos do exercício de altura gerados!")
+print("WebApp Completo Unificado gerado com sucesso!")
