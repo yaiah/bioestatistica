@@ -61,9 +61,33 @@
         .col-highlight { background-color: var(--highlight-color) !important; font-weight: bold; border-left: 2px solid var(--highlight-border) !important; border-right: 2px solid var(--highlight-border) !important; }
         th.col-highlight { background-color: var(--accent-color) !important; color: white; border-left: 2px solid #d35400 !important; border-right: 2px solid #d35400 !important;}
         
-        .img-container { text-align: center; margin: 30px 0; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: 1px dashed #ccc;}
-        .img-container img { max-width: 100%; border-radius: 4px; }
-        .img-placeholder-text { color: #999; font-style: italic; display: block; margin-top: 10px; }
+        /* Atualize o CSS das imagens para este formato: */
+.img-container { 
+    text-align: center; 
+    margin: 30px 0; 
+    padding: 20px; 
+    background: white; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+    border: 1px dashed #ccc;
+}
+
+.img-container img { 
+    max-width: 100%; /* Garante que não vaze da tela no celular */
+    width: 100%; 
+    max-width: 650px; /* Trava o crescimento máximo em 650 pixels no PC */
+    height: auto; /* Mantém a proporção da imagem sem distorcer */
+    border-radius: 4px; 
+    margin: 0 auto; /* Centraliza a imagem perfeitamente */
+    display: block;
+}
+
+.img-placeholder-text { 
+    color: #999; 
+    font-style: italic; 
+    display: block; 
+    margin-top: 15px; 
+}
         
         .reflection-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-top: 4px solid var(--primary-color); margin-bottom: 30px; }
         .reflection-card h3 { margin-top: 0; color: var(--primary-color); display: flex; align-items: center; gap: 10px; }
