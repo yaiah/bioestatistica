@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bioestatística Aplicada - Módulo 2</title>
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root { --primary-color: #4A6984; --secondary-color: #6C8EAD; --bg-color: #F4F7F6; --text-color: #333333; --accent-color: #E67E22; --success-color: #27ae60; --alert-color: #c0392b; --highlight-color: #fdf5e6; --highlight-border: #f39c12; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; margin: 0; padding: 0; }
+        
+        header { background-color: var(--success-color); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
+        
+        .section-title { color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; margin-top: 40px; }
+        .context-box { background-color: white; border-left: 5px solid var(--accent-color); padding: 15px 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        .math-card { background: white; border-radius: 8px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-top: 4px solid var(--secondary-color); }
+        .math-card h3 { margin-top: 0; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        .formula-display { text-align: center; font-size: 1.3em; margin: 25px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc; overflow-x: auto; }
+        
+        .alert-box { background-color: #fdf2f2; border-left: 4px solid var(--alert-color); padding: 15px; margin-bottom: 20px; border-radius: 4px; }
+        .alert-box h4 { margin-top: 0; color: var(--alert-color); margin-bottom: 10px; }
+        
+        ul.math-list { list-style-type: none; padding-left: 0; }
+        ul.math-list li { margin-bottom: 12px; padding-left: 20px; position: relative; }
+        ul.math-list li:before { content: '👉'; position: absolute; left: 0; top: 0; }
+        
+        .grid-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .formula-box { background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-color); }
+        .formula-box code { font-size: 1.1em; color: var(--primary-color); display: block; margin-bottom: 5px;}
+        
+        .interactive-box { background-color: #e8f4f8; padding: 20px; border-radius: 8px; margin-top: 30px; border-left: 5px solid var(--primary-color); }
+        .input-group { display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+        .calc-input { width: 60px; padding: 10px; text-align: center; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; font-weight: bold; color: var(--primary-color); background-color: white; transition: border 0.3s; }
+        .calc-input:focus { border-color: var(--accent-color); outline: none; }
+        
+        .btn-calc { background-color: var(--accent-color); color: white; border: none; padding: 12px 25px; font-size: 16px; cursor: pointer; border-radius: 4px; font-weight: bold; display: block; margin: 0 auto; transition: 0.3s; }
+        .btn-calc:hover { background-color: #d35400; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        #calc-result { display: none; margin-top: 25px; padding: 15px; background-color: white; border-radius: 8px; border-left: 5px solid var(--success-color); font-size: 1.1em; }
+        
+        .table-container { overflow-x: auto; margin-bottom: 30px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #6C8EAD; color: white; }
+        tr:nth-child(even) {background-color: #f9f9f9;}
+        .total-row { font-weight: bold; background-color: #e2e8f0 !important; }
+        
+        .col-highlight { background-color: var(--highlight-color) !important; font-weight: bold; border-left: 2px solid var(--highlight-border) !important; border-right: 2px solid var(--highlight-border) !important; }
+        th.col-highlight { background-color: var(--accent-color) !important; color: white; border-left: 2px solid #d35400 !important; border-right: 2px solid #d35400 !important;}
+        
+        .img-container { text-align: center; margin: 30px 0; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: 1px dashed #ccc;}
+        .img-container img { max-width: 100%; border-radius: 4px; }
+        .img-placeholder-text { color: #999; font-style: italic; display: block; margin-top: 10px; }
+        
+        .reflection-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-top: 4px solid var(--primary-color); margin-bottom: 30px; }
+        .reflection-card h3 { margin-top: 0; color: var(--primary-color); display: flex; align-items: center; gap: 10px; }
+        
+        .btn-reveal { background-color: #2c3e50; color: white; border: none; padding: 15px 25px; font-size: 18px; cursor: pointer; border-radius: 8px; font-weight: bold; display: block; margin: 40px auto; transition: 0.3s; width: 80%; max-width: 400px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-reveal:hover { background-color: #1a252f; box-shadow: 0 6px 12px rgba(0,0,0,0.2); transform: translateY(-2px); }
+        
+        .hidden-section { display: none; }
+        
+        .password-container { text-align: center; margin: 40px 0; padding: 20px; background-color: #fdfdfd; border-radius: 8px; border: 2px dashed var(--accent-color); }
+        .password-container input { padding: 10px; font-size: 16px; width: 150px; text-align: center; border: 1px solid #ccc; border-radius: 4px; margin-right: 10px; }
+        .password-container button { padding: 10px 20px; font-size: 16px; background-color: var(--accent-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        
+        .practice-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 30px; }
+        .practice-item { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 4px solid var(--success-color); }
+        .practice-item h4 { margin-top: 0; color: var(--primary-color); }
+        .btn-panic { background-color: var(--alert-color); color: white; border: none; padding: 8px 15px; font-size: 13px; cursor: pointer; border-radius: 4px; font-weight: bold; margin-top: 15px; }
+        .btn-panic:hover { background-color: #a93226; }
+        .hint-box { display: none; background-color: #fdf2f2; padding: 15px; margin-top: 15px; border-radius: 4px; font-size: 0.95em; color: #333; border-left: 3px solid var(--alert-color); line-height: 1.5; }
+        
+        @media (max-width: 768px) {
+            .grid-formulas { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Laboratório de Bioestatística Aplicada</h1>
+    <p>Módulo 2: Medidas de Tendência Central e Dispersão</p>
+</header>
+
+<div class="container">
+    
+    <!-- PASSO 0: O SOMATÓRIO -->
+    <h2 class="section-title">Passo 0: A Ferramenta Base</h2>
+    
+    <div class="context-box">
+        <p>Antes de mergulharmos no aprendizado das medidas de tendência central e das medidas de dispersão, precisamos dominar a operação matemática que é o "motor" de todas essas medidas: o <strong>Somatório</strong>.</p>
+        <p>Na bioestatística, frequentemente lidamos com amostras de dezenas, centenas ou milhares de pacientes. O somatório é a forma elegante e compacta de dizer "some todos esses valores" sem precisar escrever uma equação infinita.</p>
+    </div>
+
+    <div class="math-card">
+        <h3>A Anatomia da Notação Sigma (&Sigma;)</h3>
+        <p>A notação de somatório utiliza a letra grega Sigma maiúscula (&Sigma;). Veja como desmembrar seus componentes, considerando sempre uma amostra de 5 observações (<strong>n = 5</strong>) para nossos exemplos:</p>
+        
+        <div class="formula-display">
+            $$ \sum_{i=1}^{5} x_i $$
+        </div>
+        
+        <ul class="math-list">
+            <li><strong>&Sigma; (Símbolo de Somatório):</strong> É a instrução central. Significa literalmente "a soma de".</li>
+            <li><strong><em>x<sub>i</sub></em> :</strong> Representa o dado bruto que estamos medindo na linha da tabela. O índice <strong><em>i</em></strong> indica a posição na lista (<em>x<sub>1</sub></em> é a primeira linha, <em>x<sub>2</sub></em> a segunda, etc.).</li>
+            <li><strong><em>i</em> = 1 (Limite Inferior):</strong> Fica embaixo do &Sigma;. Indica por onde a soma deve começar. Geralmente, começamos do primeiro elemento (1).</li>
+            <li><strong><em>n</em> = 5 (Limite Superior):</strong> Fica no topo do &Sigma;. Indica o tamanho da amostra (número de linhas analisadas).</li>
+        </ul>
+    </div>
+
+    <div class="math-card">
+        <h3>Variações e Propriedades do Somatório (Considerando n = 5)</h3>
+        <p>Na bioestatística (especialmente ao calcular a variância), raramente somamos apenas o <em>x<sub>i</sub></em> puro. Muitas vezes precisamos realizar operações algébricas <strong>antes</strong> de somar. Compreender a ordem das operações é vital para não errar os cálculos.</p>
+        
+        <div class="alert-box">
+            <h4>⚠️ O Poder dos Parênteses: A Armadilha Clássica</h4>
+            <p>Antes de avançarmos, observe a diferença crucial que um parênteses faz na instrução estatística. A regra de ouro é: <strong>o somatório afeta apenas o que está imediatamente à sua frente ou dentro do parênteses.</strong></p>
+            <ul style="padding-left: 20px;">
+                <li><strong>&Sigma; <em>x<sub>i</sub></em> + 2 (Sem parênteses):</strong> O somatório "puxa" apenas o <em>x<sub>i</sub></em>. Você soma todos os 5 dados brutos primeiro, obtém um total geral, e <strong>só no final</strong> adiciona o número 2 a esse total.</li>
+                <li style="margin-top: 10px;"><strong>&Sigma; (<em>x<sub>i</sub></em> + 2) (Com parênteses):</strong> O somatório engloba toda a expressão. Você deve adicionar 2 a <strong>cada um dos 5 dados individualmente</strong>, e só depois somar todos esses novos valores. <em>(Equivale a calcular o somatório de todos os x<sub>i</sub> e depois somar 2&times;5 ao resultado final).</em></li>
+            </ul>
+        </div>
+
+        <div class="grid-formulas">
+            <!-- Grupo 1 -->
+            <div class="formula-box">
+                <h4 style="margin-top:0; color:var(--primary-color);">1. Operações com Constantes e Expoentes</h4>
+                <ul style="padding-left: 20px;">
+                    <li><code>&Sigma; (x<sub>i</sub> + 2<sup>2</sup>)</code>Soma-se 4 (pois 2<sup>2</sup> = 4) ao dado de cada uma das 5 linhas e, em seguida, realiza-se o somatório geral.</li>
+                    <li style="margin-top: 10px;"><code>&Sigma; (x<sub>i</sub> + 2)<sup>2</sup></code>Atenção redobrada aqui: Primeiro soma-se 2 ao dado, <strong>eleva-se esse resultado ao quadrado</strong>, e apenas depois que você fez isso para todas as 5 observações é que se soma tudo. Esta lógica é a base estrutural para entender o cálculo do Desvio Padrão!</li>
+                </ul>
+            </div>
+
+            <!-- Grupo 2 -->
+            <div class="formula-box">
+                <h4 style="margin-top:0; color:var(--primary-color);">2. Operações com Múltiplas Variáveis</h4>
+                <ul style="padding-left: 20px;">
+                    <li><code>&Sigma; (x<sub>i</sub> + 2x<sub>i</sub>)</code>Algebricamente, <em>x<sub>i</sub></em> + 2<em>x<sub>i</sub></em> = 3<em>x<sub>i</sub></em>. A instrução é: multiplique o dado de cada uma das 5 linhas por 3 e depois faça a soma total.</li>
+                    <li style="margin-top: 10px;"><code>&Sigma; (x<sub>i</sub> + 2x<sub>i</sub><sup>2</sup>)</code>Primeiro, eleva-se o dado ao quadrado (<em>x<sub>i</sub><sup>2</sup></em>), multiplica-se isso por 2, soma-se com o valor original (<em>x<sub>i</sub></em>) e só então passa-se para a próxima linha até completar as 5. O somatório agrega todos esses resultados finais.</li>
+                    <li style="margin-top: 10px;"><code>&Sigma; (x<sub>i</sub> + 2x<sub>i</sub>)<sup>2</sup></code>Simplificando a expressão dentro do parênteses temos (3<em>x<sub>i</sub></em>)<sup>2</sup>, o que resulta em 9<em>x<sub>i</sub></em><sup>2</sup>. Portanto, eleva-se o dado ao quadrado, multiplica-se por 9 e depois soma-se todos os 5 valores.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="math-card">
+        <h3>Praticando: O Somatório Simples</h3>
+        <p>Vamos aplicar a notação utilizando os 5 primeiros dados da nossa amostra de dispersão (frequências: 12, 3, 1, 16, 35). Como nossa amostra tem 5 elementos, nosso <strong>n = 5</strong>.</p>
+        
+        <div class="formula-display">
+            $$ \sum_{i=1}^{5} x_i = x_1 + x_2 + x_3 + x_4 + x_5 $$
+        </div>
+
+        <div class="interactive-box">
+            <h4 style="margin-top:0; color: var(--primary-color);">Laboratório Prático: Calcule o Somatório</h4>
+            <p>Os valores iniciais já estão preenchidos com os dados da nossa amostra, mas <strong>sinta-se livre para alterá-los</strong>. Clique em calcular para verificar o processamento estatístico da sua nova amostra.</p>
+            
+            <div class="input-group">
+                <div>
+                    <label style="display:block; text-align:center; font-size:12px; color:#666;"><em>x<sub>1</sub></em></label>
+                    <input type="number" class="calc-input" id="x1" value="12">
+                </div>
+                <div style="align-self: center; font-weight: bold;">+</div>
+                <div>
+                    <label style="display:block; text-align:center; font-size:12px; color:#666;"><em>x<sub>2</sub></em></label>
+                    <input type="number" class="calc-input" id="x2" value="3">
+                </div>
+                <div style="align-self: center; font-weight: bold;">+</div>
+                <div>
+                    <label style="display:block; text-align:center; font-size:12px; color:#666;"><em>x<sub>3</sub></em></label>
+                    <input type="number" class="calc-input" id="x3" value="1">
+                </div>
+                <div style="align-self: center; font-weight: bold;">+</div>
+                <div>
+                    <label style="display:block; text-align:center; font-size:12px; color:#666;"><em>x<sub>4</sub></em></label>
+                    <input type="number" class="calc-input" id="x4" value="16">
+                </div>
+                <div style="align-self: center; font-weight: bold;">+</div>
+                <div>
+                    <label style="display:block; text-align:center; font-size:12px; color:#666;"><em>x<sub>5</sub></em></label>
+                    <input type="number" class="calc-input" id="x5" value="35">
+                </div>
+            </div>
+            
+            <button class="btn-calc" onclick="calculateSum()">Executar Somatório ( &Sigma; )</button>
+            
+            <div id="calc-result">
+                <!-- Resultado injetado via JS -->
+            </div>
+        </div>
+    </div>
+    
+    <button id="btn-reveal-0" class="btn-reveal" onclick="revealSection('recorte-section', 'btn-reveal-0')">Avançar para Apresentação de Dados &#8595;</button>
+
+    <!-- SEÇÃO OCULTA 0: O RECORTE EPIDEMIOLÓGICO -->
+    <div id="recorte-section" class="hidden-section">
+        <h2 class="section-title">Passo 1: O Recorte Epidemiológico</h2>
+        <div class="context-box">
+            <p>Agora que já dominamos o motor matemático (o Somatório), vamos iniciar nossa jornada pelas <strong>Medidas de Tendência Central</strong>.</p>
+            <p>Para isso, voltaremos à nossa base de notificação de Leishmaniose Visceral. Desta vez, faremos um recorte amostral focado exclusivamente nos pacientes com escolaridade de <strong>1ª a 4ª série incompleta</strong> e <strong>4ª série completa</strong>. Observe a tabela abaixo e localize de onde extrairemos nossos dados.</p>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Faixa Etária</th>
+                        <th>Ign/Branco</th>
+                        <th>Analfabeto</th>
+                        <th class="col-highlight">1ª a 4ª série inc.</th>
+                        <th class="col-highlight">4ª série comp.</th>
+                        <th>5ª a 8ª série inc.</th>
+                        <th>Outros...</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>5-9 Anos</td><td>13</td><td>-</td><td class="col-highlight">12</td><td class="col-highlight">1</td><td>2</td><td>...</td><td>58</td></tr>
+                    <tr><td>10-14 Anos</td><td>11</td><td>-</td><td class="col-highlight">3</td><td class="col-highlight">1</td><td>16</td><td>...</td><td>32</td></tr>
+                    <tr><td>15-19 Anos</td><td>13</td><td>-</td><td class="col-highlight">1</td><td class="col-highlight">-</td><td>5</td><td>...</td><td>37</td></tr>
+                    <tr><td>20-39 Anos</td><td>100</td><td>9</td><td class="col-highlight">16</td><td class="col-highlight">7</td><td>56</td><td>...</td><td>311</td></tr>
+                    <tr><td>40-59 Anos</td><td>121</td><td>13</td><td class="col-highlight">35</td><td class="col-highlight">14</td><td>46</td><td>...</td><td>340</td></tr>
+                    <tr><td>60-64 Anos</td><td>18</td><td>4</td><td class="col-highlight">6</td><td class="col-highlight">6</td><td>7</td><td>...</td><td>62</td></tr>
+                    <tr><td>65-69 Anos</td><td>12</td><td>1</td><td class="col-highlight">-</td><td class="col-highlight">3</td><td>2</td><td>...</td><td>34</td></tr>
+                    <tr><td>70-79 Anos</td><td>23</td><td>8</td><td class="col-highlight">5</td><td class="col-highlight">2</td><td>3</td><td>...</td><td>48</td></tr>
+                    <tr><td>80 e + Anos</td><td>6</td><td>1</td><td class="col-highlight">3</td><td class="col-highlight">4</td><td>1</td><td>...</td><td>18</td></tr>
+                    <tr class="total-row"><td>TOTAL</td><td>...</td><td>...</td><td class="col-highlight">81</td><td class="col-highlight">38</td><td>...</td><td>...</td><td>1.106</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <button id="btn-reveal-1" class="btn-reveal" onclick="revealSection('nuvem-section', 'btn-reveal-1')">Avançar para Visualização Bruta &#8595;</button>
+    </div>
+
+    <!-- SEÇÃO OCULTA 1: NUVEM DE DADOS E REFLEXÃO -->
+    <div id="nuvem-section" class="hidden-section">
+        <h2 class="section-title">Passo 2: O Caos dos Dados Brutos</h2>
+        
+        <div class="context-box">
+            <p>Se pegarmos todos os registros (as frequências) contidos nestas duas colunas e colocarmos soltos em um espaço, teremos algo parecido com a imagem abaixo.</p>
+        </div>
+
+        <div class="img-container">
+            <img src="nuvem.png" alt="Nuvem de Dados Brutos">
+            <span class="img-placeholder-text">*Nuvem de dados representativa inserida pelo professor*</span>
+        </div>
+
+        <div class="reflection-card">
+            <h3>🤔 Momento de Reflexão</h3>
+            <p><strong>Olhando essa nuvem de dados exatamente na forma em que estão distribuídos, o que é possível extrair de informação?</strong></p>
+            <p style="font-size: 0.9em; color: #666; font-style: italic; margin-top: 15px;">Pense um pouco sobre a diferença entre termos um monte de <strong>dados</strong> soltos na tela e conseguirmos transformar isso em uma <strong>informação</strong> útil para a tomada de decisão em saúde pública.</p>
+        </div>
+        
+        <button id="btn-reveal-2" class="btn-reveal" onclick="revealSection('dotplot-section', 'btn-reveal-2')">Avançar para Organização dos Dados &#8595;</button>
+    </div>
+
+    <!-- SEÇÃO OCULTA 2: DOTPLOT E TENDÊNCIA CENTRAL -->
+    <div id="dotplot-section" class="hidden-section">
+        <h2 class="section-title">Passo 3: Transformando Dados em Informação</h2>
+        
+        <div class="context-box">
+            <p>Como vocês perceberam, números soltos são apenas <em>dados</em>. Eles não nos contam uma história clara.</p>
+            <p>Para que possamos extrair <em>informação</em> e finalmente calcular onde está o "centro de gravidade" dessa população (a Tendência Central), nós vamos trabalhar melhor a apresentação visual desses mesmos números. Vamos arrumá-los em um gráfico chamado <strong>Dotplot (Gráfico de Pontos)</strong>, empilhando as repetições em uma linha numérica.</p>
+        </div>
+
+        <div class="img-container" style="border-color: var(--success-color);">
+            <img src="dotplot.png" alt="Dotplot organizado dos dados">
+            <span class="img-placeholder-text">*Gráfico Dotplot inserido pelo professor*</span>
+        </div>
+        
+        <p style="text-align: center; font-size: 1.1em; color: var(--primary-color); font-weight: bold;">
+            Observem como a simples organização revela imediatamente onde a maior concentração (a maior frequência) dos nossos casos está localizada!
+        </p>
+
+        <div class="alert-box" style="margin-top: 30px; border-color: var(--primary-color); background-color: #e8f4f8;">
+            <h4 style="color: var(--primary-color);">👨‍🏫 Atenção: Medidas de Tendência Central</h4>
+            <p><strong>Agora, preste atenção no professor!</strong> A partir desta estruturação gráfica e do somatório, vamos definir quem são a Média, a Mediana e a Moda no mundo real da epidemiologia.</p>
+        </div>
+
+        <div class="password-container" id="btn-senha-container">
+            <p style="font-weight: bold; color: var(--text-color); margin-top: 0;">Para avançar ao próximo módulo de Dispersão, insira a chave liberada em sala:</p>
+            <input type="password" id="password-input" placeholder="Senha de Acesso">
+            <button onclick="checkPassword()">Avançar para Medidas de Dispersão &#8595;</button>
+        </div>
+    </div>
+
+    <!-- SEÇÃO OCULTA 3: MEDIDAS DE DISPERSÃO -->
+    <div id="dispersao-section" class="hidden-section">
+        <h2 class="section-title">Passo 4: Medidas de Dispersão</h2>
+        
+        <div class="context-box">
+            <p>A média sozinha pode ser enganosa. Dois grupos podem ter a mesma média, mas os dados de um podem estar super agrupados enquanto os do outro estão amplamente espalhados. A <strong>Dispersão</strong> (como o desvio padrão e a variância) avalia essa distância de cada ponto em relação ao centro.</p>
+        </div>
+
+        <div class="img-container">
+            <img src="disp.png" alt="Exemplo de Dispersão (Atividade Física x Freq. Semanal)">
+            <span class="img-placeholder-text">*Gráfico representativo de desvios inserido pelo professor*</span>
+        </div>
+        
+        <button id="btn-reveal-3" class="btn-reveal" onclick="revealSection('pratica-section', 'btn-reveal-3')">Avançar para a parte de Prática! &#8595;</button>
+    </div>
+
+    <!-- SEÇÃO OCULTA 4: PRÁTICA -->
+    <div id="pratica-section" class="hidden-section">
+        <h2 class="section-title">Laboratório Prático: Tendência e Dispersão</h2>
+        
+        <div class="context-box">
+            <p>Utilizando a tabela original de Leishmaniose Visceral, concentre-se nas colunas de pacientes com escolaridade de <strong>1ª a 4ª série incompleta</strong> e <strong>4ª série completa</strong>. Resolva os questionamentos abaixo no seu caderno. Se travar, utilize o Botão de Pânico para receber uma dica do professor!</p>
+        </div>
+
+        <div class="practice-grid">
+            
+            <div class="practice-item">
+                <h4>Exercício 1</h4>
+                <p>Compare as médias (aritméticas) entre as duas categorias de escolaridade. O que isso diz?</p>
+                <button class="btn-panic" onclick="toggleHint('hint1')">🚨 Botão de Pânico</button>
+                <div id="hint1" class="hint-box">
+                    <strong>Dica do Professor:</strong> Nesta análise, seus dados brutos ($x_i$) são os números de casos de cada linha. O tamanho da sua amostra ($n$) é o número de faixas etárias analisadas (9 linhas). Calcule a média dividindo o somatório total da coluna por 9. Compare os dois resultados finais para ver qual grupo de escolaridade apresenta, em média, a maior carga da doença por faixa etária.
+                </div>
+            </div>
+
+            <div class="practice-item">
+                <h4>Exercício 2</h4>
+                <p>Para cada uma das categorias de escolaridade, compare a média com a mediana.</p>
+                <button class="btn-panic" onclick="toggleHint('hint2')">🚨 Botão de Pânico</button>
+                <div id="hint2" class="hint-box">
+                    <strong>Dica do Professor:</strong> Para achar a Mediana, você precisa primeiro organizar os 9 números de frequência da coluna em um rol crescente (do menor para o maior, lembrando que valores com "-" são 0). O número que ficar exatamente na 5ª posição central é a mediana. Se a Média calculada for muito maior que a Mediana, significa que picos isolados (como a linha com 35 casos) estão "puxando" a média para cima de forma não simétrica.
+                </div>
+            </div>
+
+            <div class="practice-item">
+                <h4>Exercício 3</h4>
+                <p>Para ambas as categorias existe uma moda? Qual?</p>
+                <button class="btn-panic" onclick="toggleHint('hint3')">🚨 Botão de Pânico</button>
+                <div id="hint3" class="hint-box">
+                    <strong>Dica do Professor:</strong> A Moda estatística é simplesmente o valor que mais aparece em um conjunto. Observe a sequência dos 9 números brutos em cada coluna separadamente (ex: 12, 3, 1, 16...) e identifique qual algarismo exato se repete mais vezes.
+                </div>
+            </div>
+
+            <div class="practice-item">
+                <h4>Exercício 4</h4>
+                <p>Utilizando uma medida de dispersão como um parâmetro analítico, compare a diferença entre as médias.</p>
+                <button class="btn-panic" onclick="toggleHint('hint4')">🚨 Botão de Pânico</button>
+                <div id="hint4" class="hint-box">
+                    <strong>Dica do Professor:</strong> Lembre-se da visualização do dotplot. As médias (o centro de gravidade) dos dois grupos são matematicamente diferentes, mas os pontos individuais variam muito em torno desse centro? Se o Desvio Padrão (a dispersão) de um grupo for muito largo, isso ofusca a precisão da média de representar aquele grupo epidemiológico de forma homogênea.
+                </div>
+            </div>
+
+            <div class="practice-item">
+                <h4>Exercício 5</h4>
+                <p>Qual a variação e amplitude dos dados para ambas as categorias de escolaridade? Qual delas possui maiores frequências de ocorrência?</p>
+                <button class="btn-panic" onclick="toggleHint('hint5')">🚨 Botão de Pânico</button>
+                <div id="hint5" class="hint-box">
+                    <strong>Dica do Professor:</strong> A amplitude é a medida de dispersão mais rápida de se obter: basta olhar para a coluna e subtrair o menor valor registrado do maior valor registrado (Máximo - Mínimo). O grupo com a maior amplitude apresenta a maior oscilação na distribuição da doença ao longo das idades.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function calculateSum() {
+        const x1 = parseFloat(document.getElementById('x1').value) || 0;
+        const x2 = parseFloat(document.getElementById('x2').value) || 0;
+        const x3 = parseFloat(document.getElementById('x3').value) || 0;
+        const x4 = parseFloat(document.getElementById('x4').value) || 0;
+        const x5 = parseFloat(document.getElementById('x5').value) || 0;
+        
+        const total = x1 + x2 + x3 + x4 + x5;
+        
+        const resultDiv = document.getElementById('calc-result');
+        resultDiv.style.display = 'block';
+        
+        resultDiv.innerHTML = `
+            <strong>Procedimento Concluído!</strong><br><br>
+            Abertura da equação: <br>
+            <span style="font-family: monospace; font-size: 1.2em; color: #4A6984;">
+                &Sigma; <em>x<sub>i</sub></em> = ${x1} + ${x2} + ${x3} + ${x4} + ${x5}
+            </span>
+            <br><br>
+            Resultado Final:<br>
+            <span style="font-size: 1.5em; font-weight: bold; color: #27ae60;">
+                &Sigma; = ${total}
+            </span>
+            <br><br>
+            <em style="font-size: 0.9em; color: #666;">Excelente! Agora que você domina a ordem das operações do somatório e pode testar amostras dinâmicas, a fórmula da Média será apenas um passo natural.</em>
+        `;
+    }
+
+    function revealSection(sectionId, btnId) {
+        document.getElementById(btnId).style.display = 'none'; 
+        const section = document.getElementById(sectionId);
+        section.style.display = 'block'; 
+        
+        setTimeout(() => {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+    
+    function checkPassword() {
+        const pwd = document.getElementById('password-input').value;
+        if(pwd === '404403') {
+            document.getElementById('btn-senha-container').style.display = 'none';
+            const section = document.getElementById('dispersao-section');
+            section.style.display = 'block';
+            setTimeout(() => {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        } else {
+            alert('Senha incorreta! Preste atenção no professor para obter a chave de acesso.');
+        }
+    }
+    
+    function toggleHint(hintId) {
+        const hintDiv = document.getElementById(hintId);
+        if(hintDiv.style.display === 'none' || hintDiv.style.display === '') {
+            hintDiv.style.display = 'block';
+        } else {
+            hintDiv.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
