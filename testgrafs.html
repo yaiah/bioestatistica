@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bioestatística Aplicada - Gráficos</title>
+    <style>
+        :root { 
+            --primary-color: #4A6984; 
+            --secondary-color: #6C8EAD; 
+            --bg-color: #F4F7F6; 
+            --text-color: #333333; 
+            --accent-color: #E67E22; 
+            --success-color: #27ae60; 
+            --bar-color: #3498db;
+            --poly-color: #8e44ad;
+            --ogiva-color: #e74c3c;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; margin: 0; padding: 0; }
+        
+        header { background-color: var(--success-color); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
+        
+        .section-title { color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; margin-top: 40px; }
+        .context-box { background-color: white; border-left: 5px solid var(--accent-color); padding: 15px 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        .raw-data-box { background: #fff; padding: 15px; border-radius: 8px; border: 1px dashed #ccc; font-family: monospace; font-size: 14px; color: #555; margin-bottom: 20px; text-align: center; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: var(--primary-color); color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        .chart-container { position: relative; width: calc(100% - 100px); max-width: 600px; height: 350px; margin: 40px auto 70px auto; background: white; border-left: 2px solid #333; border-bottom: 2px solid #333; display: flex; align-items: flex-end; padding-top: 20px; box-sizing: border-box; }
+        
+        .y-axis-title { position: absolute; left: -80px; top: 50%; transform: translate(-50%, -50%) rotate(-90deg); font-weight: bold; font-size: 14px; color: var(--primary-color); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+        .x-axis-title { position: absolute; bottom: -55px; left: 50%; transform: translateX(-50%); font-weight: bold; font-size: 14px; color: var(--primary-color); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+
+        .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; position: relative; }
+        .bar { width: 100%; background-color: var(--bar-color); border: 1px solid #2980b9; transition: height 1.5s ease-in-out; height: 0; display: flex; justify-content: center; align-items: flex-start; }
+        .bar-label { margin-top: 5px; font-weight: bold; color: white; opacity: 0; transition: opacity 0.5s 1.5s; }
+        .x-axis-label { position: absolute; bottom: -25px; font-size: 12px; font-weight: bold; width: 100%; text-align: center; }
+        
+        /* Marcador do Ponto Médio no Polígono apenas no topo da barra */
+        .midpoint-mark { position: absolute; left: 50%; transform: translate(-50%, 50%); width: 3px; height: 12px; background-color: var(--poly-color); z-index: 9; }
+
+        .svg-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+        .poly-line { stroke: var(--poly-color); stroke-width: 3; fill: none; stroke-dasharray: 1500; stroke-dashoffset: 1500; transition: stroke-dashoffset 3.5s ease-in-out; }
+        .poly-point { fill: var(--poly-color); r: 0; transition: r 0.5s ease-out; }
+        .ogiva-line { stroke: var(--ogiva-color); stroke-width: 3; fill: none; stroke-dasharray: 1500; stroke-dashoffset: 1500; transition: stroke-dashoffset 3.5s ease-in-out; }
+        .ogiva-point { fill: var(--ogiva-color); r: 0; transition: r 0.5s ease-out; }
+        
+        .prop-master-container { position: relative; width: 100%; max-width: 400px; margin: 40px auto 50px auto; display: flex; justify-content: center; }
+        .prop-y-axis { display: flex; flex-direction: column; justify-content: space-between; height: 400px; margin-right: 15px; font-size: 12px; font-weight: bold; padding-bottom: 2px; text-align: right; border-right: 2px solid #333; padding-right: 10px; }
+        .prop-bar-container { width: 120px; height: 400px; border: 2px solid #333; border-left: none; display: flex; flex-direction: column; justify-content: flex-end; background: #f9f9f9; position: relative; border-bottom: 2px solid #333; }
+        .prop-segment { width: 100%; transition: height 1.5s ease-in-out; height: 0; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 16px; overflow: hidden; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
+        
+        .legend-container { display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 5px; font-size: 14px; }
+        .legend-color { width: 15px; height: 15px; border-radius: 3px; }
+
+        .btn-animate { background-color: var(--accent-color); color: white; border: none; padding: 12px 25px; font-size: 16px; cursor: pointer; border-radius: 4px; font-weight: bold; display: block; margin: 0 auto; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-animate:hover { background-color: #d35400; transform: translateY(-2px); }
+        .btn-animate:disabled { background-color: #95a5a6; cursor: not-allowed; transform: none; }
+        
+        .y-axis-labels { position: absolute; left: -30px; height: 100%; display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; font-weight: bold; padding-bottom: 2px; text-align: right; }
+
+        /* Estilo específico para a tabela de log de laboratório e checkmark */
+        .log-table th { background-color: var(--secondary-color); }
+        .log-table td { font-family: monospace; font-size: 14px; }
+        .check-mark { color: var(--success-color); font-weight: bold; margin-left: 5px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Laboratório de Bioestatística Aplicada</h1>
+    <p>Construção Animada: Histogramas, Polígonos, Ogivas e Barras Proporcionais</p>
+</header>
+
+<div class="container">
+    
+    <!-- SEÇÃO 1: DADOS E TABELA -->
+    <h2 class="section-title">1. Da Prancheta para a Tabela</h2>
+    <div class="context-box">
+        <p>Abaixo estão os dados reais de altura (em metros) coletados de 23 pacientes do sexo feminino. Transformamos esses valores brutos em classes ordenadas para desenhar nossos gráficos de variáveis contínuas.</p>
+    </div>
+    
+    <div class="raw-data-box">
+        1,63 - 1,68 - 1,70 - 1,62 - 1,61 - 1,67 - 1,54 - 1,50 - 1,67 - 1,59 - 1,58 - 1,75 - 1,70 - 1,59 - 1,67 - 1,53 - 1,65 - 1,60 - 1,70 - 1,55 - 1,58 - 1,60 - 1,65
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Classes (Altura em m)</th>
+                <th>Freq. Absoluta (f<sub>i</sub>)</th>
+                <th>Freq. Acumulada (F<sub>i</sub>)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>1,50 |- 1,55</td><td>3</td><td>3</td></tr>
+            <tr><td>1,55 |- 1,60</td><td>5</td><td>8</td></tr>
+            <tr><td>1,60 |- 1,65</td><td>5</td><td>13</td></tr>
+            <tr><td>1,65 |- 1,70</td><td>6</td><td>19</td></tr>
+            <tr><td>1,70 |- 1,76</td><td>4</td><td>23</td></tr>
+        </tbody>
+    </table>
+
+    <!-- SEÇÃO 2: HISTOGRAMA ANIMADO -->
+    <h2 class="section-title">2. Construindo o Histograma</h2>
+    <div class="context-box">
+        <p>O Histograma exibe a <strong>Frequência Absoluta</strong>. Os blocos são "colados" porque a variável é contínua (onde termina uma classe, começa a outra).</p>
+    </div>
+
+    <div class="chart-container" id="hist-chart">
+        <div class="y-axis-title">Frequência Absoluta</div>
+        <div class="x-axis-title">Altura (Metros)</div>
+        
+        <div class="y-axis-labels">
+            <span>6</span><span>4</span><span>2</span><span>0</span>
+        </div>
+        
+        <div class="bar-wrapper">
+            <div class="bar" data-target="50%"><span class="bar-label">3</span></div>
+            <div class="x-axis-label">1,50 |- 1,55</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar" data-target="83.33%"><span class="bar-label">5</span></div>
+            <div class="x-axis-label">1,55 |- 1,60</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar" data-target="83.33%"><span class="bar-label">5</span></div>
+            <div class="x-axis-label">1,60 |- 1,65</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar" data-target="100%"><span class="bar-label">6</span></div>
+            <div class="x-axis-label">1,65 |- 1,70</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar" data-target="66.66%"><span class="bar-label">4</span></div>
+            <div class="x-axis-label">1,70 |- 1,76</div>
+        </div>
+    </div>
+    <button class="btn-animate" id="btn-hist" style="margin-top: 70px;" onclick="animateHistogram()">Erguer Histograma</button>
+
+
+    <!-- SEÇÃO 3: POLÍGONO DE FREQUÊNCIA -->
+    <h2 class="section-title" style="margin-top: 60px;">3. Traçando o Polígono de Frequência</h2>
+    <div class="context-box">
+        <p>O Polígono de Frequência também utiliza a Frequência Absoluta. Ele é construído marcando um ponto no <strong>ponto médio</strong> do topo de cada bloco do Histograma e ligando-os. Ele mostra a "silhueta" da distribuição. Observe as pequenas marcações no topo indicando o exato meio de cada barra.</p>
+    </div>
+
+    <div class="chart-container" id="poly-chart">
+        <div class="y-axis-title">Frequência Absoluta</div>
+        <div class="x-axis-title">Altura (Metros)</div>
+        
+        <div class="y-axis-labels">
+            <span>6</span><span>4</span><span>2</span><span>0</span>
+        </div>
+        
+        <div class="bar-wrapper">
+            <div class="bar" style="height: 50%; background-color: #bdc3c7;"></div>
+            <div class="midpoint-mark" style="bottom: 50%;"></div>
+            <div class="x-axis-label">1,50 |- 1,55</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar" style="height: 83.33%; background-color: #bdc3c7;"></div>
+            <div class="midpoint-mark" style="bottom: 83.33%;"></div>
+            <div class="x-axis-label">1,55 |- 1,60</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar" style="height: 83.33%; background-color: #bdc3c7;"></div>
+            <div class="midpoint-mark" style="bottom: 83.33%;"></div>
+            <div class="x-axis-label">1,60 |- 1,65</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar" style="height: 100%; background-color: #bdc3c7;"></div>
+            <div class="midpoint-mark" style="bottom: 100%;"></div>
+            <div class="x-axis-label">1,65 |- 1,70</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar" style="height: 66.66%; background-color: #bdc3c7;"></div>
+            <div class="midpoint-mark" style="bottom: 66.66%;"></div>
+            <div class="x-axis-label">1,70 |- 1,76</div>
+        </div>
+
+        <svg class="svg-overlay" viewBox="0 0 600 350" preserveAspectRatio="none">
+            <polyline class="poly-line" id="polyLine" points="0,350 60,185 180,75 300,75 420,20 540,130 600,350" />
+            <circle class="poly-point" cx="60" cy="185" />
+            <circle class="poly-point" cx="180" cy="75" />
+            <circle class="poly-point" cx="300" cy="75" />
+            <circle class="poly-point" cx="420" cy="20" />
+            <circle class="poly-point" cx="540" cy="130" />
+        </svg>
+    </div>
+    <button class="btn-animate" id="btn-poly" style="margin-top: 70px;" onclick="animatePolygon()">Desenhar Polígono</button>
+
+
+    <!-- SEÇÃO 4: OGIVA ANIMADA -->
+    <h2 class="section-title" style="margin-top: 60px;">4. Traçando a Ogiva (Frequência Acumulada)</h2>
+    <div class="context-box">
+        <p>A Ogiva foca na <strong>Frequência Acumulada</strong>. Perceba que a linha não marca o ponto médio, mas sim o limite superior de cada classe, empilhando o valor atual com todos os anteriores até chegar ao total (23 pacientes). A linha nunca desce.</p>
+    </div>
+
+    <div class="chart-container" id="ogiva-chart">
+        <div class="y-axis-title">Frequência Acumulada</div>
+        <div class="x-axis-title">Altura (Metros)</div>
+        
+        <div class="y-axis-labels">
+            <span>25</span><span>20</span><span>15</span><span>10</span><span>5</span><span>0</span>
+        </div>
+        
+        <div class="bar-wrapper"><div class="x-axis-label" style="text-align: right; margin-right: -20px;">1,55</div></div>
+        <div class="bar-wrapper"><div class="x-axis-label" style="text-align: right; margin-right: -20px;">1,60</div></div>
+        <div class="bar-wrapper"><div class="x-axis-label" style="text-align: right; margin-right: -20px;">1,65</div></div>
+        <div class="bar-wrapper"><div class="x-axis-label" style="text-align: right; margin-right: -20px;">1,70</div></div>
+        <div class="bar-wrapper"><div class="x-axis-label" style="text-align: right; margin-right: -20px;">1,76</div></div>
+
+        <svg class="svg-overlay" viewBox="0 0 600 350" preserveAspectRatio="none">
+            <polyline class="ogiva-line" id="ogivaLine" points="0,350 120,310.4 240,244.4 360,178.4 480,99.2 600,46.4" />
+            <circle class="ogiva-point" cx="0" cy="350" />
+            <circle class="ogiva-point" cx="120" cy="310.4" />
+            <circle class="ogiva-point" cx="240" cy="244.4" />
+            <circle class="ogiva-point" cx="360" cy="178.4" />
+            <circle class="ogiva-point" cx="480" cy="99.2" />
+            <circle class="ogiva-point" cx="600" cy="46.4" />
+        </svg>
+    </div>
+    <button class="btn-animate" id="btn-ogiva" style="margin-top: 70px;" onclick="animateOgiva()">Desenhar Ogiva</button>
+
+
+    <!-- SEÇÃO 5: DIAGRAMA DE BARRAS PROPORCIONAIS -->
+    <h2 class="section-title" style="margin-top: 60px;">5. Variáveis Categóricas e Barras Proporcionais</h2>
+    <div class="context-box">
+        <p>Para variáveis qualitativas (categorias puras), usamos a Barra Proporcional, guiada pela <strong>Frequência Relativa (%)</strong>. A tabela reflete o uso de medicamentos em uma amostra de 200 pacientes. A barra total, ao final, representará 100% da amostra.</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Medicamento (Categoria)</th>
+                <th>Freq. Absoluta</th>
+                <th>Freq. Relativa (%)</th>
+                <th>Freq. Rel. Acumulada (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Paracetamol</td><td>80</td><td>40%</td><td>40%</td></tr>
+            <tr><td>Ibuprofeno</td><td>60</td><td>30%</td><td>70%</td></tr>
+            <tr><td>Dipirona</td><td>40</td><td>20%</td><td>90%</td></tr>
+            <tr><td>AAS</td><td>20</td><td>10%</td><td>100%</td></tr>
+            <tr style="font-weight: bold; background-color: #e2e8f0;"><td>TOTAL</td><td>200</td><td>100%</td><td>-</td></tr>
+        </tbody>
+    </table>
+
+    <div class="prop-master-container">
+        <div class="y-axis-title" style="left: -40px;">Proporção (%)</div>
+        <div class="x-axis-title" style="bottom: -40px;">Amostra Total (N=200)</div>
+        
+        <div class="prop-y-axis">
+            <span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>
+        </div>
+        
+        <div class="prop-bar-container">
+            <div class="prop-segment" data-target="10%" style="background-color: #f1c40f;" id="seg4"></div>
+            <div class="prop-segment" data-target="20%" style="background-color: #e67e22;" id="seg3"></div>
+            <div class="prop-segment" data-target="30%" style="background-color: #9b59b6;" id="seg2"></div>
+            <div class="prop-segment" data-target="40%" style="background-color: #27ae60;" id="seg1"></div>
+        </div>
+    </div>
+
+    <div class="legend-container">
+        <div class="legend-item"><div class="legend-color" style="background: #27ae60;"></div> Paracetamol (80)</div>
+        <div class="legend-item"><div class="legend-color" style="background: #9b59b6;"></div> Ibuprofeno (60)</div>
+        <div class="legend-item"><div class="legend-color" style="background: #e67e22;"></div> Dipirona (40)</div>
+        <div class="legend-item"><div class="legend-color" style="background: #f1c40f;"></div> AAS (20)</div>
+    </div>
+
+    <button class="btn-animate" id="btn-prop" style="margin-top: 50px;" onclick="animatePropBar()">Preencher Barra Proporcional</button>
+
+
+    <!-- SEÇÃO 6: EXERCÍCIO PRÁTICO (VARIÁVEIS CONTÍNUAS) -->
+    <h2 class="section-title" style="margin-top: 80px;">6. Mão na Massa: Variáveis Contínuas</h2>
+    <div class="context-box">
+        <p>Agora é a sua vez de colocar em prática o que vimos nas animações. Abaixo, temos um novo conjunto de dados brutos representando um parâmetro contínuo aferido de 12 pacientes.</p>
+    </div>
+
+    <div class="raw-data-box" style="font-size: 16px; letter-spacing: 2px;">
+        167 - 152 - 164 - 171 - 168 - 176 - 161 - 166 - 158 - 174 - 163 - 169
+    </div>
+
+    <div class="context-box" style="border-left: 5px solid var(--primary-color); background-color: #e8f4f8;">
+        <h4 style="margin-top: 0; color: var(--primary-color);">Laboratório Prático: Seus Gráficos</h4>
+        <p>Em seu caderno, siga os passos fundamentais da bioestatística para processar esta amostra:</p>
+        <ol style="line-height: 1.8; padding-left: 20px;">
+            <li><strong>Organize:</strong> Coloque os dados brutos acima em um Rol (ordem crescente).</li>
+            <li><strong>Tabule:</strong> Construa a tabela de distribuição de frequências completa. Utilize classes com intervalos de 5 unidades, começando em <strong>150 |- 155</strong> e terminando em <strong>175 |- 180</strong>.</li>
+            <li><strong>Desenhe o Histograma:</strong> Utilize a Frequência Absoluta que você calculou para determinar a altura dos blocos contíguos no gráfico.</li>
+            <li><strong>Trace o Polígono de Frequência:</strong> Sobreponha ao seu Histograma marcando exatamente os pontos médios no topo das barras e interligando-os.</li>
+            <li><strong>Construa a Ogiva:</strong> Em um novo eixo cartesiano, plote a Frequência Acumulada Relativa (%), lembrando-se de ancorar os pontos sempre no limite superior de cada classe.</li>
+        </ol>
+        <p style="font-size: 0.9em; color: #666; font-style: italic; margin-top: 15px;">Dica: Ao finalizar o exercício corretamente, sua tabela e seus três gráficos deverão refletir perfeitamente as proporções vistas nas anotações do caderno de estudos.</p>
+    </div>
+
+    <!-- SEÇÃO 7: EXERCÍCIO PRÁTICO (VARIÁVEIS CATEGÓRICAS) -->
+    <h2 class="section-title" style="margin-top: 60px;">7. Mão na Massa: Variáveis Categóricas</h2>
+    <div class="context-box">
+        <p>Em um experimento laboratorial sobre segurança alimentar, biomédicos avaliaram 20 lotes de ovos contaminados por cepas de <em>Salmonella</em>. O objetivo era determinar sob qual condição de armazenamento a proliferação bacteriana ocorreu com maior predominância.</p>
+        <p>As condições testadas foram categorizadas pelas letras abaixo e os resultados dos 20 lotes infectados foram documentados diretamente na tabela de registro da bancada sendo marcados os casos com crescimento bacteriano significativo:</p>
+        <ul style="padding-left: 20px;">
+            <li><strong>(I) Incubadora</strong> (30°C - 35°C)</li>
+            <li><strong>(A) Ambiente</strong> (20°C - 25°C)</li>
+            <li><strong>(C) Choque Térmico</strong> (Flutuação abrupta)</li>
+            <li><strong>(R) Refrigerado</strong> (4°C)</li>
+        </ul>
+    </div>
+
+    <table class="log-table" style="max-width: 600px; margin: 0 auto 30px auto;">
+        <thead>
+            <tr>
+                <th>Lote</th>
+                <th>Condição</th>
+                <th>Lote</th>
+                <th>Condição</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>001</td><td><strong>I</strong> <span class="check-mark">✔</span></td><td>011</td><td><strong>I</strong> <span class="check-mark">✔</span></td></tr>
+            <tr><td>002</td><td><strong>A</strong> <span class="check-mark">✔</span></td><td>012</td><td><strong>A</strong> <span class="check-mark">✔</span></td></tr>
+            <tr><td>003</td><td><strong>I</strong> <span class="check-mark">✔</span></td><td>013</td><td><strong>I</strong> <span class="check-mark">✔</span></td></tr>
+            <tr><td>004</td><td><strong>C</strong> <span class="check-mark">✔</span></td><td>014</td><td><strong>C</strong> <span class="check-mark">✔</span></td></tr>
+            <tr><td>005</td><td><strong>I</strong> <span class="check-mark">✔</span></td><td>015</td><td><strong>R</strong> <span class="check-mark">✔</span></td></tr>
+            <tr><td>006</td><td><strong>R</strong> <span class="check-mark">✔</span></td><td>016</td><td><strong>A</strong> <span class="check-mark">✔</span></td></tr>
+            <tr><td>007</td><td><strong>A</strong> <span class="check-mark">✔</span></td><td>017</td><td><strong>I</strong> <span class="check-mark">✔</span></td></tr>
+            <tr><td>008</td><td><strong>I</strong> <span class="check-mark">✔</span></td><td>018</td><td><strong>I</strong> <span class="check-mark">✔</span></td></tr>
+            <tr><td>009</td><td><strong>C</strong> <span class="check-mark">✔</span></td><td>019</td><td><strong>A</strong> <span class="check-mark">✔</span></td></tr>
+            <tr><td>010</td><td><strong>A</strong> <span class="check-mark">✔</span></td><td>020</td><td><strong>C</strong> <span class="check-mark">✔</span></td></tr>
+        </tbody>
+    </table>
+
+    <div class="context-box" style="border-left: 5px solid var(--accent-color); background-color: #fdf5e6;">
+        <h4 style="margin-top: 0; color: var(--accent-color);">Laboratório Prático: Seu Diagrama Proporcional</h4>
+        <p>A partir das observações listadas no livro de registro acima:</p>
+        <ol style="line-height: 1.8; padding-left: 20px;">
+            <li><strong>Construa a Tabela:</strong> Crie uma tabela de distribuição contendo a Categoria (Condição), a Frequência Absoluta (conte quantas vezes cada letra aparece) e a Frequência Relativa (%).</li>
+            <li><strong>Desenhe a Barra Proporcional:</strong> Desenhe uma única coluna vertical em seu caderno com um eixo ao lado variando de 0% a 100%. Divida a barra em 4 fatias, onde a altura de cada fatia seja proporcional à Frequência Relativa de cada condição (I, A, C e R).</li>
+        </ol>
+    </div>
+
+</div>
+
+<script>
+    function animateHistogram() {
+        const btn = document.getElementById('btn-hist');
+        const bars = document.querySelectorAll('#hist-chart .bar');
+        const labels = document.querySelectorAll('#hist-chart .bar-label');
+
+        if (btn.innerText.includes('Novamente')) {
+            bars.forEach(bar => { bar.style.transition = 'none'; bar.style.height = '0'; });
+            labels.forEach(label => { label.style.transition = 'none'; label.style.opacity = '0'; });
+            
+            void btn.offsetWidth; // Força a re-renderização imediata
+            
+            bars.forEach(bar => bar.style.transition = 'height 1.5s ease-in-out');
+            labels.forEach(label => label.style.transition = 'opacity 0.5s 1.5s');
+        }
+
+        btn.disabled = true;
+        btn.innerText = 'Construindo blocos...';
+
+        bars.forEach((bar, index) => {
+            setTimeout(() => {
+                bar.style.height = bar.getAttribute('data-target');
+                labels[index].style.opacity = '1';
+            }, index * 800); 
+        });
+        
+        setTimeout(() => { 
+            btn.innerText = 'Gerar Novamente ↺'; 
+            btn.disabled = false;
+        }, bars.length * 800 + 1000);
+    }
+
+    function animatePolygon() {
+        const btn = document.getElementById('btn-poly');
+        const line = document.getElementById('polyLine');
+        const points = document.querySelectorAll('.poly-point');
+
+        if (btn.innerText.includes('Novamente')) {
+            line.style.transition = 'none';
+            line.style.strokeDashoffset = '1500';
+            points.forEach(point => { point.style.transition = 'none'; point.style.r = '0'; });
+            
+            void btn.offsetWidth; 
+            
+            line.style.transition = 'stroke-dashoffset 3.5s ease-in-out';
+            points.forEach(point => point.style.transition = 'r 0.5s ease-out');
+        }
+
+        btn.disabled = true;
+        btn.innerText = 'Traçando linha...';
+        line.style.strokeDashoffset = '0';
+
+        points.forEach((point, index) => {
+            setTimeout(() => {
+                point.style.r = '6';
+            }, index * 600);
+        });
+
+        setTimeout(() => { 
+            btn.innerText = 'Gerar Novamente ↺'; 
+            btn.disabled = false; 
+        }, points.length * 600 + 1000);
+    }
+
+    function animateOgiva() {
+        const btn = document.getElementById('btn-ogiva');
+        const line = document.getElementById('ogivaLine');
+        const points = document.querySelectorAll('.ogiva-point');
+
+        if (btn.innerText.includes('Novamente')) {
+            line.style.transition = 'none';
+            line.style.strokeDashoffset = '1500';
+            points.forEach(point => { point.style.transition = 'none'; point.style.r = '0'; });
+            
+            void btn.offsetWidth;
+            
+            line.style.transition = 'stroke-dashoffset 3.5s ease-in-out';
+            points.forEach(point => point.style.transition = 'r 0.5s ease-out');
+        }
+
+        btn.disabled = true;
+        btn.innerText = 'Traçando ogiva...';
+        line.style.strokeDashoffset = '0';
+
+        points.forEach((point, index) => {
+            setTimeout(() => {
+                point.style.r = '6';
+            }, index * 600);
+        });
+
+        setTimeout(() => { 
+            btn.innerText = 'Gerar Novamente ↺'; 
+            btn.disabled = false; 
+        }, points.length * 600 + 1000);
+    }
+
+    function animatePropBar() {
+        const btn = document.getElementById('btn-prop');
+        const segments = [
+            document.getElementById('seg1'),
+            document.getElementById('seg2'),
+            document.getElementById('seg3'),
+            document.getElementById('seg4')
+        ];
+
+        if (btn.innerText.includes('Novamente')) {
+            segments.forEach(seg => { seg.style.transition = 'none'; seg.style.height = '0'; });
+            
+            void btn.offsetWidth;
+            
+            segments.forEach(seg => seg.style.transition = 'height 1.5s ease-in-out');
+        }
+
+        btn.disabled = true;
+        btn.innerText = 'Empilhando proporções...';
+
+        segments.forEach((seg, index) => {
+            setTimeout(() => {
+                seg.style.height = seg.getAttribute('data-target');
+            }, index * 1000);
+        });
+
+        setTimeout(() => { 
+            btn.innerText = 'Gerar Novamente ↺'; 
+            btn.disabled = false; 
+        }, segments.length * 1000 + 1000);
+    }
+</script>
+
+</body>
+</html>
