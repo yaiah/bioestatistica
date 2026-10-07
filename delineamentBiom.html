@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Delineamento Experimental nas Ciências Biológicas e da Saúde</title>
+  <style>
+    :root {
+      --bg: #02131d;
+      --panel: #ffffff;
+      --ink: #041b24;
+      --ink-body: #112833;
+      --muted: #415e6d;
+      --line: #c8dce6;
+      --primary: #0369a1;
+      --primary-light: #0284c7;
+      --primary-dark: #021a24;
+      --secondary: #0f766e;
+      --coral: #be123c;
+      --amber: #b45309;
+      --brown-text: #78350f;
+      --soft: #f0f7fb;
+      --shadow: 0 25px 50px -12px rgba(2, 26, 36, 0.35);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink-body);
+      background:
+        radial-gradient(circle at top left, rgba(2, 132, 199, 0.16), transparent 42rem),
+        radial-gradient(circle at bottom right, rgba(15, 118, 110, 0.14), transparent 36rem),
+        #f4f9fc;
+      overflow: hidden;
+    }
+
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      height: 100vh;
+      width: 100vw;
+      transition: grid-template-columns 0.3s ease;
+    }
+
+    /* ==========================================================================
+       BACKGROUNDS FOTOGRÁFICOS COM ALTO CONTRASTE (PEXELS)
+       ========================================================================== */
+    .slide.bg-photo {
+      background-color: #021a24 !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+      color: #ffffff !important;
+    }
+
+    .slide.bg-photo h2 { color: #ffffff !important; }
+
+    /* Capa: Laboratório Biomédico */
+    .slide.bg-lab-cover {
+      background-image: 
+        linear-gradient(135deg, rgba(2, 26, 36, 0.94), rgba(3, 105, 161, 0.88)),
+        url('https://images.pexels.com/photos/3735709/pexels-photo-3735709.jpeg') !important;
+    }
+
+    /* Slide 2: Ampulheta / Tempo */
+    .slide.bg-hourglass {
+      background-image: 
+        linear-gradient(135deg, rgba(2, 26, 36, 0.94), rgba(30, 41, 59, 0.9)),
+        url('https://images.pexels.com/photos/39396/hourglass-time-sand-clock-39396.jpeg') !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Slide 3: Balança de Precisão */
+    .slide.bg-scale {
+      background-image: 
+        linear-gradient(135deg, rgba(2, 26, 36, 0.94), rgba(15, 118, 110, 0.88)),
+        url('https://images.pexels.com/photos/837267/pexels-photo-837267.jpeg') !important;
+    }
+
+    /* Slide 4: Coelho / Modelo Animal */
+    .slide.bg-rabbit {
+      background-image: 
+        linear-gradient(135deg, rgba(2, 26, 36, 0.94), rgba(15, 118, 110, 0.88)),
+        url('https://images.pexels.com/photos/4001296/pexels-photo-4001296.jpeg') !important;
+    }
+
+    /* Slide 7: Gráficos na Tela do Computador */
+    .slide.bg-computer-charts {
+      background-image: 
+        linear-gradient(135deg, rgba(2, 26, 36, 0.95), rgba(3, 105, 161, 0.9)),
+        url('https://images.pexels.com/photos/186461/pexels-photo-186461.jpeg') !important;
+    }
+
+    /* Slide 12: Placa de Petri / Cultura Celular */
+    .slide.bg-petri {
+      background-image: 
+        linear-gradient(135deg, rgba(2, 26, 36, 0.94), rgba(2, 132, 199, 0.88)),
+        url('https://images.pexels.com/photos/2280547/pexels-photo-2280547.jpeg') !important;
+    }
+
+    /* Slide 17: Confinamento / Criação de Animais */
+    .slide.bg-cages {
+      background-image: 
+        linear-gradient(135deg, rgba(30, 10, 15, 0.95), rgba(69, 10, 10, 0.9)),
+        url('https://images.pexels.com/photos/1769279/pexels-photo-1769279.jpeg') !important;
+    }
+
+    /* Slide 18: Dado / Sorteio Probabilístico */
+    .slide.bg-dice {
+      background-image: 
+        linear-gradient(135deg, rgba(2, 26, 36, 0.94), rgba(30, 58, 138, 0.88)),
+        url('https://images.pexels.com/photos/1111597/pexels-photo-1111597.jpeg') !important;
+    }
+
+    /* Slide 19: Tela Estilo Matrix / Código Digital */
+    .slide.bg-matrix {
+      background-image: 
+        linear-gradient(135deg, rgba(1, 20, 10, 0.95), rgba(4, 47, 46, 0.9)),
+        url('https://images.pexels.com/photos/1089438/pexels-photo-1089438.jpeg') !important;
+    }
+
+    /* Slide 21: Mulher Pensando / Reflexão Crítica */
+    .slide.bg-thinking {
+      background-image: 
+        linear-gradient(135deg, rgba(2, 26, 36, 0.94), rgba(51, 65, 85, 0.9)),
+        url('https://images.pexels.com/photos/3807755/pexels-photo-3807755.jpeg') !important;
+    }
+
+    /* Slide 22: Gráficos de Análise de Dados e Variância */
+    .slide.bg-data-analytics {
+      background-image: 
+        linear-gradient(135deg, rgba(2, 26, 36, 0.94), rgba(3, 105, 161, 0.9)),
+        url('https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg') !important;
+    }
+
+    .card.dark-card {
+      background: rgba(2, 26, 36, 0.88) !important;
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+      color: #ffffff !important;
+    }
+    .card.dark-card h3 { color: #38bdf8 !important; }
+    .card.dark-card p, .card.dark-card li { color: #ffffff !important; font-weight: 500; }
+    .card.dark-card strong { color: #facc15 !important; }
+
+    /* ==========================================================================
+       ESTILOS EM MARROM (CONTROLES E PLACEBO)
+       ========================================================================== */
+    .slide.theme-brown h2 { color: var(--brown-text) !important; }
+    .card.brown-card {
+      background: #fefce8 !important;
+      border: 2px solid #ca8a04 !important;
+      color: var(--brown-text) !important;
+    }
+    .card.brown-card h3 { color: #854d0e !important; }
+    .card.brown-card p, .card.brown-card li { color: #713f12 !important; }
+    .blockquote-brown {
+      border-left: 6px solid #b45309 !important;
+      background: #fefce8 !important;
+      color: #713f12 !important;
+    }
+
+    /* ==========================================================================
+       MODO APRESENTAÇÃO / TELA CHEIA (FULLSCREEN + FONTES +20%)
+       ========================================================================== */
+    .app.fullscreen-mode {
+      display: block !important;
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+
+    .app.fullscreen-mode .sidebar,
+    .app.fullscreen-mode .topbar {
+      display: none !important;
+    }
+
+    .app.fullscreen-mode .stage {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+
+    .app.fullscreen-mode .progress {
+      height: 5px;
+      flex-shrink: 0;
+    }
+
+    .app.fullscreen-mode .slides {
+      position: relative !important;
+      flex: 1 1 auto !important;
+      width: 100% !important;
+      height: 100% !important;
+      padding: 24px 40px !important;
+      box-sizing: border-box !important;
+    }
+
+    .app.fullscreen-mode .slide {
+      position: absolute !important;
+      top: 20px !important;
+      left: 32px !important;
+      right: 32px !important;
+      bottom: 20px !important;
+      width: auto !important;
+      height: auto !important;
+      border-radius: 24px !important;
+      box-shadow: 0 30px 65px rgba(0, 0, 0, 0.35) !important;
+      padding: clamp(36px, 4.5vw, 64px) !important;
+      box-sizing: border-box !important;
+    }
+
+    .app.fullscreen-mode .slide h2 {
+      font-size: clamp(2.6rem, 3.8vw, 3.8rem);
+      margin-bottom: 24px;
+    }
+
+    .app.fullscreen-mode .cover h2 {
+      font-size: clamp(3.6rem, 6vw, 5.8rem);
+      margin-bottom: 24px;
+    }
+
+    .app.fullscreen-mode .cover .lead {
+      font-size: clamp(1.9rem, 2.8vw, 2.5rem);
+      line-height: 1.5;
+      color: #f0f7fb;
+    }
+
+    .app.fullscreen-mode .slide h3 {
+      font-size: 1.95rem;
+      margin-bottom: 18px;
+      color: var(--ink);
+    }
+
+    .app.fullscreen-mode .lead {
+      font-size: clamp(1.6rem, 2.2vw, 2rem);
+      line-height: 1.55;
+      margin-bottom: 26px;
+    }
+
+    .app.fullscreen-mode .eyebrow {
+      font-size: 1.2rem;
+      padding: 10px 22px;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+    }
+
+    .app.fullscreen-mode .slide p,
+    .app.fullscreen-mode .card p {
+      font-size: 1.68rem;
+      line-height: 1.65;
+    }
+
+    .app.fullscreen-mode .card li,
+    .app.fullscreen-mode .slide li {
+      font-size: 1.62rem;
+      line-height: 1.6;
+      margin: 14px 0;
+    }
+
+    .app.fullscreen-mode blockquote.big {
+      font-size: clamp(1.75rem, 2.7vw, 2.55rem);
+      line-height: 1.45;
+      padding: 30px 38px;
+    }
+
+    .app.fullscreen-mode .large-table th {
+      font-size: 1.6rem;
+      padding: 22px 26px;
+    }
+
+    .app.fullscreen-mode .large-table td {
+      font-size: 1.55rem;
+      line-height: 1.6;
+      padding: 22px 26px;
+    }
+
+    .app.fullscreen-mode .giant-takeaway {
+      font-size: 1.68rem;
+      padding: 26px 32px;
+    }
+
+    /* ==========================================================================
+       BARRA LATERAL / SIDEBAR
+       ========================================================================== */
+    .sidebar {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+      border-right: 1px solid var(--line);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 8px 20px rgba(3, 105, 161, 0.28);
+    }
+
+    .brand strong { display: block; font-size: 1.05rem; color: var(--ink); }
+    .brand small { color: var(--muted); font-size: 0.9rem; font-weight: 600; }
+
+    .agenda {
+      overflow-y: auto;
+      padding-right: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .agenda button {
+      border: 1px solid transparent;
+      background: transparent;
+      color: #3b5563;
+      text-align: left;
+      border-radius: 10px;
+      padding: 9px 12px;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.98rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .agenda button span:first-child {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--soft);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .agenda button:hover { background: rgba(3, 105, 161, 0.08); color: var(--ink); }
+    .agenda button.active {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+    }
+    .agenda button.active span:first-child { background: rgba(255,255,255,0.25); color: #fff; }
+
+    .side-footer { margin-top: auto; display: grid; gap: 8px; }
+
+    .ghost-btn, .icon-btn {
+      border: 0;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .ghost-btn {
+      padding: 12px 16px;
+      background: var(--soft);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 0.98rem;
+    }
+    .ghost-btn:hover { background: #d7e8f2; }
+
+    /* ==========================================================================
+       PALCO / STAGE
+       ========================================================================== */
+    .stage {
+      position: relative;
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto 4px minmax(0, 1fr);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 32px 12px;
+    }
+
+    #slideKicker {
+      color: var(--primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-size: 0.85rem;
+    }
+
+    #slideTitle {
+      margin: 2px 0 0;
+      font-size: clamp(1.2rem, 1.8vw, 1.65rem);
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .controls { display: flex; align-items: center; gap: 10px; }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1.6rem;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+    }
+    .icon-btn:hover { background: #0284c7; }
+    .counter { color: var(--ink); font-weight: 800; font-size: 1rem; min-width: 65px; text-align: center; }
+
+    .progress { background: var(--line); }
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--amber));
+      transition: width 0.3s ease;
+    }
+
+    /* ==========================================================================
+       ESTRUTURA DOS SLIDES
+       ========================================================================== */
+    .slides { position: relative; min-height: 0; padding: 24px 32px 32px; }
+
+    .slide {
+      position: absolute;
+      inset: 24px 32px 32px;
+      overflow-y: auto;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(28px, 4vw, 50px);
+      opacity: 0;
+      transform: translateY(12px) scale(0.99);
+      pointer-events: none;
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .slide h2 {
+      margin: 0 0 18px;
+      font-size: clamp(1.9rem, 3.2vw, 2.9rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .slide h3 { margin: 0 0 14px; font-size: 1.45rem; color: var(--ink); font-weight: 800; }
+    .slide p { line-height: 1.65; color: var(--ink-body); font-size: 1.4rem; }
+    .lead { font-size: clamp(1.3rem, 1.6vw, 1.6rem); color: var(--ink-body); font-weight: 500; max-width: 900px; margin-bottom: 22px; line-height: 1.55; }
+
+    .eyebrow {
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: var(--primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.95rem;
+      border: 1px solid #bae6fd;
+    }
+
+    /* Capa */
+    .cover {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #021a24, #0369a1);
+      color: #fff;
+      border: 0;
+    }
+    .cover .eyebrow { background: rgba(255,255,255,0.2); color: #ffffff; border-color: transparent; }
+    .cover-content { text-align: center; max-width: 950px; }
+    .cover h2 {
+      font-size: clamp(3.2rem, 5.8vw, 5.4rem);
+      color: #ffffff;
+      margin-bottom: 24px;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+    .cover .lead {
+      color: #f0f7fb;
+      font-size: clamp(1.65rem, 2.4vw, 2.2rem);
+      font-weight: 400;
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    /* Citações */
+    blockquote {
+      margin: 22px 0;
+      padding: 20px 26px;
+      border-left: 6px solid var(--amber);
+      background: #fffbeb;
+      border-radius: 0 14px 14px 0;
+      color: #78350f;
+      font-weight: 600;
+      line-height: 1.5;
+      font-size: 1.35rem;
+    }
+    blockquote.big {
+      font-size: clamp(1.5rem, 2.2vw, 2.1rem);
+      line-height: 1.45;
+      padding: 28px 34px;
+    }
+
+    /* Cartões */
+    .card {
+      background: #ffffff;
+      border: 1.5px solid var(--line);
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+    }
+    .card.accent { background: #f0fdfa; border-color: #5eead4; }
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--primary);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+
+    .card.single-focus {
+      padding: 38px 44px;
+      border-radius: 20px;
+      border: 2px solid var(--line);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      margin-top: 20px;
+    }
+    .card.single-focus.accent { background: #f0f7fb; border-color: #7dd3fc; }
+
+    .large-list {
+      list-style: none;
+      padding-left: 0 !important;
+      margin: 20px 0 0 !important;
+    }
+    .large-list li {
+      position: relative;
+      padding-left: 40px;
+      margin: 18px 0 !important;
+      font-size: 1.45rem;
+      line-height: 1.6;
+    }
+    .large-list li::before {
+      content: "•";
+      position: absolute;
+      left: 12px;
+      top: -4px;
+      font-size: 2.3rem;
+      color: var(--primary);
+    }
+
+    .takeaway {
+      margin-top: 24px;
+      padding: 20px 28px;
+      border-radius: 14px;
+      background: #f0fdf4;
+      border-left: 5px solid var(--secondary);
+      color: #064e3b;
+      font-weight: 700;
+      font-size: 1.45rem;
+      line-height: 1.55;
+    }
+
+    /* Tabelas */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      margin-top: 20px;
+      background: #fff;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 650px; }
+    th, td { padding: 20px 24px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); font-size: 1.3rem; }
+    th { background: #f0f7fb; color: var(--ink); font-weight: 800; border-bottom: 2px solid var(--line); font-size: 1.4rem; }
+    td { color: var(--ink-body); line-height: 1.6; }
+    tr:last-child td { border-bottom: 0; }
+
+    /* ==========================================================================
+       ESTILOS DO JOGO (CILADA OU DELINEAMENTO ROBUSTO?)
+       ========================================================================== */
+    .game-slide {
+      background: linear-gradient(135deg, #021a24, #073b4c) !important;
+      color: #ffffff !important;
+    }
+    .game-slide h2 { color: #ffffff !important; margin-bottom: 16px; font-weight: 800; }
+
+    .game-container {
+      max-width: 980px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .game-score {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px 24px;
+      border-radius: 999px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #38bdf8;
+      border: 1.5px solid #38bdf8;
+    }
+
+    .game-case-box {
+      background: rgba(3, 37, 51, 0.94);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 30px 36px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    }
+
+    .game-badge {
+      display: inline-block;
+      background: var(--amber);
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+
+    .game-case-text {
+      font-size: clamp(1.55rem, 2.4vw, 2.15rem);
+      font-weight: 700;
+      line-height: 1.45;
+      color: #ffffff !important;
+      margin: 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .game-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 10px;
+    }
+
+    .game-btn {
+      background: #0284c7;
+      color: #ffffff;
+      border: 2px solid #7dd3fc;
+      border-radius: 16px;
+      padding: 20px 22px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+    .game-btn:hover:not(:disabled) {
+      background: #0369a1;
+      transform: translateY(-2px);
+    }
+    .game-btn.danger {
+      background: #be123c;
+      border-color: #fda4af;
+    }
+    .game-btn.danger:hover:not(:disabled) {
+      background: #9f1239;
+    }
+    .game-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .game-feedback {
+      display: none;
+      background: #01131a;
+      border: 2.5px solid var(--secondary);
+      border-radius: 18px;
+      padding: 26px 32px;
+      margin-top: 14px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+      animation: fadeIn 0.3s ease;
+    }
+    .game-feedback.active { display: block; }
+    .game-feedback.correct { border-color: #22c55e; background: #052e16; }
+    .game-feedback.wrong { border-color: #ef4444; background: #450a0a; }
+
+    .feedback-verdict {
+      font-size: 1.7rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .game-feedback.correct .feedback-verdict { color: #4ade80 !important; }
+    .game-feedback.wrong .feedback-verdict { color: #fca5a5 !important; }
+
+    .feedback-explanation {
+      font-size: 1.45rem;
+      line-height: 1.55;
+      color: #ffffff !important;
+      font-weight: 600;
+      margin: 0 0 18px;
+    }
+
+    .primary-btn {
+      background: var(--amber);
+      color: #ffffff;
+      border: 0;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-weight: 800;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .primary-btn:hover { background: #b45309; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       CONTROLOS FLUTUANTES (HOVER)
+       ========================================================================== */
+    .floating-hover-zone {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      pointer-events: auto;
+    }
+
+    .floating-controls {
+      background: rgba(2, 26, 36, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .floating-hover-zone:hover .floating-controls {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .float-btn {
+      border: 0;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .float-btn:hover { background: rgba(255, 255, 255, 0.35); }
+    .float-btn.exit { background: var(--coral); }
+    .float-btn.exit:hover { background: #9f1239; }
+    .float-counter { color: #ffffff; font-size: 1.1rem; font-weight: 800; min-width: 65px; text-align: center; }
+
+    /* ==========================================================================
+       PAINEL DE NOTAS & VISÃO GERAL
+       ========================================================================== */
+    .notes-panel {
+      position: absolute;
+      right: 32px;
+      bottom: 32px;
+      width: min(450px, calc(100% - 64px));
+      max-height: 40%;
+      overflow-y: auto;
+      background: #021a24;
+      color: #fff;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 20px 24px;
+      transform: translateY(16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.2s ease;
+      z-index: 110;
+    }
+    .notes-panel.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .notes-head, .overview-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .notes-head button, .overview-head button {
+      border: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      color: inherit;
+    }
+    #notesText { margin: 0; font-size: 1.15rem; line-height: 1.6; color: #f0f7fb; }
+
+    .overview {
+      position: absolute;
+      inset: 0;
+      z-index: 120;
+      background: rgba(240, 247, 251, 0.98);
+      backdrop-filter: blur(10px);
+      padding: 32px;
+      display: none;
+      overflow-y: auto;
+    }
+    .overview.open { display: block; }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .overview-grid button {
+      min-height: 110px;
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px;
+      text-align: left;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+    .overview-grid button.active { outline: 3px solid var(--primary); }
+    .overview-grid span { display: block; color: var(--primary); font-size: 0.85rem; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; }
+    .overview-grid strong { font-size: 1.05rem; color: var(--ink); line-height: 1.25; }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .app { grid-template-columns: 1fr; height: auto; }
+      .sidebar { display: none; }
+      .stage { min-height: 100vh; }
+      .slides { padding: 16px; }
+      .slide { inset: 16px; padding: 20px; }
+      .game-options { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- Barra Lateral -->
+    <aside class="sidebar" id="sidebar" aria-label="Roteiro da aula">
+      <div class="brand">
+        <span class="brand-mark">DE</span>
+        <div>
+          <strong>Delineamento Experimental</strong>
+          <small>Ciências Biológicas & Saúde</small>
+        </div>
+      </div>
+
+      <nav class="agenda" id="agenda" aria-label="Navegação dos slides"></nav>
+
+      <div class="side-footer">
+        <button class="ghost-btn" id="fullscreenSideBtn" type="button">⛶ Modo Apresentação (F)</button>
+        <button class="ghost-btn" id="overviewBtn" type="button">Visão Geral (O)</button>
+        <button class="ghost-btn" id="notesBtn" type="button">Notas do Professor (N)</button>
+      </div>
+    </aside>
+
+    <!-- Palco Principal -->
+    <main class="stage">
+      <header class="topbar">
+        <div class="slide-meta">
+          <span id="slideKicker">Bioestatística Aplicada</span>
+          <h1 id="slideTitle">Delineamento Experimental</h1>
+        </div>
+
+        <div class="controls" aria-label="Controles da apresentação">
+          <button class="ghost-btn" id="fullscreenBtn" type="button" title="Modo Apresentação (Tecla F)">⛶ Tela Cheia</button>
+          <button class="icon-btn" id="prevBtn" type="button" aria-label="Slide anterior">‹</button>
+          <span class="counter" id="counter">1 / --</span>
+          <button class="icon-btn" id="nextBtn" type="button" aria-label="Próximo slide">›</button>
+        </div>
+      </header>
+
+      <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+      <section class="slides" id="slides" aria-live="polite">
+        
+        <!-- Slide 1: Capa (Background Laboratório com Ênfase Total) -->
+        <article class="slide cover active bg-photo bg-lab-cover" data-title="Abertura" data-kicker="Bioestatística & Método" data-notes="Apresente o delineamento como o alicerce ético, financeiro e lógico da inferência científica na saúde e na biologia.">
+          <div class="cover-content">
+            <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Método Científico & Rigor Estatístico</span>
+            <h2>Delineamento Experimental</h2>
+            <p class="lead">Como planejar experimentos robustos para responder a perguntas reais, dominar o ruído biológico e honrar compromissos éticos.</p>
+          </div>
+        </article>
+
+        <!-- Slide 2: Por que se preocupar? (Ampulheta / Sem Borda Azul) -->
+        <article class="slide bg-photo bg-hourglass" data-title="O Custo do Delineamento Ruim" data-kicker="Relevância 1/2" data-notes="Mostre que desenhar mal a pesquisa invalida investimentos e perde tempo precioso.">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Tempo & Recursos</span>
+          <h2>Por que se preocupar com o Delineamento?</h2>
+          <div class="card single-focus dark-card" style="border: none;">
+            <div class="card-icon">⏳</div>
+            <h3>O Desperdício Irreversível</h3>
+            <p>Um delineamento ruim gera dados que simplesmente <strong>não respondem à pergunta da pesquisa</strong>. Isso joga fora meses de esforço, destrói cronogramas e consome verbas financeiras que nunca mais serão recuperadas.</p>
+          </div>
+        </article>
+
+        <!-- Slide 3: Balança no BG (O Dilema da Amostragem) -->
+        <article class="slide bg-photo bg-scale" data-title="O Dilema da Amostragem" data-kicker="Relevância 2/2" data-notes="Nem de menos (inconclusivo), nem demais (desperdício fútil).">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">O Peso da Amostra</span>
+          <h2>O Dilema do Tamanho da Amostra</h2>
+          <div class="card single-focus dark-card">
+            <div class="card-icon">⚖️</div>
+            <h3>O Equilíbrio Exato na Balança</h3>
+            <ul class="large-list">
+              <li><strong>Coletar dados de menos:</strong> Torna impossível detectar os efeitos biológicos reais (gerando estudos falso-negativos e forçando a repetição do experimento).</li>
+              <li><strong>Coletar dados demais:</strong> Desperdiça recursos valiosos que poderiam financiar outros ensaios e expõe animais ou pacientes a riscos desnecessários.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 4: Coelho / Rato de Laboratório (Dever Ético) -->
+        <article class="slide bg-photo bg-rabbit" data-title="Dever Ético e Animais" data-kicker="Bioética Experimental" data-notes="O respeito ao bem-estar animal passa obrigatoriamente pela matemática do tamanho amostral.">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Princípio dos 3Rs & Bioética</span>
+          <h2>Delinear é um Dever Ético</h2>
+          <blockquote class="big dark-card" style="margin-top: 24px;">
+            Experimentos com animais ou materiais biológicos impõem custos reais de bem-estar e conservação. É um dever moral planejar uma amostra grande o suficiente para detectar efeitos biológicos significativos, mas não tão grande a ponto de causar sofrimento desnecessário.
+          </blockquote>
+        </article>
+
+        <!-- Slide 5: Estudo Manipulativo -->
+        <article class="slide" data-title="Estudo Manipulativo" data-kicker="Tipos de Estudo 1/3" data-notes="Destaque a intervenção ativa do pesquisador sobre o sistema biológico.">
+          <span class="eyebrow">Classificação Metodológica</span>
+          <h2>Estudo Manipulativo</h2>
+          <div class="card single-focus">
+            <div class="card-icon">🧪</div>
+            <h3>Intervenção Ativa do Pesquisador</h3>
+            <p>O pesquisador altera intencionalmente uma ou mais variáveis do sistema experimental e mede diretamente os efeitos provocados por essa mudança.</p>
+            <div class="takeaway">
+              <strong>Exemplo na Prática:</strong> Dividir coelhos machos adultos aleatoriamente em dois grupos e administrar um medicamento diferente para cada grupo para medir o tempo de coagulação sanguínea.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 6: Estudo Observacional (Exemplo Biomédico) -->
+        <article class="slide" data-title="Estudo Observacional" data-kicker="Tipos de Estudo 2/3" data-notes="Exemplo ajustado para a rotina clínica de um biomédico.">
+          <span class="eyebrow">Classificação Metodológica</span>
+          <h2>Estudo Observacional (Correlacional)</h2>
+          <div class="card single-focus accent">
+            <div class="card-icon">🔬</div>
+            <h3>Aferição da Variação Natural</h3>
+            <p>O pesquisador não controla nem altera as variáveis de interesse: ele apenas afere a variação que já ocorre naturalmente no sistema biológico ou clínico.</p>
+            <div class="takeaway">
+              <strong>Exemplo na Biomedicina:</strong> Acompanhar pacientes admitidos no hospital, quantificar os níveis séricos basais de Proteína C-Reativa (PCR) na triagem e correlacionar esses valores ao tempo total de internação, sem intervir nas condutas médicas.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 7: Causalidade Reversa (BG Gráficos na Tela do Computador) -->
+        <article class="slide bg-photo bg-computer-charts" data-title="A Cilada da Causalidade Reversa" data-kicker="Tipos de Estudo 3/3" data-notes="Explique como A correlacionado com B não define quem causou quem.">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Correlação Não é Causa</span>
+          <h2>A Cilada da Causalidade Reversa</h2>
+          <blockquote class="big dark-card">
+            É o erro grave de assumir que a variável A causa a variável B quando, na realidade, é a variável B que causa a variável A — ou quando uma variável oculta C comanda ambas na tela.
+          </blockquote>
+          <div class="card single-focus dark-card" style="margin-top: 24px;">
+            <h3>Exemplo Clínico: Uso de Medicamentos e Piora do Quadro</h3>
+            <p>Observar que pacientes que usam altas doses de um analgésico relatam níveis maiores de dor crônica pode induzir à falsa conclusão de que o fármaco intensifica a dor, quando na verdade é a gravidade da doença subjacente que força a prescrição de doses maiores.</p>
+          </div>
+        </article>
+
+        <!-- Slide 8: Estudo Transversal (Conceito e Vantagens) [NOVO] -->
+        <article class="slide" data-title="Estudo Transversal: Conceito" data-kicker="Delineamentos Temporais 1/4" data-notes="O snapshot temporal: rápido e barato, mas sem acompanhamento longitudinal.">
+          <span class="eyebrow">Delineamento Temporal</span>
+          <h2>Estudo Transversal (Cross-Sectional)</h2>
+          <div class="card single-focus">
+            <div class="card-icon">📸</div>
+            <h3>O "Instantâneo" (Snapshot) no Tempo</h3>
+            <p>Mede-se a variável de interesse e o fator de exposição/causa hipotética <strong>ao mesmo tempo</strong> em subamostras de indivíduos de diferentes idades ou categorias em um único momento.</p>
+            <ul class="large-list">
+              <li><strong>Exemplos:</strong> Avaliar coordenação motora comparando um grupo de 20 anos com outro de 40 anos no mesmo instante, ou medir o IMC entre homens e mulheres em um único ponto.</li>
+              <li><strong>Vantagens:</strong> Rápido, prático e simples de executar — não exige acompanhar os voluntários por meses ou anos.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 9: Estudo Transversal (O Risco do Efeito de Coorte) [NOVO] -->
+        <article class="slide" data-title="Transversal: Efeito de Coorte" data-kicker="Delineamentos Temporais 2/4" data-notes="Alerta sobre confundir envelhecimento biológico com diferenças históricas e ambientais entre gerações.">
+          <span class="eyebrow" style="background:#fee2e2; color:#991b1b; border-color:#fca5a5;">Armadilha Metodológica</span>
+          <h2>O Risco Crítico: Efeito de Coorte</h2>
+          <blockquote class="big" style="border-left-color: var(--coral); background: #fff1f2; color: #881337;">
+            O estudo transversal está altamente vulnerável ao <strong>efeito de coorte (cohort effect)</strong>, confundindo diferenças geracionais com mudanças biológicas.
+          </blockquote>
+          <div class="card single-focus accent" style="margin-top: 24px;">
+            <h3>Por que o Grupo de 40 Anos Teve Melhor Coordenação?</h3>
+            <p>Se o grupo de 40 anos tiver melhor coordenação do que o de 20 anos, isso <strong>não prova</strong> que o envelhecimento aprimora a coordenação motora. As duas gerações cresceram sob condições totalmente distintas de trabalho, tecnologias, estímulos motores na infância e estilos de vida.</p>
+          </div>
+        </article>
+
+        <!-- Slide 10: Estudo Longitudinal (Conceito e Vantagens) [NOVO] -->
+        <article class="slide" data-title="Estudo Longitudinal: Conceito" data-kicker="Delineamentos Temporais 3/4" data-notes="O acompanhamento ao longo do tempo elimina o efeito de coorte ao atuar como delineamento intra-sujeito.">
+          <span class="eyebrow">Delineamento Temporal</span>
+          <h2>Estudo Longitudinal (Longitudinal Study)</h2>
+          <div class="card single-focus accent">
+            <div class="card-icon">⏳</div>
+            <h3>Acompanhando os Mesmos Indivíduos</h3>
+            <p>Acompanha os <strong>mesmos indivíduos</strong> ao longo de um período de tempo, realizando medições repetidas no mesmo sujeito em diferentes idades ou momentos.</p>
+            <ul class="large-list">
+              <li><strong>Exemplo:</strong> Recrutar uma coorte de voluntários aos 20 anos de idade e acompanhá-los clinicamente até que completem 40 anos para medir sua coordenação motora novamente.</li>
+              <li><strong>Grande Vantagem:</strong> <strong>Elimina o efeito de coorte</strong>, pois compara o desempenho do mesmo indivíduo contra si mesmo ao longo do tempo (funcionando como um delineamento intra-sujeito).</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 11: Estudo Longitudinal (Desvantagens e Drop-outs) [NOVO] -->
+        <article class="slide" data-title="Longitudinal: Desafios e Perdas" data-kicker="Delineamentos Temporais 4/4" data-notes="O alto custo no tempo e o perigo de atrito amostral por abandono dos voluntários.">
+          <span class="eyebrow" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">Desafios Práticos</span>
+          <h2>Os Desafios do Estudo Longitudinal</h2>
+          <div class="card single-focus">
+            <div class="card-icon">⚠️</div>
+            <h3>Tempo Longo e Perda Amostral (Drop-outs)</h3>
+            <ul class="large-list">
+              <li><strong>Respostas Lentas:</strong> Leva anos ou décadas para fornecer conclusões, exigindo financiamento sustentado e infraestrutura estável.</li>
+              <li><strong>Perda de Indivíduos (Drop-outs):</strong> Risco constante de voluntários mudarem de cidade, abandonarem o protocolo ou falecerem ao longo do acompanhamento.</li>
+              <li><strong>Viés de Atrito:</strong> Se os participantes que desistem forem os mais doentes, os dados finais parecerão artificialmente saudáveis.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 12: In vitro vs In vivo (BG Placa de Petri) -->
+        <article class="slide bg-photo bg-petri" data-title="In vitro × In vivo" data-kicker="Modelos Experimentais" data-notes="Trade-off claro entre controle técnico laboratorial e generalização no organismo integrado.">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Controle vs. Generalização</span>
+          <h2>In vitro × In vivo</h2>
+          <div class="table-wrap large-table dark-card" style="margin-top: 24px;">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 50%; color:#38bdf8;">In vitro (Praticidade & Controle)</th>
+                  <th style="width: 50%; color:#facc15;">In vivo (Complexidade & Generalização)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Experimentos fora do organismo intacto, em células ou tecidos isolados.</td>
+                  <td>Experimentos conduzidos diretamente no organismo vivo integrado.</td>
+                </tr>
+                <tr>
+                  <td><strong>Exemplo:</strong> Microarranjos de DNA (placas) para quantificar expressão gênica.</td>
+                  <td><strong>Exemplo:</strong> Administrar fármacos diretamente em coelhos e medir respostas fisiológicas.</td>
+                </tr>
+                <tr>
+                  <td>Alto controle de variáveis; reduz ruído externo.</td>
+                  <td><strong>Melhor generalização:</strong> Representa as pressões biológicas reais do mundo exterior.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- Slide 13: O Mito do Estudo Perfeito -->
+        <article class="slide" data-title="O Mito do Estudo Perfeito" data-kicker="Filosofia da Ciência" data-notes="Não existe receita mágica; o desenho depende da biologia do sistema.">
+          <span class="eyebrow">Compromisso Metodológico</span>
+          <h2>O Mito do "Estudo Perfeito"</h2>
+          <blockquote class="big">
+            Não existe um delineamento universal que sirva para todas as perguntas. O melhor desenho depende intimamente da biologia do sistema estudado e dos compromissos práticos e éticos de cada método.
+          </blockquote>
+          <div class="card single-focus" style="margin-top: 24px;">
+            <h3>O Limite dos Estudos Correlacionais</h3>
+            <p>Dados puramente correlacionais podem ser totalmente consistentes com a sua hipótese, mas costumam ser igualmente compatíveis com inúmeras explicações alternativas concorrentes.</p>
+          </div>
+        </article>
+
+        <!-- Slide 14: Variação e Replicação Verdadeira -->
+        <article class="slide" data-title="Variação e Replicação Real" data-kicker="Ruído Biológico 1/2" data-notes="A variação é a regra na biologia; precisamos de réplicas independentes para achar o sinal.">
+          <span class="eyebrow">Fundamento Estatístico</span>
+          <h2>Variação e Replicação Verdadeira</h2>
+          <div class="card single-focus">
+            <div class="card-icon">📶</div>
+            <h3>Variação Individual é a Regra</h3>
+            <p>A heterogeneidade entre indivíduos é inerente às ciências da vida. O objetivo do delineamento é controlar esse ruído aleatório para enxergar o efeito real dos tratamentos testados.</p>
+          </div>
+        </article>
+
+        <!-- Slide 15: Replicação na Biomedicina -->
+        <article class="slide" data-title="Replicação na Biomedicina" data-kicker="Ruído Biológico 2/2" data-notes="Mostre o cálculo da média com sujeitos independentes de forma didática e clara.">
+          <span class="eyebrow">Replicação Genuína</span>
+          <h2>Como Replicar com Rigor na Biomedicina</h2>
+          <div class="card single-focus accent">
+            <div class="card-icon">🔁</div>
+            <h3>Independência Experimental Real</h3>
+            <p>Consiste em aplicar as mesmas manipulações e tomar medidas em sujeitos experimentais verdadeiramente autônomos.</p>
+            <div class="takeaway">
+              <strong>Exemplo Didático:</strong> Obter amostras de sangue de indivíduos distintos — com um tamanho amostral de <strong>6 indivíduos recebendo a Droga B</strong> e <strong>7 indivíduos recebendo a Droga G</strong> — permitindo estimar a média real do efeito farmacológico.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 16: Pseudorepetição (Múltiplas Coletas) -->
+        <article class="slide" data-title="Pseudorepetição: Coletas Múltiplas" data-kicker="Falhas Graves 1/2" data-notes="Alerta clássico de inflar o n coletando várias vezes do mesmo indivíduo.">
+          <span class="eyebrow">Erro Metodológico Crítico</span>
+          <h2>Pseudorepetição: Múltiplas Coletas</h2>
+          <blockquote class="big" style="border-left-color: var(--coral); background: #fff1f2; color: #881337;">
+            Ocorre quando medidas dependentes são tratadas estatisticamente como se fossem unidades experimentais autônomas.
+          </blockquote>
+          <div class="card single-focus" style="margin-top: 24px;">
+            <h3>Cilada 1: Coletar Várias Vezes do Mesmo Paciente</h3>
+            <p>Coletar amostras de sangue do mesmo paciente repetidas vezes ao longo do dia e computar cada tubo como se fosse de uma pessoa diferente. Você possui apenas <strong>uma única unidade biológica</strong> ($n = 1$) com múltiplas subamostragens técnicas.</p>
+          </div>
+        </article>
+
+        <!-- Slide 17: Pseudorepetição (BG Confinamento / Criação de Animais) -->
+        <article class="slide bg-photo bg-cages" data-title="Pseudorepetição: Efeito de Gaiola" data-kicker="Falhas Graves 2/2" data-notes="Animais no mesmo microambiente compartilham influências comuns.">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Erro Metodológico Crítico</span>
+          <h2>Pseudorepetição: O Efeito de Gaiola</h2>
+          <div class="card single-focus dark-card">
+            <div class="card-icon">🐁</div>
+            <h3>Cilada 2: Roedores Compartilhando o Mesmo Recinto</h3>
+            <p>Manter vários roedores experimentais dentro de uma mesma gaiola, compartilhando a mesma água medicada, e tratar cada roedor como uma amostra independente nos testes estatísticos.</p>
+            <div class="takeaway" style="background: rgba(190, 18, 60, 0.25); border-left-color: var(--coral); color: #ffffff;">
+              <strong>O Erro:</strong> O ambiente comum, a hierarquia social e o bebedouro compartilhado distorcem os resultados. A verdadeira unidade experimental independente é <strong>a gaiola</strong>, não o roedor isolado.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 18: Arbitrário vs. Aleatório (BG Dado / Sorteio) -->
+        <article class="slide bg-photo bg-dice" data-title="Arbitrário × Aleatório" data-kicker="Aleatorização 1/3" data-notes="Derrube a confusão entre o que é informal e o que é sorteio formal algorítmico.">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Conceituação Inicial</span>
+          <h2>Arbitrário × Aleatório</h2>
+          <div class="card single-focus dark-card">
+            <div class="card-icon">🎲</div>
+            <h3>Você Realmente Sabe o que é Aleatório?</h3>
+            <p><strong>Escolha Arbitrária (ou "a olho"):</strong> É baseada na conveniência, intuição ou decisão casual do pesquisador (ex: pegar primeiro os animais mais calmos). Isso introduz viés sistemático inconsciente.</p>
+            <p style="margin-top: 18px;"><strong>Aleatorização Verdadeira:</strong> É um processo estritamente probabilístico onde todo e qualquer sujeito tem exatamente a mesma chance matemática de ser alocado para qualquer tratamento.</p>
+          </div>
+        </article>
+
+        <!-- Slide 19: Como Aleatorizar Corretamente (BG Matrix / Algoritmo) -->
+        <article class="slide bg-photo bg-matrix" data-title="Como Aleatorizar Corretamente" data-kicker="Aleatorização 2/3" data-notes="Ensine o uso de geradores formais de números aleatórios.">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Procedimento Técnico</span>
+          <h2>Como Aleatorizar Corretamente?</h2>
+          <div class="card single-focus dark-card">
+            <div class="card-icon">💻</div>
+            <h3>Uso de Algoritmos Computacionais</h3>
+            <p>Utilize sempre um gerador de números aleatórios formal (algoritmo computacional) para atribuir os sujeitos aos grupos de forma imparcial e independente.</p>
+            <div class="takeaway" style="background: rgba(15, 118, 110, 0.4); border-left-color: #2dd4bf; color: #ffffff;">
+              A aleatorização formal é a única salvaguarda comprovada para distribuir igualmente entre os grupos tanto as variáveis que você conhece quanto aquelas que você sequer imagina que existem.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 20: Neutralização de Fatores de Confusão -->
+        <article class="slide" data-title="Neutralizando Confundimento" data-kicker="Aleatorização 3/3" data-notes="A randomização equilibra características basais como idade e peso.">
+          <span class="eyebrow">Aplicação Biomédica</span>
+          <h2>Neutralizando Fatores de Confusão</h2>
+          <div class="card single-focus">
+            <div class="card-icon">🐇</div>
+            <h3>Exemplo: Os Coelhos das Drogas B e G</h3>
+            <p>Ao dividir coelhos adultos entre os grupos da Droga B e da Droga G, a aleatorização formal garante que nenhum grupo fique apenas com os animais mais velhos, mais pesados ou mais estressados.</p>
+            <div class="takeaway">
+              Assim, qualquer diferença observada na coagulação poderá ser atribuída com segurança ao fármaco, e não à idade dos animais.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 21: Mulher Pensando no BG (Mito das Regras Fixas) -->
+        <article class="slide bg-photo bg-thinking" data-title="Poder Estatístico e Amostra" data-kicker="Dimensionamento 1/2" data-notes="Ter amostra de menos invalida o estudo; ter de mais é antiético.">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Reflexão Crítica</span>
+          <h2>Poder Estatístico e Tamanho da Amostra</h2>
+          <div class="card single-focus dark-card">
+            <div class="card-icon">🤔</div>
+            <h3>O Perigo das Regras Fixas</h3>
+            <p>Ter réplicas de menos prejudica o estudo; ter réplicas demais aumenta o custo financeiro e o sofrimento animal de forma antiética. A ideia simplista de que "quanto mais amostras, melhor" ou a fixação arbitrária em "30 réplicas" é uma ilusão metodológica perigosa.</p>
+          </div>
+        </article>
+
+        <!-- Slide 22: Gráficos de Análise no BG (Análise de Poder) -->
+        <article class="slide bg-photo bg-data-analytics" data-title="Análise de Poder Formal" data-kicker="Dimensionamento 2/2" data-notes="A análise de poder determina o número exato de sujeitos com base em estudos anteriores.">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Dimensionamento com Rigor</span>
+          <h2>Análise de Poder Formal (Power Analysis)</h2>
+          <div class="card single-focus dark-card">
+            <div class="card-icon">📊</div>
+            <h3>Calculando o Número Exato Necessário</h3>
+            <p>Para decidir o tamanho da amostra, deve-se utilizar estimativas de estudos anteriores ou realizar uma Análise de Poder formal.</p>
+            <div class="takeaway" style="background: rgba(3, 105, 161, 0.4); border-left-color: #38bdf8; color: #ffffff;">
+              A Análise de Poder calcula matematicamente a probabilidade de o estudo detectar uma diferença biológica real caso ela de fato exista, encontrando o número exato de sujeitos necessários.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 23: Grupos de Controle (Conceito em Marrom) -->
+        <article class="slide theme-brown" data-title="Grupos de Controle: Conceito" data-kicker="Delineamentos Específicos" data-notes="O controle passa por tudo, menos pela variável ativa de teste. Título e cartões em tons de marrom.">
+          <span class="eyebrow" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">Referência de Linha de Base</span>
+          <h2>Grupos de Controle</h2>
+          <blockquote class="big blockquote-brown">
+            Grupos de controle atuam como referência base, sofrendo exatamente os mesmos procedimentos e estresses do grupo experimental, exceto pela manipulação do fator principal.
+          </blockquote>
+          <div class="card brown-card" style="margin-top: 24px;">
+            <p>Sem um controle manipulado da mesma forma, torna-se impossível saber se a resposta biológica foi provocada pelo fármaco ou pelo simples estresse do manuseio laboratorial.</p>
+          </div>
+        </article>
+
+        <!-- Slide 24: Grupos de Controle (Exemplo Prático em Marrom) -->
+        <article class="slide theme-brown" data-title="Controle: Exemplo do Voo" data-kicker="Delineamentos Específicos" data-notes="Exemplo claro do voo e dor nas costas destacado em marrom.">
+          <span class="eyebrow" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">Exemplo Clínico</span>
+          <h2>O Controle na Prática: Voo e Dor nas Costas</h2>
+          <div class="card brown-card">
+            <h3>Como Isolar o Efeito Real do Voo?</h3>
+            <p>Ao testar se voos longos causam dor nas costas em humanos, um grupo controle adequado passaria por todo o estresse de se deslocar até o aeroporto, carregar malas e fazer check-in, mas não realizaria o voo em si.</p>
+            <div class="takeaway" style="background:#fffbeb; border-left-color:#b45309; color:#78350f;">
+              Isso isola com precisão científica apenas o efeito do voo, separando-o do cansaço geral da viagem.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 25: Tipos de Controle: Negativo vs. Positivo -->
+        <article class="slide theme-brown" data-title="Tipos: Controle Negativo e Positivo" data-kicker="Controles & Validação" data-notes="Diferencie claramente a ausência de intervenção contra o padrão-ouro de eficácia já estabelecido.">
+          <span class="eyebrow" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">Tipologia de Controles</span>
+          <h2>Controle Negativo × Controle Positivo</h2>
+          <div class="card brown-card">
+            <ul class="large-list">
+              <li><strong>Controle Negativo:</strong> Grupo que não recebe nenhum tratamento ativo (ou recebe apenas o veículo salino). Garante que qualquer efeito medido não é decorrente do procedimento em si.</li>
+              <li><strong>Controle Positivo:</strong> Grupo tratado com uma substância cujo efeito já é amplamente comprovado pela literatura científica. Confirma que o sistema experimental está funcional e responde adequadamente ao teste.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 26: O Efeito Placebo e o Controle Sham -->
+        <article class="slide theme-brown" data-title="Placebo & Controle Sham" data-kicker="Controles & Validação" data-notes="Controle do efeito psicológico e do estresse cirúrgico/técnico simulado.">
+          <span class="eyebrow" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">Simulação Rigorosa</span>
+          <h2>Placebo & Procedimento Simulado (Sham)</h2>
+          <div class="card brown-card">
+            <h3>Separando a Crença do Efeito Farmacológico</h3>
+            <p><strong>Placebo:</strong> Substância inerte (como pílula de farinha ou soro fisiológico) administrada com a mesma aparência do medicamento real para isolar o impacto psicológico da expectativa do paciente.</p>
+            <p style="margin-top: 16px;"><strong>Controle Simulado (Cirurgia Sham):</strong> Em modelos cirúrgicos com animais, o grupo controle é anestesiado e sofre a incisão, mas o órgão não é manipulado, isolando o trauma cirúrgico do efeito terapêutico real.</p>
+          </div>
+        </article>
+
+        <!-- Slide 27: Cegamento Experimental -->
+        <article class="slide theme-brown" data-title="Cegamento: Simples e Duplo-Cego" data-kicker="Controles & Validação" data-notes="Como evitar o viés de confirmação tanto do voluntário quanto do pesquisador avaliador.">
+          <span class="eyebrow" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">Prevenção de Vieses</span>
+          <h2>Cegamento: Simples-Cego × Duplo-Cego</h2>
+          <div class="card brown-card">
+            <ul class="large-list">
+              <li><strong>Estudo Simples-Cego:</strong> O voluntário não sabe se está recebendo a droga teste ou o placebo, evitando que expectativas pessoais alterem os sintomas relatados.</li>
+              <li><strong>Estudo Duplo-Cego (Padrão-Ouro):</strong> Nem o paciente nem o pesquisador que administra o medicamento e avalia os exames sabem quem pertence a qual grupo até o fim da análise. Neutraliza o viés de confirmação do cientista.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 28: Blocagem / Blocking (Conceito) -->
+        <article class="slide" data-title="Blocagem (Blocking): Conceito" data-kicker="Controle de Variância 1/2" data-notes="Agrupar indivíduos para controlar fontes de variação técnica ou biológica indesejada.">
+          <span class="eyebrow">Redução de Ruído</span>
+          <h2>Blocagem (Blocking)</h2>
+          <div class="card single-focus">
+            <div class="card-icon">🧱</div>
+            <h3>Controlando Variações Conhecidas</h3>
+            <p>Controla fontes de variação indesejada agrupando indivíduos ou unidades experimentais por características em comum antes de aplicar os tratamentos sorteados.</p>
+            <div class="takeaway">
+              A blocagem assegura que a variação conhecida entre os blocos não seja computada erroneamente como erro aleatório, aumentando o poder estatístico do teste.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 29: Blocagem / Blocking (Exemplo Lote de Reagente) -->
+        <article class="slide" data-title="Blocagem: Lote de Reagente" data-kicker="Controle de Variância 2/2" data-notes="Exemplo prático de blocagem por lote de reagente laboratorial.">
+          <span class="eyebrow">Exemplo Biomédico</span>
+          <h2>Blocagem na Prática: O Lote do Reagente</h2>
+          <div class="card single-focus accent">
+            <div class="card-icon">🧪</div>
+            <h3>Evitando o Viés do Fabricante</h3>
+            <p>Ao realizar ensaios enzimáticos ao longo de várias semanas usando reagentes de dois lotes de fabricação distintos, o pesquisador divide os tratamentos igualmente dentro de cada lote.</p>
+            <div class="takeaway">
+              Dessa forma, eventuais diferenças técnicas entre os frascos são "blocadas" no modelo estatístico, impedindo que a variação de fabricação mascare o efeito real dos fármacos.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 30: Delineamento Intra-sujeito (Conceito em Marrom) -->
+        <article class="slide theme-brown" data-title="Delineamento Intra-Sujeito" data-kicker="Desenhos Pareados 1/2" data-notes="O mesmo indivíduo é comparado em momentos distintos, reduzindo o ruído interpessoal.">
+          <span class="eyebrow" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">Desenhos Pareados</span>
+          <h2>Delineamento Intra-Sujeito (Within-Subject)</h2>
+          <blockquote class="big blockquote-brown">
+            As comparações são realizadas no mesmo indivíduo em momentos temporais diferentes, reduzindo a drástica variação basal que ocorreria ao comparar pessoas distintas.
+          </blockquote>
+          <div class="card brown-card" style="margin-top: 24px;">
+            <p>Cada sujeito serve como o seu próprio controle de linha de base, eliminando o ruído das diferenças genéticas e fisiológicas individuais.</p>
+          </div>
+        </article>
+
+        <!-- Slide 31: Delineamento Intra-sujeito (Exemplo Case-Crossover em Marrom) -->
+        <article class="slide theme-brown" data-title="Intra-Sujeito: Enxaqueca" data-kicker="Desenhos Pareados 2/2" data-notes="Exemplo do diário de enxaqueca e voos destacado em marrom.">
+          <span class="eyebrow" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">Aplicação Clínica</span>
+          <h2>O Caso Clínico da Enxaqueca (Case-Crossover)</h2>
+          <div class="card brown-card">
+            <h3>Diário de Crises e Voos</h3>
+            <p>Pacientes anotam em um diário clínico seus ataques de enxaqueca e relatam seu histórico de voos nos 7 dias anteriores à dor.</p>
+            <div class="takeaway" style="background:#fffbeb; border-left-color:#b45309; color:#78350f;">
+              Esse histórico é então comparado com os voos que o mesmo paciente realizou em semanas de controle em que não sofreu de enxaqueca, controlando perfeitamente a variação individual.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 32: JOGO INTERATIVO - Cilada ou Delineamento Robusto? -->
+        <article class="slide game-slide" data-title="Jogo: Delineamento ou Cilada?" data-kicker="Fixação Prática" data-notes="Proponha o caso para a turma julgar antes de clicar. Explore as justificativas de pseudorepetição e delineamento.">
+          <div class="game-container">
+            <div class="game-header">
+              <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Desafio Metodológico</span>
+              <div class="game-score">Pontos: <strong id="gameScore">0</strong> / <span id="gameTotal">5</span></div>
+            </div>
+            
+            <h2 id="gameQuestionTitle">Delineamento Robusto, Pseudorepetição ou Confusão?</h2>
+            
+            <div class="game-case-box">
+              <div class="game-badge" id="gameRoundBadge">Rodada 1 de 5</div>
+              <p class="game-case-text" id="gameCaseText">"Pesquisador coleta sangue de 3 coelhos 10 vezes ao longo do dia e relata uma amostra com n = 30 para o teste do anticoagulante."</p>
+            </div>
+
+            <div class="game-options">
+              <button class="game-btn danger" data-choice="pseudorepeticao">Pseudorepetição!</button>
+              <button class="game-btn" data-choice="robusto">Delineamento Robusto</button>
+              <button class="game-btn" data-choice="confusao">Variável de Confusão</button>
+            </div>
+
+            <div class="game-feedback" id="gameFeedback">
+              <div class="feedback-verdict" id="feedbackVerdict"></div>
+              <p class="feedback-explanation" id="feedbackText"></p>
+              <button class="primary-btn" id="nextGameRoundBtn">Próximo Caso →</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 33: Síntese (1/4) - Ética e Amostra -->
+        <article class="slide cover" data-title="Síntese: Ética & Amostra" data-kicker="Lição de Ouro 1/4" data-notes="Primeira lição de síntese da aula.">
+          <div class="cover-content">
+            <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Síntese Metodológica 1/4</span>
+            <h2 style="font-size: clamp(2.8rem, 4.5vw, 4.5rem);">1. Ética e Eficiência Amostral</h2>
+            <p class="lead">
+              A amostragem planejada via Análise de Poder protege o bem-estar animal e economiza recursos públicos, assegurando poder estatístico real sem desperdício fútil.
+            </p>
+          </div>
+        </article>
+
+        <!-- Slide 34: Síntese (2/4) - Independência Real -->
+        <article class="slide cover" data-title="Síntese: Independência" data-kicker="Lição de Ouro 2/4" data-notes="Segunda lição de síntese da aula.">
+          <div class="cover-content">
+            <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Síntese Metodológica 2/4</span>
+            <h2 style="font-size: clamp(2.8rem, 4.5vw, 4.5rem);">2. Independência Real das Réplicas</h2>
+            <p class="lead">
+              As réplicas precisam ser genuinamente independentes. Medições repetidas no mesmo indivíduo ou animais compartilhando a mesma gaiola configuram pseudorepetição.
+            </p>
+          </div>
+        </article>
+
+        <!-- Slide 35: Síntese (3/4) - Domínio do Ruído -->
+        <article class="slide cover" data-title="Síntese: Domínio do Ruído" data-kicker="Lição de Ouro 3/4" data-notes="Terceira lição de síntese da aula.">
+          <div class="cover-content">
+            <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Síntese Metodológica 3/4</span>
+            <h2 style="font-size: clamp(2.8rem, 4.5vw, 4.5rem);">3. Controle Eficaz do Ruído</h2>
+            <p class="lead">
+              Blocagem e delineamentos intra-sujeito neutralizam a alta variabilidade biológica basal e o viés técnico de lotes de reagentes e equipamentos laboratoriais.
+            </p>
+          </div>
+        </article>
+
+        <!-- Slide 36: Síntese (4/4) - Causalidade -->
+        <article class="slide cover" data-title="Síntese: Causalidade" data-kicker="Lição de Ouro 4/4" data-notes="Quarta lição de síntese da aula.">
+          <div class="cover-content">
+            <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Síntese Metodológica 4/4</span>
+            <h2 style="font-size: clamp(2.8rem, 4.5vw, 4.5rem);">4. Causalidade com Cautela</h2>
+            <p class="lead">
+              Estudos observacionais sugerem associações valiosas, mas apenas experimentos manipulativos rigorosamente controlados são capazes de comprovar relações causais.
+            </p>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- Zona de Ativação por Hover + Painel Flutuante Invisível -->
+      <div class="floating-hover-zone">
+        <div class="floating-controls" id="floatingControls">
+          <button class="float-btn" id="floatPrevBtn" title="Slide anterior (←)">‹</button>
+          <span class="float-counter" id="floatCounter">1 / 36</span>
+          <button class="float-btn" id="floatNextBtn" title="Próximo slide (→ / Espaço)">›</button>
+          <button class="float-btn" id="floatNotesBtn" title="Notas (N)">Notas</button>
+          <button class="float-btn exit" id="floatExitBtn" title="Sair da Tela Cheia (Esc)">✕ Sair</button>
+        </div>
+      </div>
+
+      <!-- Painel de Notas -->
+      <aside class="notes-panel" id="notesPanel" aria-label="Notas do professor">
+        <div class="notes-head">
+          <strong>Notas do Professor</strong>
+          <button id="closeNotes" type="button" aria-label="Fechar notas">×</button>
+        </div>
+        <p id="notesText"></p>
+      </aside>
+
+      <!-- Visão Geral / Grid de Slides -->
+      <div class="overview" id="overview" aria-label="Visão geral dos slides">
+        <div class="overview-head">
+          <strong>Visão Geral da Apresentação</strong>
+          <button id="closeOverview" type="button" aria-label="Fechar visão geral">×</button>
+        </div>
+        <div class="overview-grid" id="overviewGrid"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const app = document.getElementById('app');
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const agenda = document.getElementById('agenda');
+    const overview = document.getElementById('overview');
+    const overviewGrid = document.getElementById('overviewGrid');
+    const notesPanel = document.getElementById('notesPanel');
+    const notesText = document.getElementById('notesText');
+    const slideTitle = document.getElementById('slideTitle');
+    const slideKicker = document.getElementById('slideKicker');
+    const counter = document.getElementById('counter');
+    const progressBar = document.getElementById('progressBar');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const notesBtn = document.getElementById('notesBtn');
+    const closeNotes = document.getElementById('closeNotes');
+    const overviewBtn = document.getElementById('overviewBtn');
+    const closeOverview = document.getElementById('closeOverview');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const fullscreenSideBtn = document.getElementById('fullscreenSideBtn');
+
+    // Controles flutuantes de tela cheia
+    const floatPrevBtn = document.getElementById('floatPrevBtn');
+    const floatNextBtn = document.getElementById('floatNextBtn');
+    const floatCounter = document.getElementById('floatCounter');
+    const floatNotesBtn = document.getElementById('floatNotesBtn');
+    const floatExitBtn = document.getElementById('floatExitBtn');
+
+    let current = 0;
+
+    /* ==========================================================================
+       LÓGICA DO JOGO: CILADA OU DELINEAMENTO ROBUSTO?
+       ========================================================================== */
+    const gameQuestions = [
+      {
+        text: '"Pesquisador coleta sangue de 3 coelhos 10 vezes ao longo do dia e relata um estudo com amostra n = 30 para o anticoagulante."',
+        correct: 'pseudorepeticao',
+        verdictCorrect: '🎯 Exato! Isso é Pseudorepetição clássica.',
+        verdictWrong: '❌ Errado! É um caso grave de Pseudorepetição.',
+        explanation: 'As 10 medidas são dependentes do mesmo animal. Ele tem apenas 3 unidades biológicas com 10 repetições técnicas, inflando artificialmente o tamanho amostral real.'
+      },
+      {
+        text: '"Para comparar as Drogas B e G, animais são sorteados por um algoritmo computacional, garantindo pesos equilibrados nos dois grupos."',
+        correct: 'robusto',
+        verdictCorrect: '🎯 Perfeito! Delineamento Experimental Robusto.',
+        verdictWrong: '❌ Incorreto! É um Delineamento Robusto.',
+        explanation: 'A randomização formal evita que animais mais velhos ou pesados fiquem concentrados em um único grupo, neutralizando fatores de confusão.'
+      },
+      {
+        text: '"Estudo conclui que o uso de antidepressivos causa piora na qualidade de vida porque usuários relatam mais tristeza que não usuários."',
+        correct: 'confusao',
+        verdictCorrect: '🎯 Muito bem! Causalidade Reversa / Confusão.',
+        verdictWrong: '❌ Cuidado! Trata-se de Causalidade Reversa.',
+        explanation: 'É o quadro depressivo prévio que leva ao consumo do fármaco, e não o remédio que causa a depressão (falha comum de desenhos puramente observacionais).'
+      },
+      {
+        text: '"10 ratos experimentais dividem a mesma gaiola com antibiótico na água. O autor trata cada rato como réplica independente."',
+        correct: 'pseudorepeticao',
+        verdictCorrect: '🎯 Correto! Pseudorepetição por efeito de lote.',
+        verdictWrong: '❌ Atenção! Trata-se de Pseudorepetição.',
+        explanation: 'A gaiola inteira é a unidade experimental verdadeira, pois todos os roedores partilham a mesma água, temperatura e interações sociais.'
+      },
+      {
+        text: '"Pacientes com enxaqueca têm seus voos comparados entre as semanas com dor de cabeça e suas próprias semanas sem dor de cabeça."',
+        correct: 'robusto',
+        verdictCorrect: '🎯 Brilhante! Delineamento Intra-Sujeito (Case-Crossover).',
+        verdictWrong: '❌ Errado! É um desenho Intra-Sujeito de excelência.',
+        explanation: 'Fazer o indivíduo ser o controle dele mesmo anula o gigantesco ruído genético e fisiológico basal que existe entre pessoas diferentes.'
+      }
+    ];
+
+    let gameRound = 0;
+    let gameScore = 0;
+
+    const gameCaseText = document.getElementById('gameCaseText');
+    const gameRoundBadge = document.getElementById('gameRoundBadge');
+    const gameScoreEl = document.getElementById('gameScore');
+    const gameTotalEl = document.getElementById('gameTotal');
+    const gameFeedback = document.getElementById('gameFeedback');
+    const feedbackVerdict = document.getElementById('feedbackVerdict');
+    const feedbackText = document.getElementById('feedbackText');
+    const nextGameRoundBtn = document.getElementById('nextGameRoundBtn');
+    const gameButtons = document.querySelectorAll('.game-btn');
+
+    function initGame() {
+      if (!gameCaseText) return;
+      gameRound = 0;
+      gameScore = 0;
+      gameTotalEl.textContent = gameQuestions.length;
+      renderGameRound();
+    }
+
+    function renderGameRound() {
+      const q = gameQuestions[gameRound];
+      gameRoundBadge.textContent = `Rodada ${gameRound + 1} de ${gameQuestions.length}`;
+      gameCaseText.textContent = q.text;
+      gameScoreEl.textContent = gameScore;
+      gameFeedback.className = 'game-feedback';
+      gameButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      });
+    }
+
+    function checkGameAnswer(choice) {
+      const q = gameQuestions[gameRound];
+      const isCorrect = (choice === q.correct);
+
+      gameButtons.forEach(btn => btn.disabled = true);
+
+      if (isCorrect) {
+        gameScore += 1;
+        gameScoreEl.textContent = gameScore;
+        gameFeedback.className = 'game-feedback active correct';
+        feedbackVerdict.textContent = q.verdictCorrect;
+      } else {
+        gameFeedback.className = 'game-feedback active wrong';
+        feedbackVerdict.textContent = q.verdictWrong;
+      }
+
+      feedbackText.textContent = q.explanation;
+      
+      if (gameRound === gameQuestions.length - 1) {
+        nextGameRoundBtn.textContent = 'Finalizar Desafio 🏆';
+      } else {
+        nextGameRoundBtn.textContent = 'Próximo Caso →';
+      }
+    }
+
+    gameButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const choice = btn.dataset.choice;
+        checkGameAnswer(choice);
+      });
+    });
+
+    if (nextGameRoundBtn) {
+      nextGameRoundBtn.addEventListener('click', () => {
+        if (gameRound < gameQuestions.length - 1) {
+          gameRound += 1;
+          renderGameRound();
+        } else {
+          gameFeedback.className = 'game-feedback active correct';
+          feedbackVerdict.textContent = `🎉 Desafio Concluído! Placar: ${gameScore}/${gameQuestions.length}`;
+          feedbackText.textContent = 'A turma exercitou o olhar analítico para blindar experimentos contra vieses, falhas de replicação e confusão!';
+          nextGameRoundBtn.style.display = 'none';
+        }
+      });
+    }
+
+    /* ==========================================================================
+       NAVEGAÇÃO E INTERFACE
+       ========================================================================== */
+    function buildNavigation() {
+      agenda.innerHTML = '';
+      overviewGrid.innerHTML = '';
+
+      slides.forEach((slide, index) => {
+        const title = slide.dataset.title || `Slide ${index + 1}`;
+
+        const agendaBtn = document.createElement('button');
+        agendaBtn.type = 'button';
+        agendaBtn.innerHTML = `<span>${index + 1}</span><span>${title}</span>`;
+        agendaBtn.addEventListener('click', () => goTo(index));
+        agenda.appendChild(agendaBtn);
+
+        const ovBtn = document.createElement('button');
+        ovBtn.type = 'button';
+        ovBtn.innerHTML = `<span>${slide.dataset.kicker || 'Slide'}</span><strong>${index + 1}. ${title}</strong>`;
+        ovBtn.addEventListener('click', () => {
+          goTo(index);
+          toggleOverview(false);
+        });
+        overviewGrid.appendChild(ovBtn);
+      });
+    }
+
+    function updateUI() {
+      slides.forEach((slide, index) => slide.classList.toggle('active', index === current));
+      Array.from(agenda.children).forEach((btn, index) => btn.classList.toggle('active', index === current));
+      Array.from(overviewGrid.children).forEach((btn, index) => btn.classList.toggle('active', index === current));
+
+      const slide = slides[current];
+      const title = slide.dataset.title || `Slide ${current + 1}`;
+      slideTitle.textContent = title;
+      slideKicker.textContent = slide.dataset.kicker || 'Aula Expositiva';
+      
+      const countStr = `${current + 1} / ${slides.length}`;
+      counter.textContent = countStr;
+      floatCounter.textContent = countStr;
+      
+      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      notesText.textContent = slide.dataset.notes || 'Sem notas para este slide.';
+      document.title = `${title} · Delineamento Experimental`;
+      history.replaceState(null, '', `#${current + 1}`);
+
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+      prevBtn.style.opacity = prevBtn.disabled ? '0.4' : '1';
+      nextBtn.style.opacity = nextBtn.disabled ? '0.4' : '1';
+    }
+
+    function goTo(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      updateUI();
+    }
+
+    function next() {
+      if (current < slides.length - 1) {
+        goTo(current + 1);
+      }
+    }
+
+    function prev() {
+      if (current > 0) {
+        goTo(current - 1);
+      }
+    }
+
+    function toggleNotes(force) {
+      const shouldOpen = typeof force === 'boolean' ? force : !notesPanel.classList.contains('open');
+      notesPanel.classList.toggle('open', shouldOpen);
+    }
+
+    function toggleOverview(force) {
+      const shouldOpen = typeof force === 'boolean' ? force : !overview.classList.contains('open');
+      overview.classList.toggle('open', shouldOpen);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+        app.classList.add('fullscreen-mode');
+      } else {
+        document.exitFullscreen?.().catch(() => {});
+        app.classList.remove('fullscreen-mode');
+      }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        app.classList.remove('fullscreen-mode');
+      } else {
+        app.classList.add('fullscreen-mode');
+      }
+      updateUI();
+    });
+
+    buildNavigation();
+
+    const initialHash = Number.parseInt(location.hash.replace('#', ''), 10);
+    if (!Number.isNaN(initialHash) && initialHash >= 1 && initialHash <= slides.length) {
+      current = initialHash - 1;
+    }
+    updateUI();
+    initGame();
+
+    // Eventos de clique
+    prevBtn.addEventListener('click', prev);
+    nextBtn.addEventListener('click', next);
+    notesBtn.addEventListener('click', () => toggleNotes());
+    closeNotes.addEventListener('click', () => toggleNotes(false));
+    overviewBtn.addEventListener('click', () => toggleOverview());
+    closeOverview.addEventListener('click', () => toggleOverview(false));
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenSideBtn.addEventListener('click', toggleFullscreen);
+
+    // Controles Flutuantes
+    floatPrevBtn.addEventListener('click', prev);
+    floatNextBtn.addEventListener('click', next);
+    floatNotesBtn.addEventListener('click', () => toggleNotes());
+    floatExitBtn.addEventListener('click', toggleFullscreen);
+
+    // Teclado
+    document.addEventListener('keydown', (e) => {
+      if (['input', 'textarea'].includes(document.activeElement.tagName.toLowerCase())) return;
+
+      if (['ArrowRight', 'PageDown', ' '].includes(e.key)) {
+        e.preventDefault();
+        next();
+      } else if (['ArrowLeft', 'PageUp'].includes(e.key)) {
+        e.preventDefault();
+        prev();
+      } else if (e.key === 'Home') {
+        goTo(0);
+      } else if (e.key === 'End') {
+        goTo(slides.length - 1);
+      } else if (e.key.toLowerCase() === 'n') {
+        toggleNotes();
+      } else if (e.key.toLowerCase() === 'o') {
+        toggleOverview();
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      } else if (e.key === 'Escape') {
+        toggleNotes(false);
+        toggleOverview(false);
+      }
+    });
+  </script>
+</body>
+</html>
