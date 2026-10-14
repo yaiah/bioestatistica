@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caderno de Exercícios: Delineamento Experimental</title>
+  <style>
+    :root {
+      --bg: #02131d;
+      --card-bg: #03202e;
+      --panel: #ffffff;
+      --ink: #f0f7fb;
+      --ink-muted: #94a3b8;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --accent: #38bdf8;
+      --success-bg: rgba(34, 197, 94, 0.18);
+      --success-border: #22c55e;
+      --success-text: #4ade80;
+      --error-bg: rgba(239, 68, 68, 0.18);
+      --error-border: #ef4444;
+      --error-text: #f87171;
+      --border-line: rgba(255, 255, 255, 0.14);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at top left, rgba(2, 132, 199, 0.18), transparent 45rem),
+                  radial-gradient(circle at bottom right, rgba(15, 118, 110, 0.15), transparent 40rem),
+                  var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 32px 16px 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Placar Fixo no Topo */
+    .sticky-header {
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      width: 100%;
+      max-width: 900px;
+      background: rgba(3, 32, 46, 0.94);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-line);
+      border-radius: 999px;
+      padding: 12px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .sticky-title {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .score-badge {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .intro-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-line);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: center;
+    }
+
+    .intro-card h1 {
+      font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .intro-card p {
+      color: var(--ink-muted);
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+
+    /* Card de Questão */
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-line);
+      border-radius: var(--radius);
+      padding: clamp(20px, 3vw, 32px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-line);
+      padding-bottom: 14px;
+    }
+
+    .topic-pill {
+      background: rgba(2, 132, 199, 0.2);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .question-number {
+      font-weight: 800;
+      color: var(--ink-muted);
+      font-size: 0.95rem;
+    }
+
+    .question-statement {
+      font-size: 1.2rem;
+      font-weight: 600;
+      line-height: 1.55;
+      color: #ffffff;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-btn {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1.5px solid var(--border-line);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: #f1f5f9;
+      font-size: 1.05rem;
+      text-align: left;
+      line-height: 1.45;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      align-items: start;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: rgba(2, 132, 199, 0.2);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .letter-badge {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: #ffffff;
+      margin-top: 2px;
+    }
+
+    /* Estados de Feedback das Alternativas */
+    .option-btn.correct-choice {
+      background: var(--success-bg) !important;
+      border-color: var(--success-border) !important;
+      color: #ffffff !important;
+    }
+    .option-btn.correct-choice .letter-badge {
+      background: var(--success-border) !important;
+      color: #02131d !important;
+    }
+
+    .option-btn.wrong-choice {
+      background: var(--error-bg) !important;
+      border-color: var(--error-border) !important;
+      color: #fecaca !important;
+    }
+    .option-btn.wrong-choice .letter-badge {
+      background: var(--error-border) !important;
+      color: #ffffff !important;
+    }
+
+    /* Caixa de Explicação */
+    .explanation-box {
+      display: none;
+      border-radius: 12px;
+      padding: 18px 22px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .explanation-box.show {
+      display: block;
+    }
+
+    .explanation-box.correct {
+      background: var(--success-bg);
+      border: 1.5px solid var(--success-border);
+    }
+
+    .explanation-box.incorrect {
+      background: var(--error-bg);
+      border: 1.5px solid var(--error-border);
+    }
+
+    .feedback-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .explanation-box.correct .feedback-title { color: var(--success-text); }
+    .explanation-box.incorrect .feedback-title { color: var(--error-text); }
+
+    .feedback-text {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+    }
+
+    .feedback-text strong {
+      color: #ffffff;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Placar Fixo Superior -->
+  <aside class="sticky-header">
+    <div class="sticky-title">
+      <span>🧪</span> Bioestatística Aplicada
+    </div>
+    <div class="score-badge" id="scoreBadge">Respondidas: 0 / 15 | Acertos: 0</div>
+  </aside>
+
+  <main class="container">
+    <section class="intro-card">
+      <h1>Caderno de Exercícios: Delineamento Experimental</h1>
+      <p>Selecione a alternativa que julgar correta em cada uma das questões. O sistema apresentará o gabarito imediato e a explicação metodológica detalhada para cada resposta.</p>
+    </section>
+
+    <!-- As 15 questões serão renderizadas aqui -->
+    <div id="questionsContainer" style="display: flex; flex-direction: column; gap: 24px;"></div>
+  </main>
+
+  <script>
+    const quizData = [
+      {
+        topic: "Fundamentos & Ética",
+        question: "Um pesquisador submete um projeto que prevê o uso de apenas n = 5 roedores para testar a toxicidade de um novo fármaco. Sabendo que o desvio-padrão da resposta é alto e que a diferença esperada é sutil, a comissão de ética rejeita o projeto alegando que a amostra é insuficiente. Por que conduzir um estudo com 'dados de menos' constitui uma infração ética?",
+        options: [
+          "Porque testes estatísticos não rodam em softwares com menos de 30 indivíduos.",
+          "Porque amostras pequenas causam dor física excessiva nos animais restantes.",
+          "Porque a falta de poder estatístico gerará um estudo falso-negativo (inconclusivo), sacrificando vidas e consumindo verbas sem responder à pergunta científica.",
+          "Porque a legislação exige que todo grupo experimental tenha exatamente o mesmo tamanho do grupo controle."
+        ],
+        answer: 2,
+        explanation: "Um estudo subdimensionado é incapaz de rejeitar a hipótese nula mesmo quando o efeito biológico existe. Isso submete animais ao sofrimento e consome recursos públicos sem produzir benefício ou conhecimento científico real."
+      },
+      {
+        topic: "Tipos de Estudo & Causalidade",
+        question: "Um estudo epidemiológico identificou uma correlação forte e positiva entre a concentração de determinado metabólito urinário e a severidade da fadiga crônica em pacientes adultos. O autor concluiu que o metabólito é a causa primária da fadiga. Qual armadilha metodológica o pesquisador desconsiderou?",
+        options: [
+          "Pseudorepetição espacial.",
+          "Causalidade reversa e variáveis de confusão (a própria fadiga crônica pode alterar a rotina alimentar ou hídrica do paciente, elevando a excreção do metabólito).",
+          "Falta de um delineamento do tipo double-blind.",
+          "Efeito de coorte intrassujeito."
+        ],
+        answer: 1,
+        explanation: "Em estudos correlacionais (observacionais), a associação matemática não define a direção da causa. É plausível que a debilidade decorrente da fadiga altere o metabolismo ou os hábitos de vida, gerando o acúmulo do composto (o desfecho clínico causando a alteração do biomarcador)."
+      },
+      {
+        topic: "Modelos: In vitro × In vivo",
+        question: "Ao migrar de um ensaio in vitro (cultura de células endoteliais em placa de Petri) para um modelo in vivo (coelhos submetidos ao fármaco sistêmico), o pesquisador ganha prioritariamente em:",
+        options: [
+          "Controle absoluto de todas as fontes de ruído ambiental.",
+          "Custo reduzido e facilidade de manipulação.",
+          "Validade externa e capacidade de generalização biológica, pois o fármaco enfrentará barreiras fisiológicas, metabolismo hepático e excreção real.",
+          "Eliminação total da necessidade de aleatorização."
+        ],
+        answer: 2,
+        explanation: "Ensaios in vitro oferecem facilidade técnica e controle de variáveis isoladas, mas não replicam a homeostase e as pressões fisiológicas de um organismo intacto. O modelo in vivo aproxima os resultados da realidade clínica integrada."
+      },
+      {
+        topic: "Delineamento Transversal",
+        question: "Deseja-se investigar a relação entre tempo diário de uso de telas (smartphones) e acuidade visual. Para isso, foram avaliados 100 jovens de 18 anos e 100 adultos de 50 anos em um único dia. Os adultos apresentaram menor acuidade e menor tempo de uso de telas. O autor concluiu que telas protegem a visão contra o envelhecimento. Qual é a falha desse delineamento transversal?",
+        options: [
+          "Efeito de coorte (cohort effect): as duas gerações cresceram sob exposições visuais, ocupacionais e tecnológicas completamente distintas ao longo da vida.",
+          "Ocorrência inevitável de drop-outs (perda de seguimento ao longo dos anos).",
+          "Ausência de um grupo controle submetido a cirurgia simulada (sham).",
+          "Falha de blocagem térmica no laboratório."
+        ],
+        answer: 0,
+        explanation: "Estudos transversais capturam um 'instantâneo' no tempo de subamostras com idades distintas. As diferenças encontradas frequentemente decorrem do contexto histórico e ambiental em que cada geração cresceu (efeito de coorte), e não do envelhecimento biológico em si."
+      },
+      {
+        topic: "Delineamento Longitudinal",
+        question: "Se o pesquisador da questão anterior quisesse eliminar o efeito de coorte, ele deveria optar por um estudo longitudinal. Qual seria a principal desvantagem prática dessa escolha?",
+        options: [
+          "Incapacidade de aferir mais de uma variável por indivíduo.",
+          "Necessidade de acompanhar a mesma coorte durante décadas, enfrentando custos altos e o risco de atrito amostral (drop-outs).",
+          "Aumento inevitável da pseudorepetição por efeito de gaiola.",
+          "Impossibilidade matemática de aplicar análise de poder prévia."
+        ],
+        answer: 1,
+        explanation: "Estudos longitudinais comparam o indivíduo contra si mesmo ao longo do tempo, eliminando diferenças geracionais. Contudo, exigem anos de acompanhamento e sofrem com a perda de voluntários (mudanças, desistências, óbitos), o que pode enviesar a amostra remanescente."
+      },
+      {
+        topic: "Replicação vs. Pseudorepetição",
+        question: "Um biomédico coleta sangue de 4 voluntários. De cada tubo, ele extrai 5 alíquotas e afere a glicose em cada uma delas, totalizando 20 medições no aparelho. Na seção de metodologia, ele declara: 'Trabalhamos com uma amostra de n = 20 indivíduos independentes'. Essa prática é:",
+        options: [
+          "Correta, pois 20 medições distintas aumentam a precisão e o número de réplicas biológicas.",
+          "Um exemplo clássico de blocagem pareada.",
+          "Uma pseudorepetição grave: ele possui n = 4 réplicas biológicas com 5 repetições técnicas cada; tratar as 20 medições como independentes infla artificialmente os graus de liberdade.",
+          "Um delineamento cruzado (case-crossover)."
+        ],
+        answer: 2,
+        explanation: "Múltiplas leituras laboratoriais da mesma amostra ou indivíduo são réplicas técnicas que servem para reduzir o erro de medição do equipamento. A verdadeira réplica biológica requer sujeitos independentes (aqui, n = 4)."
+      },
+      {
+        topic: "Pseudorepetição em Modelos Animais",
+        question: "Vinte camundongos recebem uma nova dieta enriquecida com probióticos. Todos os 20 animais são mantidos juntos no mesmo terrário/gaiola, consumindo a mesma ração do mesmo comedouro. Por que tratar cada camundongo como uma réplica biológica independente (n = 20) é um erro metodológico?",
+        options: [
+          "Porque camundongos têm metabolismo idêntico, logo n é sempre igual a 1.",
+          "Porque os animais compartilham o mesmo microambiente, hierarquia social, microbiota e bebedouro; a unidade experimental independente é a gaiola (n = 1).",
+          "Porque estudos com probióticos só são válidos se forem do tipo in vitro.",
+          "Porque a dieta sólida anula o poder estatístico do teste t de Student."
+        ],
+        answer: 1,
+        explanation: "Ambientes partilhados criam interdependência: se um camundongo adoece ou domina o comedouro, todos os outros são afetados. Para obter réplicas verdadeiras, os animais deveriam estar alojados em gaiolas separadas com sorteio independente."
+      },
+      {
+        topic: "Aleatorização Verdadeira",
+        question: "Na rotina de bancada de um biotério, o técnico decide alocar os primeiros 10 coelhos que consegue segurar na caixa para o Grupo Tratamento, e os 10 mais ariscos (que demoraram a ser capturados) para o Grupo Controle. Essa divisão pode ser considerada aleatória?",
+        options: [
+          "Sim, pois ele não escolheu os animais deliberadamente por peso ou tamanho corporal.",
+          "Não; trata-se de uma alocação arbitrária/casual sujeita a viés de seleção (animais mais dóceis ou hipoativos podem ter perfis metabólicos e hormonais basais diferentes dos ariscos).",
+          "Sim, desde que os dois grupos recebam a mesma gaiola ao término do sorteio.",
+          "Não, porque grupos experimentais só podem ser definidos por sorteio presencial de cara ou coroa na comissão de ética."
+        ],
+        answer: 1,
+        explanation: "A escolha 'a olho' ou por facilidade de captura seleciona animais com traços fisiológicos particulares (temperamento, sedação natural, menor tônus). Apenas um algoritmo computacional garante probabilidade idêntica e imparcial de sorteio."
+      },
+      {
+        topic: "Poder Estatístico & Amostragem",
+        question: "A afirmação 'Todo estudo de bancada necessita de pelo menos n = 30 por grupo para ser estatisticamente confiável' está incorreta porque:",
+        options: [
+          "Trinta indivíduos sempre provocam superdimensionamento amostral na área da saúde.",
+          "O tamanho amostral ideal deve ser deduzido matematicamente por uma Análise de Poder (Power Analysis), que pondera a magnitude do efeito esperado, a variabilidade basal e os riscos de erros alfa e beta.",
+          "Estudos modernos utilizam frações decimais para o tamanho amostral.",
+          "O comitê de ética só permite aprovação de amostras que sejam estritamente múltiplas de 10."
+        ],
+        answer: 1,
+        explanation: "Fixar n = 30 arbitrariamente é uma regra de ouro obsoleta. Se a variabilidade for muito baixa e o efeito for enorme, n = 30 é desperdício ético e financeiro; se o efeito for sutil e a variância for alta, n = 30 continuará sendo insuficiente."
+      },
+      {
+        topic: "Grupos de Controle",
+        question: "Deseja-se testar a eficácia de uma injeção intraperitoneal de um peptídeo anti-inflamatório em ratos. O grupo experimental recebe o peptídeo diluído em soro fisiológico estéril. Qual deve ser o protocolo rigoroso do grupo controle negativo?",
+        options: [
+          "Os ratos devem permanecer intocados em suas gaiolas sem nenhum tipo de manipulação física.",
+          "Os ratos devem receber uma dose oral de anti-inflamatório comercial de referência.",
+          "Os ratos devem sofrer o mesmo estresse de contenção física e receber uma injeção intraperitoneal contendo apenas o veículo (soro fisiológico estéril no mesmo volume).",
+          "Os ratos devem ser colocados em jejum prolongado para controlar a glicemia basal."
+        ],
+        answer: 2,
+        explanation: "O grupo controle precisa passar rigorosamente por todos os procedimentos, incômodos e manipulações do grupo experimental, exceto pela presença da molécula ativa. Isso assegura que o efeito não adveio da picada, do estresse de manuseio ou do soro."
+      },
+      {
+        topic: "Controles Simulados (Sham)",
+        question: "Em um ensaio cirúrgico que avalia a regeneração tecidual após o implante de uma membrana sintética sobre o córtex renal em ratos, utiliza-se um grupo denominado Sham (cirurgia simulada). A função primordial desse grupo é:",
+        options: [
+          "Isolar o efeito específico da membrana, garantindo que o resultado observado não seja consequência do trauma da laparotomia, anestesia e manipulação tecidual.",
+          "Servir de controle positivo com uso de corticoides em altas doses.",
+          "Fornecer células-tronco renais para a fase in vitro do experimento.",
+          "Reduzir o número de réplicas necessárias para rodar uma análise de variância (ANOVA)."
+        ],
+        answer: 0,
+        explanation: "A cirurgia sham anestesia o animal e faz a incisão sem implantar a membrana. Isso permite descontar o impacto do estresse cirúrgico, da dor pós-operatória e da cicatrização da pele sobre os parâmetros renais avaliados."
+      },
+      {
+        topic: "Princípio da Blocagem (Blocking)",
+        question: "Um ensaio enzimático para quantificar cinética de Michaelis-Menten levará três semanas para ser concluído. O laboratório utilizará reagentes de dois lotes de fabricação distintos (Lote A e Lote B). Como aplicar o princípio da blocagem para neutralizar o viés do lote?",
+        options: [
+          "Testar todas as amostras do Grupo Controle com o Lote A na primeira semana e todo o Grupo Tratamento com o Lote B nas semanas seguintes.",
+          "Misturar os dois lotes no mesmo frasco antes de iniciar os testes.",
+          "Distribuir os tratamentos e controles igualmente dentro de cada lote, incluindo a variável 'Lote' como fator de bloco na análise estatística.",
+          "Descartar o lote mais antigo para evitar variação experimental."
+        ],
+        answer: 2,
+        explanation: "A blocagem agrupa unidades experimentais sob condições técnicas idênticas (mesmo lote, mesmo operador, mesma incubadora) e equilibra tratamentos e controles dentro do bloco, isolando a variância técnica na análise."
+      },
+      {
+        topic: "Delineamento Intrassujeito",
+        question: "Em um estudo de case-crossover que investiga se episódios de pico de poluição atmosférica disparam crises agudas de asma em crianças, a principal vantagem analítica do desenho é:",
+        options: [
+          "Eliminar a necessidade de aprovação por comitê de ética em pesquisa.",
+          "Permitir que cada paciente atue como seu próprio controle (comparando a exposição do indivíduo no dia da crise contra a exposição dele mesmo em dias sem crise), eliminando o ruído da variabilidade genética e social entre voluntários.",
+          "Transformar um estudo observacional em um ensaio duplo-cego manipulativo.",
+          "Reduzir o tempo de coleta de dados para menos de 24 horas."
+        ],
+        answer: 1,
+        explanation: "Em delineamentos pareados/intrassujeitos (como o case-crossover), o sujeito é comparado consigo mesmo em janelas temporais distintas. Isso neutraliza fatores de confusão estáveis (genética, renda, residência, gravidade basal da asma)."
+      },
+      {
+        topic: "Prevenção de Vieses: Cegamento",
+        question: "Em um ensaio clínico comparando um novo colírio hipotensor ocular contra o colírio de referência, tanto o paciente quanto o oftalmologista que afere a pressão intraocular desconhecem qual frasco contém qual composto até a conclusão do estudo. Esse procedimento é classificado como:",
+        options: [
+          "Estudo aberto não controlado.",
+          "Simples-cego com placebo.",
+          "Duplo-cego (double-blind), que mitiga tanto o efeito da expectativa do paciente quanto o viés de aferição e confirmação do examinador.",
+          "Delineamento correlacional não paramétrico."
+        ],
+        answer: 2,
+        explanation: "O duplo-cego evita que a esperança de melhora altere as respostas relatadas pelo paciente e impede que o médico interprete exames de forma tendenciosa para confirmar a eficácia da nova droga."
+      },
+      {
+        topic: "Efeitos Fixos vs. Efeitos Aleatórios",
+        question: "Ao ajustar um modelo linear misto (GLMM) para dados de pacientes acompanhados longitudinalmente ao longo de 6 meses com coletas repetidas de pressão arterial, o tratamento administrado (Droga A vs. Droga B) e a identidade do paciente (ID) devem ser modelados, respectivamente, como:",
+        options: [
+          "Ambos como efeitos fixos.",
+          "Tratamento como efeito fixo (níveis previsíveis e de interesse da hipótese) e ID do paciente como efeito aleatório (representa o ruído e o deslocamento basal individual sorteado de uma população maior).",
+          "Tratamento como efeito aleatório e ID do paciente como variável de confusão descartável.",
+          "Ambos como efeitos aleatórios não correlacionados."
+        ],
+        answer: 1,
+        explanation: "O tratamento é um efeito fixo porque queremos testar esses níveis específicos e replicá-los. A identidade do paciente é um efeito aleatório porque cada indivíduo carrega uma linha de base fisiológica única; modelar o ID como efeito aleatório corrige a dependência das medidas repetidas."
+      }
+    ];
+
+    let totalAnswered = 0;
+    let totalScore = 0;
+    const letters = ['A', 'B', 'C', 'D'];
+
+    const container = document.getElementById('questionsContainer');
+    const scoreBadge = document.getElementById('scoreBadge');
+
+    function updateScoreDisplay() {
+      scoreBadge.textContent = `Respondidas: ${totalAnswered} / ${quizData.length} | Acertos: ${totalScore}`;
+    }
+
+    // Renderiza todas as 15 questões de uma só vez
+    quizData.forEach((q, qIndex) => {
+      const card = document.createElement('article');
+      card.className = 'question-card';
+      card.id = `card-${qIndex}`;
+
+      card.innerHTML = `
+        <div class="card-header">
+          <span class="topic-pill">${q.topic}</span>
+          <span class="question-number">Questão ${qIndex + 1} de ${quizData.length}</span>
+        </div>
+        <p class="question-statement">${q.question}</p>
+        <div class="options-list" id="options-${qIndex}"></div>
+        <div class="explanation-box" id="explanation-${qIndex}">
+          <div class="feedback-title" id="feedback-title-${qIndex}"></div>
+          <div class="feedback-text" id="feedback-text-${qIndex}"></div>
+        </div>
+      `;
+
+      container.appendChild(card);
+
+      const optionsList = card.querySelector(`#options-${qIndex}`);
+
+      q.options.forEach((optText, optIndex) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'option-btn';
+        btn.innerHTML = `
+          <span class="letter-badge">${letters[optIndex]}</span>
+          <span>${optText}</span>
+        `;
+        btn.addEventListener('click', () => handleSelection(qIndex, optIndex));
+        optionsList.appendChild(btn);
+      });
+    });
+
+    function handleSelection(qIndex, selectedOptIndex) {
+      const q = quizData[qIndex];
+      const card = document.getElementById(`card-${qIndex}`);
+      const buttons = card.querySelectorAll('.option-btn');
+      const expBox = document.getElementById(`explanation-${qIndex}`);
+      const fbTitle = document.getElementById(`feedback-title-${qIndex}`);
+      const fbText = document.getElementById(`feedback-text-${qIndex}`);
+
+      // Desabilita botões da questão respondida
+      buttons.forEach(b => b.disabled = true);
+
+      const isCorrect = (selectedOptIndex === q.answer);
+      totalAnswered++;
+
+      if (isCorrect) {
+        totalScore++;
+        buttons[selectedOptIndex].classList.add('correct-choice');
+        expBox.className = 'explanation-box correct show';
+        fbTitle.innerHTML = '✓ Parabéns! Resposta Correta';
+        fbText.innerHTML = `<strong>Justificativa Metodológica:</strong> ${q.explanation}`;
+      } else {
+        buttons[selectedOptIndex].classList.add('wrong-choice');
+        buttons[q.answer].classList.add('correct-choice'); // Mostra a alternativa certa
+        expBox.className = 'explanation-box incorrect show';
+        fbTitle.innerHTML = `✕ Resposta Incorreta! A alternativa certa é a (${letters[q.answer]})`;
+        fbText.innerHTML = `<strong>Por que a alternativa (${letters[q.answer]}) é a correta?</strong><br>${q.explanation}`;
+      }
+
+      updateScoreDisplay();
+    }
+
+    updateScoreDisplay();
+  </script>
+</body>
+</html>
