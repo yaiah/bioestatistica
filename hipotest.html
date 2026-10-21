@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Teste de Hipóteses & Família do Teste t</title>
+  
+  <!-- MathJax para renderização de fórmulas estatísticas -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --bg: #180509;               /* Vinho Escuro Profundo */
+      --panel: #ffffff;
+      --ink: #3f0713;              /* Vinho Quase Preto */
+      --ink-body: #4c0519;         /* Borgonha Escuro */
+      --muted: #881337;            /* Vinho Médio Mudo */
+      --line: #fecdd3;             /* Rosa Linha Delicado */
+      --primary: #be123c;          /* Vermelho Carmesim */
+      --primary-light: #fda4af;    /* Rosa Claro Luminoso */
+      --primary-dark: #24070e;     /* Borgonha Noturno */
+      --secondary: #9f1239;        /* Vinho Elegante */
+      --accent: #fb7185;           /* Coral Rosado */
+      --amber: #b45309;            /* Ocre para Alertas */
+      --soft: #fff5f5;             /* Branco Rosado Suave */
+      --shadow: 0 25px 50px -12px rgba(36, 7, 14, 0.45);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink-body);
+      background:
+        radial-gradient(circle at top left, rgba(190, 18, 60, 0.16), transparent 45rem),
+        radial-gradient(circle at bottom right, rgba(136, 19, 55, 0.14), transparent 40rem),
+        #fff1f2;
+      overflow: hidden;
+    }
+
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      height: 100vh;
+      width: 100vw;
+      transition: grid-template-columns 0.3s ease;
+    }
+
+    /* Backgrounds com Alto Contraste */
+    .slide.bg-photo {
+      background-color: var(--primary-dark) !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+      color: #ffffff !important;
+    }
+
+    .slide.bg-photo h2 { color: #ffffff !important; }
+
+    /* Capa: Tomada de Decisão */
+    .slide.bg-cover {
+      background-image: 
+        linear-gradient(135deg, rgba(36, 7, 14, 0.94), rgba(159, 18, 57, 0.88)),
+        url('https://images.pexels.com/photos/3735709/pexels-photo-3735709.jpeg') !important;
+    }
+
+    /* Karl Popper com visualização translúcida rubi */
+    .slide.bg-popper {
+      background-image: 
+        linear-gradient(135deg, rgba(36, 7, 14, 0.65), rgba(76, 5, 25, 0.55)),
+        url('https://vermelho.org.br/wp-content/uploads/2020/06/Karl-Popper.jpg') !important;
+      background-position: center top !important;
+    }
+
+    /* Bebê no Berço */
+    .slide.bg-baby {
+      background-image: 
+        linear-gradient(135deg, rgba(36, 7, 14, 0.72), rgba(159, 18, 57, 0.65)),
+        url('https://images.pexels.com/photos/459957/pexels-photo-459957.jpeg') !important;
+      background-position: center center !important;
+    }
+
+    /* Card Translúcido Especial para o Slide do Popper */
+    .card.popper-card {
+      background: rgba(36, 7, 14, 0.45) !important;
+      backdrop-filter: blur(4px) !important;
+      border: 1.5px solid rgba(254, 205, 211, 0.4) !important;
+      color: #ffffff !important;
+    }
+    .card.popper-card h3 { color: var(--primary-light) !important; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+    .card.popper-card p { color: #ffffff !important; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.7); }
+
+    /* Tela Cheia / Modo Apresentação */
+    .app.fullscreen-mode {
+      display: block !important;
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+
+    .app.fullscreen-mode .sidebar,
+    .app.fullscreen-mode .topbar {
+      display: none !important;
+    }
+
+    .app.fullscreen-mode .stage {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+
+    .app.fullscreen-mode .slides {
+      position: relative !important;
+      flex: 1 1 auto !important;
+      width: 100% !important;
+      height: 100% !important;
+      padding: 24px 40px !important;
+    }
+
+    .app.fullscreen-mode .slide {
+      position: absolute !important;
+      top: 20px !important;
+      left: 32px !important;
+      right: 32px !important;
+      bottom: 20px !important;
+      width: auto !important;
+      height: auto !important;
+      border-radius: 24px !important;
+      box-shadow: 0 30px 65px rgba(0, 0, 0, 0.35) !important;
+      padding: clamp(36px, 4.5vw, 64px) !important;
+    }
+
+    .app.fullscreen-mode .slide h2 {
+      font-size: clamp(2.6rem, 3.8vw, 3.8rem);
+      margin-bottom: 24px;
+    }
+
+    .app.fullscreen-mode .cover h2 {
+      font-size: clamp(3.6rem, 6vw, 5.8rem);
+      margin-bottom: 24px;
+    }
+
+    .app.fullscreen-mode .cover .lead {
+      font-size: clamp(1.8rem, 2.6vw, 2.4rem);
+      line-height: 1.5;
+      color: #fff1f2;
+    }
+
+    .app.fullscreen-mode .slide h3 {
+      font-size: 1.95rem;
+      margin-bottom: 16px;
+    }
+
+    .app.fullscreen-mode .slide p,
+    .app.fullscreen-mode .card p {
+      font-size: 1.65rem;
+      line-height: 1.65;
+    }
+
+    .app.fullscreen-mode .card li,
+    .app.fullscreen-mode .slide li {
+      font-size: 1.58rem;
+      line-height: 1.6;
+      margin: 14px 0;
+    }
+
+    .app.fullscreen-mode blockquote.big {
+      font-size: clamp(1.7rem, 2.5vw, 2.45rem);
+      line-height: 1.45;
+      padding: 30px 36px;
+    }
+
+    .app.fullscreen-mode .giant-takeaway {
+      font-size: 1.65rem;
+      padding: 24px 30px;
+    }
+
+    /* Barra Lateral */
+    .sidebar {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+      border-right: 1px solid var(--line);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 8px 20px rgba(190, 18, 60, 0.35);
+    }
+
+    .brand strong { display: block; font-size: 1.05rem; color: var(--ink); }
+    .brand small { color: var(--muted); font-size: 0.9rem; font-weight: 600; }
+
+    .agenda {
+      overflow-y: auto;
+      padding-right: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .agenda button {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink-body);
+      text-align: left;
+      border-radius: 10px;
+      padding: 8px 12px;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.92rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .agenda button span:first-child {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #ffe4e6;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+
+    .agenda button:hover { background: rgba(190, 18, 60, 0.08); color: var(--ink); }
+    .agenda button.active { background: var(--primary); color: #fff; font-weight: 700; }
+    .agenda button.active span:first-child { background: rgba(255,255,255,0.25); color: #fff; }
+
+    .side-footer { margin-top: auto; display: grid; gap: 8px; }
+
+    .ghost-btn, .icon-btn {
+      border: 0;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .ghost-btn {
+      padding: 12px 16px;
+      background: #ffe4e6;
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .ghost-btn:hover { background: #fecdd3; }
+
+    /* Palco */
+    .stage {
+      position: relative;
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto 4px minmax(0, 1fr);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 32px 12px;
+    }
+
+    #slideKicker {
+      color: var(--primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-size: 0.85rem;
+    }
+
+    #slideTitle {
+      margin: 2px 0 0;
+      font-size: clamp(1.2rem, 1.8vw, 1.65rem);
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .controls { display: flex; align-items: center; gap: 10px; }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1.6rem;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+    }
+    .icon-btn:hover { background: var(--secondary); }
+    .counter { color: var(--ink); font-weight: 800; font-size: 1rem; min-width: 65px; text-align: center; }
+
+    .progress { background: var(--line); }
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+
+    /* Slides */
+    .slides { position: relative; min-height: 0; padding: 24px 32px 32px; }
+
+    .slide {
+      position: absolute;
+      inset: 24px 32px 32px;
+      overflow-y: auto;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(28px, 4vw, 50px);
+      opacity: 0;
+      transform: translateY(12px) scale(0.99);
+      pointer-events: none;
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .slide h2 {
+      margin: 0 0 18px;
+      font-size: clamp(1.9rem, 3.2vw, 2.9rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .slide h3 { margin: 0 0 14px; font-size: 1.45rem; color: var(--ink); font-weight: 800; }
+    .slide p { line-height: 1.65; color: var(--ink-body); font-size: 1.35rem; }
+    .lead { font-size: clamp(1.3rem, 1.6vw, 1.6rem); color: var(--ink-body); font-weight: 500; max-width: 900px; margin-bottom: 22px; line-height: 1.55; }
+
+    .eyebrow {
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: #ffe4e6;
+      color: var(--primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.95rem;
+      border: 1px solid #fecdd3;
+    }
+
+    /* Capa */
+    .cover {
+      display: grid;
+      place-items: center;
+      color: #fff;
+      border: 0;
+    }
+    .cover-content { text-align: center; max-width: 960px; }
+    .cover h2 {
+      font-size: clamp(3.2rem, 5.8vw, 5.4rem);
+      color: #ffffff;
+      margin-bottom: 24px;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+    .cover .lead {
+      color: #fff1f2;
+      font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+      font-weight: 400;
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    /* Citações e Destaques */
+    blockquote {
+      margin: 22px 0;
+      padding: 20px 26px;
+      border-left: 6px solid var(--primary);
+      background: #fff1f2;
+      border-radius: 0 14px 14px 0;
+      color: #881337;
+      font-weight: 600;
+      line-height: 1.5;
+      font-size: 1.35rem;
+    }
+    blockquote.big {
+      font-size: clamp(1.5rem, 2.2vw, 2.1rem);
+      line-height: 1.45;
+      padding: 28px 34px;
+    }
+
+    /* Cartões */
+    .card {
+      background: #ffffff;
+      border: 1.5px solid var(--line);
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 6px 16px rgba(190, 18, 60, 0.04);
+    }
+    .card.accent { background: #fff5f5; border-color: #fda4af; }
+    .card.dark-card {
+      background: rgba(36, 7, 14, 0.9) !important;
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(254, 205, 211, 0.3) !important;
+      color: #ffffff !important;
+    }
+    .card.dark-card h3 { color: var(--primary-light) !important; }
+    .card.dark-card p, .card.dark-card li { color: #ffffff !important; font-weight: 500; }
+    .card.dark-card strong { color: #fed7aa !important; }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--primary);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+
+    .card.single-focus {
+      padding: 38px 44px;
+      border-radius: 20px;
+      border: 2px solid var(--line);
+      box-shadow: 0 10px 30px rgba(190, 18, 60, 0.05);
+      margin-top: 20px;
+    }
+    .card.single-focus.accent { background: #fff5f5; border-color: #fda4af; }
+
+    .large-list {
+      list-style: none;
+      padding-left: 0 !important;
+      margin: 20px 0 0 !important;
+    }
+    .large-list li {
+      position: relative;
+      padding-left: 40px;
+      margin: 18px 0 !important;
+      font-size: 1.4rem;
+      line-height: 1.6;
+    }
+    .large-list li::before {
+      content: "•";
+      position: absolute;
+      left: 12px;
+      top: -4px;
+      font-size: 2.3rem;
+      color: var(--primary);
+    }
+
+    .takeaway {
+      margin-top: 24px;
+      padding: 20px 28px;
+      border-radius: 14px;
+      background: #fff1f2;
+      border-left: 5px solid var(--primary);
+      color: #881337;
+      font-weight: 700;
+      font-size: 1.4rem;
+      line-height: 1.55;
+    }
+
+    .formula-box {
+      background: #24070e;
+      color: #fda4af;
+      border: 2px solid #be123c;
+      border-radius: 16px;
+      padding: 22px;
+      margin: 18px 0;
+      text-align: center;
+      font-size: 1.65rem;
+    }
+
+    /* Contêiner dos Diagramas Vetoriais SVG */
+    .tree-diagram-container {
+      width: 100%;
+      max-width: 900px;
+      margin: 14px auto;
+      background: #ffffff;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      padding: 20px 16px;
+      box-shadow: 0 6px 20px rgba(190, 18, 60, 0.06);
+    }
+
+    .tree-diagram-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Floating Controls */
+    .floating-hover-zone {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      pointer-events: auto;
+    }
+
+    .floating-controls {
+      background: rgba(36, 7, 14, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(254, 205, 211, 0.3);
+      border-radius: 999px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .floating-hover-zone:hover .floating-controls {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .float-btn {
+      border: 0;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .float-btn:hover { background: rgba(255, 255, 255, 0.35); }
+    .float-btn.exit { background: var(--primary); }
+    .float-btn.exit:hover { background: var(--secondary); }
+    .float-counter { color: #ffffff; font-size: 1.1rem; font-weight: 800; min-width: 65px; text-align: center; }
+
+    /* Notas & Overview */
+    .notes-panel {
+      position: absolute;
+      right: 32px;
+      bottom: 32px;
+      width: min(450px, calc(100% - 64px));
+      max-height: 40%;
+      overflow-y: auto;
+      background: #24070e;
+      color: #fff;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 20px 24px;
+      transform: translateY(16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.2s ease;
+      z-index: 110;
+    }
+    .notes-panel.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .notes-head, .overview-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .notes-head button, .overview-head button {
+      border: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      color: inherit;
+    }
+    #notesText { margin: 0; font-size: 1.15rem; line-height: 1.6; color: #fff1f2; }
+
+    .overview {
+      position: absolute;
+      inset: 0;
+      z-index: 120;
+      background: rgba(255, 241, 242, 0.98);
+      backdrop-filter: blur(10px);
+      padding: 32px;
+      display: none;
+      overflow-y: auto;
+    }
+    .overview.open { display: block; }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .overview-grid button {
+      min-height: 110px;
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px;
+      text-align: left;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+    .overview-grid button.active { outline: 3px solid var(--primary); }
+    .overview-grid span { display: block; color: var(--primary); font-size: 0.85rem; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; }
+    .overview-grid strong { font-size: 1.05rem; color: var(--ink); line-height: 1.25; }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .app { grid-template-columns: 1fr; height: auto; }
+      .sidebar { display: none; }
+      .stage { min-height: 100vh; }
+      .slides { padding: 16px; }
+      .slide { inset: 16px; padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- Barra Lateral -->
+    <aside class="sidebar" id="sidebar" aria-label="Roteiro da aula">
+      <div class="brand">
+        <span class="brand-mark">TH</span>
+        <div>
+          <strong>Teste de Hipóteses</strong>
+          <small>Decisão, Popper & Testes t</small>
+        </div>
+      </div>
+
+      <nav class="agenda" id="agenda" aria-label="Navegação dos slides"></nav>
+
+      <div class="side-footer">
+        <button class="ghost-btn" id="fullscreenSideBtn" type="button">⛶ Modo Apresentação (F)</button>
+        <button class="ghost-btn" id="overviewBtn" type="button">Visão Geral (O)</button>
+        <button class="ghost-btn" id="notesBtn" type="button">Notas do Professor (N)</button>
+      </div>
+    </aside>
+
+    <!-- Palco Principal -->
+    <main class="stage">
+      <header class="topbar">
+        <div class="slide-meta">
+          <span id="slideKicker">Bioestatística Aplicada à Biomedicina</span>
+          <h1 id="slideTitle">Teste de Hipóteses & Família do Teste t</h1>
+        </div>
+
+        <div class="controls" aria-label="Controles da apresentação">
+          <button class="ghost-btn" id="fullscreenBtn" type="button" title="Modo Apresentação (Tecla F)">⛶ Tela Cheia</button>
+          <button class="icon-btn" id="prevBtn" type="button" aria-label="Slide anterior">‹</button>
+          <span class="counter" id="counter">1 / --</span>
+          <button class="icon-btn" id="nextBtn" type="button" aria-label="Próximo slide">›</button>
+        </div>
+      </header>
+
+      <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+      <section class="slides" id="slides" aria-live="polite">
+        
+        <!-- Slide 1: A Estatística como Ferramenta de Tomada de Decisão -->
+        <article class="slide cover active bg-photo bg-cover" data-title="A Decisão Estatística" data-kicker="Epistemologia & Bioestatística" data-notes="Apresente a estatística como a tecnologia intelectual que guia a ação humana frente ao desconhecido. Na clínica ou no laboratório, nunca temos certeza absoluta; a estatística quantifica riscos para agir com racionalidade.">
+          <div class="cover-content">
+            <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Racionalidade Frente à Incerteza</span>
+            <h2>Estatística para a Tomada de Decisão</h2>
+            <p class="lead">A ciência não produz certezas absolutas: ela fornece modelos probabilísticos para decidir intervenções, aprovar fármacos e diagnosticar com risco calculado.</p>
+          </div>
+        </article>
+
+        <!-- Slide 2: A Árvore de Decisão (Carro e Seguro) -->
+        <article class="slide" data-title="A Árvore de Decisão: O Seguro" data-kicker="Tomada de Decisão & Risco" data-notes="Explore a figura da árvore de decisão do carro e seguro: fazer seguro é uma aposta sob incerteza. Se você faz seguro e o carro não é roubado, incorreu num custo desnecessário (semelhante ao Erro Tipo I); se não faz e é roubado, tem a perda catastrófica (Erro Tipo II).">
+          <span class="eyebrow">Modelo Decisório Cotidiano</span>
+          <h2>Decidindo sob Incerteza: O Carro e o Seguro</h2>
+          
+          <div class="tree-diagram-container">
+            <svg class="tree-diagram-svg" viewBox="0 0 800 460" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="arrow1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-reverse">
+                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#9f1239" />
+                </marker>
+                <filter id="shadow1" x="-5%" y="-5%" width="110%" height="115%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.12"/>
+                </filter>
+              </defs>
+
+              <rect x="290" y="15" width="220" height="52" rx="10" fill="#9f1239" filter="url(#shadow1)" />
+              <text x="400" y="48" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle">Comprar um carro</text>
+
+              <line x1="400" y1="67" x2="400" y2="105" stroke="#9f1239" stroke-width="2.5" marker-end="url(#arrow1)"/>
+
+              <polygon points="400,105 515,165 400,225 285,165" fill="#ffe4e6" stroke="#fecdd3" stroke-width="2" filter="url(#shadow1)" />
+              <text x="400" y="172" font-family="Inter, sans-serif" font-size="19" font-weight="800" fill="#881337" text-anchor="middle">Fez seguro?</text>
+
+              <line x1="315" y1="180" x2="215" y2="242" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow1)"/>
+              <text x="245" y="200" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#be123c">Sim</text>
+
+              <line x1="485" y1="180" x2="585" y2="242" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow1)"/>
+              <text x="555" y="200" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#be123c">Não</text>
+
+              <rect x="105" y="245" width="220" height="50" rx="8" fill="#be123c" filter="url(#shadow1)" />
+              <text x="215" y="277" font-family="Inter, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">Carro é roubado</text>
+
+              <rect x="475" y="245" width="220" height="50" rx="8" fill="#be123c" filter="url(#shadow1)" />
+              <text x="585" y="277" font-family="Inter, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">Carro é roubado</text>
+
+              <line x1="160" y1="295" x2="105" y2="352" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow1)"/>
+              <text x="115" y="325" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#881337">Sim</text>
+
+              <line x1="270" y1="295" x2="325" y2="352" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow1)"/>
+              <text x="315" y="325" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#881337">Não</text>
+
+              <rect x="15" y="355" width="180" height="60" rx="8" fill="#881337" filter="url(#shadow1)" />
+              <text x="105" y="391" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">Recebe carro</text>
+
+              <rect x="225" y="355" width="200" height="60" rx="8" fill="#881337" filter="url(#shadow1)" />
+              <text x="325" y="380" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">Lamenta ter</text>
+              <text x="325" y="402" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">feito seguro</text>
+
+              <line x1="530" y1="295" x2="475" y2="352" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow1)"/>
+              <text x="485" y="325" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#881337">Sim</text>
+
+              <line x1="640" y1="295" x2="695" y2="352" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow1)"/>
+              <text x="685" y="325" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#881337">Não</text>
+
+              <rect x="415" y="355" width="180" height="60" rx="8" fill="#881337" filter="url(#shadow1)" />
+              <text x="505" y="391" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">Perdeu o carro</text>
+
+              <rect x="625" y="355" width="170" height="60" rx="8" fill="#881337" filter="url(#shadow1)" />
+              <text x="710" y="380" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">Não gastou</text>
+              <text x="710" y="402" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">dinheiro</text>
+            </svg>
+          </div>
+
+          <div class="takeaway" style="margin-top: 14px;">
+            <strong>A Lógica do Teste Estatístico:</strong> Fazer o seguro protege contra a perda máxima, mas impõe um custo de alarme falso ("lamenta ter feito seguro"). O teste de hipótese é a nossa apólice matemática contra o erro!
+          </div>
+        </article>
+
+        <!-- Slide 3: Filosofia Popperiana (Foto Nítida de K. Popper com Container Translúcido) -->
+        <article class="slide bg-photo bg-popper" data-title="Filosofia Popperiana" data-kicker="Epistemologia da Ciência" data-notes="Karl Popper demonstrou a assimetria lógica: nenhum milhão de cisnes brancos prova a teoria, mas um único cisne negro a destrói. Na ciência, progredimos falseando hipóteses.">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.25); color:#fff; border-color:transparent;">Karl Popper</span>
+          <h2>A Ciência Aprende por Desconstrução</h2>
+          <div class="card single-focus popper-card">
+            <div class="card-icon">🔨</div>
+            <h3>O Princípio da Falseabilidade</h3>
+            <p>A ciência nunca pode provar de forma absoluta que uma hipótese é verdadeira; ela só pode demonstrar com rigor que determinadas hipóteses são <strong>insustentáveis</strong> frente às evidências empíricas.</p>
+          </div>
+        </article>
+
+        <!-- Slide 4: O Bebê no Berço (Chamado Exclusivo + Fotografia Nítida Corrigida) -->
+        <article class="slide cover active bg-photo bg-baby" data-title="O Bebê no Berço" data-kicker="Analogia Epistemológica" data-notes="Metáfora clássica do livro Basic Statistics in Ecological Studies: o bebê descobre a física do mundo derrubando objetos para ver o que cai e o que quebra.">
+          <div class="cover-content">
+            <h2 style="font-size: clamp(3.8rem, 6.8vw, 6.5rem); margin: 0; text-shadow: 0 4px 18px rgba(0,0,0,0.7);">O bebê no berço</h2>
+          </div>
+        </article>
+
+        <!-- Slide 5: A Pergunta Central da Inferência -->
+        <article class="slide" data-title="A Pergunta da Inferência" data-kicker="Lógica Estatística" data-notes="Enfatize: não calculamos a probabilidade de estarmos certos, mas a chance de estarmos cometendo um erro ao rejeitar a hipótese nula.">
+          <span class="eyebrow">Mudança de Paradigma</span>
+          <h2>Não Perguntamos se Estamos Certos!</h2>
+          <div class="card single-focus accent">
+            <div class="card-icon">❓</div>
+            <h3>Qual é a Chance de Estarmos Errados?</h3>
+            <p>A bioestatística não estima a verdade absoluta de uma afirmação clínica. Ela quantifica com precisão matemática as <strong>chances de estarmos incorrendo em erro</strong> caso decidamos declarar que existe uma diferença real.</p>
+            <div class="takeaway">
+              A decisão científica é um exercício permanente de gestão e limitação do risco de erro.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 6: Hipótese Nula (H0) -->
+        <article class="slide" data-title="A Hipótese Nula (H0)" data-kicker="Definição de Hipóteses 1/2" data-notes="H0 é o ponto de partida cético: assume que o fármaco é inócuo, a vacina não altera títulos ou que a diferença observada é mero ruído amostral.">
+          <span class="eyebrow">Ponto de Partida Cético</span>
+          <h2>A Hipótese Nula ($H_0$)</h2>
+          <div class="card single-focus">
+            <div class="card-icon">⚖️</div>
+            <h3>O Princípio da Igualdade ou Não-Efeito</h3>
+            <p>Assume que não existe efeito, relação ou diferença genuína entre os grupos e que qualquer disparidade na amostra decorre do mero acaso.</p>
+            <div class="formula-box">
+              $$H_0: A = B \quad \text{ou} \quad A - B \simeq 0$$
+            </div>
+            <div class="takeaway">
+              Na Biomedicina: "O novo anticoagulante tem eficácia idêntica ao placebo ($H_0$)."
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 7: Hipótese Alternativa (H1) -->
+        <article class="slide" data-title="A Hipótese Alternativa (H1)" data-kicker="Definição de Hipóteses 2/2" data-notes="H1 é a hipótese substantiva do pesquisador: bidirecional (diferente) ou direcional (maior ou menor).">
+          <span class="eyebrow">Hipótese do Pesquisador</span>
+          <h2>A Hipótese Alternativa ($H_1$)</h2>
+          <div class="card single-focus accent">
+            <div class="card-icon">🎯</div>
+            <h3>A Existência do Efeito Biológico</h3>
+            <p>Afirma que existe uma diferença real ou efeito sistemático no universo estudado que não pode ser explicado apenas pelo acaso.</p>
+            <ul class="large-list">
+              <li><strong>Bilateral (Bicaudal):</strong> $H_1: A \neq B$ (Interessa qualquer diferença, seja superior ou inferior).</li>
+              <li><strong>Unilateral à Esquerda:</strong> $H_1: A < B$ (Hipótese de redução, ex: redução de colesterol).</li>
+              <li><strong>Unilateral à Direita:</strong> $H_1: A > B$ (Hipótese de aumento, ex: aumento de anticorpos).</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 8: O Fluxograma da Decisão Estatística (Anexo) -->
+        <article class="slide" data-title="A Matriz de Decisão Estatística" data-kicker="Erro Tipo I & Tipo II" data-notes="Apresente o fluxograma idêntico ao anexo: Objetivo -> Hipótese -> Dados -> Teste estatístico -> Rejeição ou Não Rejeição de H0, gerando as matrizes de acerto (Ok) ou os Erros Tipo I e Tipo II.">
+          <span class="eyebrow">O Caminho da Inferência</span>
+          <h2>O Fluxograma da Decisão & Riscos de Erro</h2>
+          
+          <div class="tree-diagram-container">
+            <svg class="tree-diagram-svg" viewBox="0 0 820 490" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="arrow2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-reverse">
+                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#9f1239" />
+                </marker>
+                <filter id="shadow2" x="-5%" y="-5%" width="110%" height="115%">
+                  <feDropShadow dx="0" dy="2.5" stdDeviation="3" flood-opacity="0.12"/>
+                </filter>
+              </defs>
+
+              <rect x="300" y="10" width="220" height="46" rx="8" fill="#9f1239" filter="url(#shadow2)" />
+              <text x="410" y="39" font-family="Inter, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">Objetivo da pergunta</text>
+
+              <line x1="410" y1="56" x2="410" y2="80" stroke="#9f1239" stroke-width="2.5" marker-end="url(#arrow2)"/>
+
+              <rect x="330" y="80" width="160" height="42" rx="8" fill="#9f1239" filter="url(#shadow2)" />
+              <text x="410" y="107" font-family="Inter, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">Hipótese</text>
+
+              <line x1="410" y1="122" x2="410" y2="148" stroke="#9f1239" stroke-width="2.5" marker-end="url(#arrow2)"/>
+
+              <rect x="330" y="148" width="160" height="42" rx="8" fill="#9f1239" filter="url(#shadow2)" />
+              <text x="410" y="175" font-family="Inter, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">Dados</text>
+
+              <line x1="410" y1="190" x2="410" y2="218" stroke="#9f1239" stroke-width="2.5" marker-end="url(#arrow2)"/>
+
+              <polygon points="410,218 525,268 410,318 295,268" fill="#ffe4e6" stroke="#fecdd3" stroke-width="2" filter="url(#shadow2)" />
+              <text x="410" y="263" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#881337" text-anchor="middle">Teste</text>
+              <text x="410" y="283" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#881337" text-anchor="middle">estatístico</text>
+
+              <!-- Braço Esquerdo: Rejeita H0 -->
+              <line x1="315" y1="280" x2="200" y2="335" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow2)"/>
+              <text x="235" y="298" font-family="Inter, sans-serif" font-size="15" font-weight="800" fill="#be123c">Rejeita H₀</text>
+
+              <!-- Braço Direito: Não rejeita H0 -->
+              <line x1="505" y1="280" x2="620" y2="335" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow2)"/>
+              <text x="595" y="298" font-family="Inter, sans-serif" font-size="15" font-weight="800" fill="#be123c">Não rejeita H₀</text>
+
+              <!-- Losango Esquerdo: H0 é verdadeira? -->
+              <polygon points="200,325 295,365 200,405 105,365" fill="#fff1f2" stroke="#fecdd3" stroke-width="1.8" filter="url(#shadow2)" />
+              <text x="200" y="371" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#4c0519" text-anchor="middle">H₀ é verdadeira?</text>
+
+              <line x1="135" y1="385" x2="90" y2="430" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow2)"/>
+              <text x="95" y="410" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#be123c">Sim</text>
+
+              <line x1="265" y1="385" x2="310" y2="430" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow2)"/>
+              <text x="300" y="410" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#881337">Não</text>
+
+              <rect x="25" y="432" width="130" height="45" rx="20" fill="#be123c" filter="url(#shadow2)" />
+              <text x="90" y="460" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">Erro tipo I</text>
+
+              <rect x="255" y="432" width="115" height="45" rx="20" fill="#881337" filter="url(#shadow2)" />
+              <text x="312" y="460" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#ffffff" text-anchor="middle">Ok</text>
+
+              <!-- Losango Direito: H0 é falsa? -->
+              <polygon points="620,325 715,365 620,405 525,365" fill="#fff1f2" stroke="#fecdd3" stroke-width="1.8" filter="url(#shadow2)" />
+              <text x="620" y="371" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#4c0519" text-anchor="middle">H₀ é falsa?</text>
+
+              <line x1="555" y1="385" x2="510" y2="430" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow2)"/>
+              <text x="520" y="410" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#be123c">Sim</text>
+
+              <line x1="685" y1="385" x2="730" y2="430" stroke="#9f1239" stroke-width="2" marker-end="url(#arrow2)"/>
+              <text x="720" y="410" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#881337">Não</text>
+
+              <rect x="445" y="432" width="135" height="45" rx="20" fill="#be123c" filter="url(#shadow2)" />
+              <text x="512" y="460" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">Erro tipo II</text>
+
+              <rect x="680" y="432" width="115" height="45" rx="20" fill="#881337" filter="url(#shadow2)" />
+              <text x="737" y="460" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#ffffff" text-anchor="middle">Ok</text>
+            </svg>
+          </div>
+        </article>
+
+        <!-- Slide 9: Nível de Significância (Alfa) -->
+        <article class="slide" data-title="Nível de Significância (Alfa)" data-kicker="Controle do Erro" data-notes="Alfa é o limiar de tolerância fixado a priori: a probabilidade máxima de cometer o Erro Tipo I (rejeitar H0 verdadeira).">
+          <span class="eyebrow">Tolerância ao Erro</span>
+          <h2>Nível de Significância ($\alpha$)</h2>
+          <div class="card single-focus">
+            <div class="card-icon">🚦</div>
+            <h3>O Limite do Risco de Falso Positivo (Erro Tipo I)</h3>
+            <p>É a probabilidade máxima aceitável de rejeitar a hipótese nula quando ela é, na verdade, verdadeira.</p>
+            <div class="formula-box" style="font-size: 1.5rem;">
+              $$\alpha = 0{,}05 \quad (5\% \text{ de tolerância ao Erro Tipo I})$$
+            </div>
+            <div class="takeaway">
+              Se o valor-p for menor que $\alpha$, rejeitamos $H_0$. Concluímos que a chance de alarme falso é pequena o bastante para aceitarmos a existência do efeito.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 10: Graus de Liberdade (gl) -->
+        <article class="slide" data-title="Graus de Liberdade" data-kicker="Fundamentos Matemáticos" data-notes="Graus de liberdade refletem o número de observações independentes livres para variar após a estimativa dos parâmetros amostrais.">
+          <span class="eyebrow">Amostragem & Geometria</span>
+          <h2>Graus de Liberdade ($gl$ ou $df$)</h2>
+          <div class="card single-focus accent">
+            <div class="card-icon">📐</div>
+            <h3>O que são Graus de Liberdade?</h3>
+            <p>Corresponde ao número de observações independentes na amostra que estão livres para variar após estimarmos parâmetros populacionais (como a média).</p>
+            <div class="formula-box">
+              $$gl = n - 1$$
+            </div>
+            <div class="takeaway">
+              Se você conhece a média de 5 pacientes e os valores de 4 deles, o 5º valor está matematicamente fixado. Amostras maiores geram mais $gl$, refinando a distribuição teórica de Student.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 11: A Família do Teste t -->
+        <article class="slide" data-title="A Família do Teste t" data-kicker="Visão Geral dos Métodos" data-notes="Apresente as três variações do teste t formuladas por William Sealy Gosset (Student) para amostras pequenas.">
+          <span class="eyebrow">William Sealy Gosset (Student)</span>
+          <h2>A Família do Teste t</h2>
+          <div class="card single-focus">
+            <h3>Três Perguntas, Três Delineamentos:</h3>
+            <ul class="large-list">
+              <li><strong>1. Teste t de Aderência (Uma Amostra):</strong> A média da minha amostra difere de um valor padrão pré-estabelecido?</li>
+              <li><strong>2. Teste t para Amostras Independentes:</strong> Dois grupos formados por indivíduos completamente distintos diferem entre si?</li>
+              <li><strong>3. Teste t Pareado (Amostras Dependentes):</strong> O mesmo indivíduo avaliado antes e depois de uma intervenção apresentou alteração real?</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 12: Teste t de Aderência (Indicação & Pré-requisitos) -->
+        <article class="slide" data-title="Teste t de Aderência: Conceito" data-kicker="Uma Amostra 1/3" data-notes="Verifica se a média de uma amostra empírica converge ou diverge de uma constante conhecida ou valor de referência laboratorial.">
+          <span class="eyebrow">Teste t de Uma Amostra</span>
+          <h2>Teste t de Aderência: Indicação & Requisitos</h2>
+          <div class="card single-focus">
+            <div class="card-icon">🎯</div>
+            <h3>Quando Usar?</h3>
+            <p>Quando se deseja comparar a média obtida em uma amostra experimental contra um valor de referência teórico, histórico ou padrão clínico consolidado ($\mu_0$).</p>
+            <ul class="large-list">
+              <li><strong>Pré-requisito 1:</strong> Variável quantitativa contínua.</li>
+              <li><strong>Pré-requisito 2:</strong> Distribuição aproximadamente normal dos dados na população (crítica em $n < 30$).</li>
+              <li><strong>Pré-requisito 3:</strong> Amostragem aleatória e independente.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 13: Teste t de Aderência (Fórmula & Cenário Clínico) -->
+        <article class="slide" data-title="Teste t de Aderência: Cenário" data-kicker="Uma Amostra 2/3" data-notes="Exemplo claro da Biomedicina: calibrar um lote de controle de glicemia contra o padrão da farmacopeia.">
+          <span class="eyebrow">Aplicação Biomédica</span>
+          <h2>Teste t de Aderência: Cenário Clínico</h2>
+          <div class="formula-box">
+            $$t = \frac{\bar{x} - \mu_0}{\frac{s}{\sqrt{n}}} \quad \text{com} \quad gl = n - 1$$
+          </div>
+          <div class="card single-focus accent">
+            <h3>Calibração de Glicosímetro Laboratorial</h3>
+            <p>Um controle padrão certificado possui $\mu_0 = 100\text{ mg/dL}$. Analisam-se $n = 16$ alíquotas independentes no aparelho, obtendo-se média $\bar{x} = 104\text{ mg/dL}$ e desvio-padrão $s = 3{,}2\text{ mg/dL}$.</p>
+            <div class="takeaway">
+              O aparelho está descalibrado ou esse desvio de $+4\text{ mg/dL}$ é mero ruído analítico aceitável?
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 14: Teste t de Aderência (Aplicação Numérica na Fórmula) -->
+        <article class="slide" data-title="Teste t de Aderência: Cálculo" data-kicker="Uma Amostra 3/3" data-notes="Demonstração do passo a passo do cálculo na fórmula com conclusão do teste.">
+          <span class="eyebrow">Aplicação na Fórmula</span>
+          <h2>Teste t de Aderência: Resolução Passo a Passo</h2>
+          <div class="card single-focus">
+            <h3>Substituição dos Dados:</h3>
+            <div class="formula-box" style="font-size: 1.45rem;">
+              $$t = \frac{104 - 100}{\frac{3{,}2}{\sqrt{16}}} = \frac{4}{\frac{3{,}2}{4}} = \frac{4}{0{,}8} = 5{,}00$$
+            </div>
+            <ul class="large-list">
+              <li><strong>Graus de Liberdade:</strong> $gl = 16 - 1 = 15$.</li>
+              <li><strong>Valor Crítico ($t_{\text{crítico}}$ bicaudal a $\alpha = 0{,}05$):</strong> $\approx 2{,}13$.</li>
+              <li><strong>Decisão Clínica:</strong> Como $t_{\text{calculado}} = 5{,}00 > 2{,}13$, rejeita-se $H_0$ ($p < 0{,}001$). O glicosímetro está sistematicamente descalibrado e superestimando as dosagens.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 15: Teste t para Amostras Independentes (Indicação & Pré-requisitos) -->
+        <article class="slide" data-title="Teste t Independente: Conceito" data-kicker="Amostras Independentes 1/3" data-notes="Compara dois grupos compostos por sujeitos inteiramente distintos. Exige normalidade e homocedasticidade (homogeneidade de variâncias).">
+          <span class="eyebrow">Dois Grupos Distintos</span>
+          <h2>Teste t para Amostras Independentes</h2>
+          <div class="card single-focus">
+            <div class="card-icon">👥</div>
+            <h3>Quando Usar?</h3>
+            <p>Quando comparamos as médias de uma variável contínua entre dois grupos mutuamente exclusivos (cada indivíduo pertence a apenas um grupo).</p>
+            <ul class="large-list">
+              <li><strong>Pré-requisito 1:</strong> Independência biológica absoluta entre as unidades amostrais dos dois grupos.</li>
+              <li><strong>Pré-requisito 2:</strong> Distribuição normal dos dados em ambos os grupos.</li>
+              <li><strong>Pré-requisito 3 (Homocedasticidade):</strong> Variâncias homogêneas ($\sigma_1^2 \approx \sigma_2^2$). Se violada, adota-se a correção de Welch.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 16: Teste t Independente (Fórmula & Cenário Clínico) -->
+        <article class="slide" data-title="Teste t Independente: Cenário" data-kicker="Amostras Independentes 2/3" data-notes="Exemplo claro da Biomedicina: avaliar a redução de colesterol com novo fármaco BioX em dois grupos paralelos.">
+          <span class="eyebrow">Aplicação Biomédica</span>
+          <h2>Teste t Independente: Cenário Clínico</h2>
+          <div class="formula-box">
+            $$t = \frac{\bar{x}_1 - \bar{x}_2}{s_p \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}} \quad \text{com} \quad gl = n_1 + n_2 - 2$$
+          </div>
+          <div class="card single-focus accent">
+            <h3>Ensaio Clínico Paralelo de Hipolipemiante</h3>
+            <p>Pacientes hipercolesterolêmicos são aleatorizados: $n_1 = 20$ recebem o novo fármaco "BioX" ($\bar{x}_1 = 110\text{ mg/dL}$) e $n_2 = 20$ recebem placebo ($\bar{x}_2 = 130\text{ mg/dL}$).</p>
+            <div class="takeaway">
+              A variância combinada das amostras é homogênea com desvio padrão agrupado $s_p = 15\text{ mg/dL}$. A diferença de $20\text{ mg/dL}$ é significativa?
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 17: Teste t Independente (Aplicação Numérica na Fórmula) -->
+        <article class="slide" data-title="Teste t Independente: Cálculo" data-kicker="Amostras Independentes 3/3" data-notes="Demonstração do passo a passo do cálculo na fórmula com conclusão do teste independente.">
+          <span class="eyebrow">Aplicação na Fórmula</span>
+          <h2>Teste t Independente: Resolução Passo a Passo</h2>
+          <div class="card single-focus">
+            <h3>Substituição dos Dados:</h3>
+            <div class="formula-box" style="font-size: 1.45rem;">
+              $$t = \frac{110 - 130}{15 \cdot \sqrt{\frac{1}{20} + \frac{1}{20}}} = \frac{-20}{15 \cdot \sqrt{0{,}10}} = \frac{-20}{15 \cdot 0{,}316} = \frac{-20}{4{,}74} \approx -4{,}22$$
+            </div>
+            <ul class="large-list">
+              <li><strong>Graus de Liberdade:</strong> $gl = 20 + 20 - 2 = 38$.</li>
+              <li><strong>Valor Crítico ($t_{\text{crítico}}$ bicaudal a $\alpha = 0{,}05$):</strong> $\approx \pm 2{,}02$.</li>
+              <li><strong>Decisão Clínica:</strong> Como $|t_{\text{calculado}}| = 4{,}22 > 2{,}02$, rejeita-se $H_0$ ($p < 0{,}001$). O fármaco BioX reduz significativamente o LDL em relação ao placebo.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 18: Teste t Pareado (Indicação & Pré-requisitos) -->
+        <article class="slide" data-title="Teste t Pareado: Conceito" data-kicker="Delineamento Pareado 1/3" data-notes="Within-subject design: o indivíduo é o seu próprio controle. Analisa-se a média das diferenças pareadas (d).">
+          <span class="eyebrow">Within-Subject Design</span>
+          <h2>Teste t Pareado (Amostras Dependentes)</h2>
+          <div class="card single-focus">
+            <div class="card-icon">🔁</div>
+            <h3>O Indivíduo como seu Próprio Controle</h3>
+            <p>Utilizado quando as duas medidas provêm do <strong>mesmo sujeito experimental</strong> em momentos distintos (antes vs. depois) ou de pares biologicamente pareados.</p>
+            <ul class="large-list">
+              <li><strong>Grande Vantagem:</strong> Elimina a variação genética e fisiológica basal entre indivíduos, maximizando o poder estatístico.</li>
+              <li><strong>Pré-requisito Central:</strong> Exige a <strong>distribuição normal das diferenças pareadas</strong> ($d_i = x_{2i} - x_{1i}$), e não necessariamente dos dados brutos.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 19: Teste t Pareado (Fórmula & Cenário Clínico) -->
+        <article class="slide" data-title="Teste t Pareado: Cenário" data-kicker="Delineamento Pareado 2/3" data-notes="Exemplo claro da Biomedicina: quantificar PCR antes e após anticorpo monoclonal no mesmo paciente.">
+          <span class="eyebrow">Aplicação Biomédica</span>
+          <h2>Teste t Pareado: Cenário Clínico</h2>
+          <div class="formula-box">
+            $$t = \frac{\bar{d}}{\frac{s_d}{\sqrt{n}}} \quad \text{com} \quad gl = n - 1$$
+          </div>
+          <div class="card single-focus accent">
+            <h3>Ensaio Pré e Pós-Tratamento de Artrite Reumatoide</h3>
+            <p>Avalia-se a Proteína C-Reativa (PCR) em $n = 16$ pacientes antes e 30 dias após terapia com anticorpo monoclonal.</p>
+            <div class="takeaway">
+              A média das reduções individuais foi de $\bar{d} = -3{,}6\text{ mg/L}$ com desvio padrão das diferenças $s_d = 2{,}4\text{ mg/L}$. A redução é significativa?
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 20: Teste t Pareado (Aplicação Numérica na Fórmula) -->
+        <article class="slide" data-title="Teste t Pareado: Cálculo" data-kicker="Delineamento Pareado 3/3" data-notes="Demonstração do passo a passo do cálculo na fórmula pareada com conclusão do teste.">
+          <span class="eyebrow">Aplicação na Fórmula</span>
+          <h2>Teste t Pareado: Resolução Passo a Passo</h2>
+          <div class="card single-focus">
+            <h3>Substituição dos Dados:</h3>
+            <div class="formula-box" style="font-size: 1.45rem;">
+              $$t = \frac{-3{,}6 - 0}{\frac{2{,}4}{\sqrt{16}}} = \frac{-3{,}6}{\frac{2{,}4}{4}} = \frac{-3{,}6}{0{,}6} = -6{,}00$$
+            </div>
+            <ul class="large-list">
+              <li><strong>Graus de Liberdade:</strong> $gl = 16 - 1 = 15$.</li>
+              <li><strong>Valor Crítico ($t_{\text{crítico}}$ bicaudal a $\alpha = 0{,}05$):</strong> $\approx \pm 2{,}13$.</li>
+              <li><strong>Decisão Clínica:</strong> Como $|t_{\text{calculado}}| = 6{,}00 > 2{,}13$, rejeita-se $H_0$ ($p < 0{,}0001$). Há evidência contundente de que a terapia reduz os níveis inflamatórios de PCR no mesmo paciente.</li>
+            </ul>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- Zona de Ativação por Hover + Painel Flutuante Invisível -->
+      <div class="floating-hover-zone">
+        <div class="floating-controls" id="floatingControls">
+          <button class="float-btn" id="floatPrevBtn" title="Slide anterior (←)">‹</button>
+          <span class="float-counter" id="floatCounter">1 / 20</span>
+          <button class="float-btn" id="floatNextBtn" title="Próximo slide (→ / Espaço)">›</button>
+          <button class="float-btn" id="floatNotesBtn" title="Notas (N)">Notas</button>
+          <button class="float-btn exit" id="floatExitBtn" title="Sair da Tela Cheia (Esc)">✕ Sair</button>
+        </div>
+      </div>
+
+      <!-- Painel de Notas -->
+      <aside class="notes-panel" id="notesPanel" aria-label="Notas do professor">
+        <div class="notes-head">
+          <strong>Notas do Professor</strong>
+          <button id="closeNotes" type="button" aria-label="Fechar notas">×</button>
+        </div>
+        <p id="notesText"></p>
+      </aside>
+
+      <!-- Visão Geral / Grid de Slides -->
+      <div class="overview" id="overview" aria-label="Visão geral dos slides">
+        <div class="overview-head">
+          <strong>Visão Geral da Apresentação</strong>
+          <button id="closeOverview" type="button" aria-label="Fechar visão geral">×</button>
+        </div>
+        <div class="overview-grid" id="overviewGrid"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const app = document.getElementById('app');
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const agenda = document.getElementById('agenda');
+    const overview = document.getElementById('overview');
+    const overviewGrid = document.getElementById('overviewGrid');
+    const notesPanel = document.getElementById('notesPanel');
+    const notesText = document.getElementById('notesText');
+    const slideTitle = document.getElementById('slideTitle');
+    const slideKicker = document.getElementById('slideKicker');
+    const counter = document.getElementById('counter');
+    const progressBar = document.getElementById('progressBar');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const notesBtn = document.getElementById('notesBtn');
+    const closeNotes = document.getElementById('closeNotes');
+    const overviewBtn = document.getElementById('overviewBtn');
+    const closeOverview = document.getElementById('closeOverview');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const fullscreenSideBtn = document.getElementById('fullscreenSideBtn');
+
+    const floatPrevBtn = document.getElementById('floatPrevBtn');
+    const floatNextBtn = document.getElementById('floatNextBtn');
+    const floatCounter = document.getElementById('floatCounter');
+    const floatNotesBtn = document.getElementById('floatNotesBtn');
+    const floatExitBtn = document.getElementById('floatExitBtn');
+
+    let current = 0;
+
+    function buildNavigation() {
+      agenda.innerHTML = '';
+      overviewGrid.innerHTML = '';
+
+      slides.forEach((slide, index) => {
+        const title = slide.dataset.title || `Slide ${index + 1}`;
+
+        const agendaBtn = document.createElement('button');
+        agendaBtn.type = 'button';
+        agendaBtn.innerHTML = `<span>${index + 1}</span><span>${title}</span>`;
+        agendaBtn.addEventListener('click', () => goTo(index));
+        agenda.appendChild(agendaBtn);
+
+        const ovBtn = document.createElement('button');
+        ovBtn.type = 'button';
+        ovBtn.innerHTML = `<span>${slide.dataset.kicker || 'Slide'}</span><strong>${index + 1}. ${title}</strong>`;
+        ovBtn.addEventListener('click', () => {
+          goTo(index);
+          toggleOverview(false);
+        });
+        overviewGrid.appendChild(ovBtn);
+      });
+    }
+
+    function updateUI() {
+      slides.forEach((slide, index) => slide.classList.toggle('active', index === current));
+      Array.from(agenda.children).forEach((btn, index) => btn.classList.toggle('active', index === current));
+      Array.from(overviewGrid.children).forEach((btn, index) => btn.classList.toggle('active', index === current));
+
+      const slide = slides[current];
+      const title = slide.dataset.title || `Slide ${current + 1}`;
+      slideTitle.textContent = title;
+      slideKicker.textContent = slide.dataset.kicker || 'Aula Expositiva';
+      
+      const countStr = `${current + 1} / ${slides.length}`;
+      counter.textContent = countStr;
+      floatCounter.textContent = countStr;
+      
+      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      notesText.textContent = slide.dataset.notes || 'Sem notas para este slide.';
+      document.title = `${title} · Teste de Hipóteses`;
+      history.replaceState(null, '', `#${current + 1}`);
+
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+      prevBtn.style.opacity = prevBtn.disabled ? '0.4' : '1';
+      nextBtn.style.opacity = nextBtn.disabled ? '0.4' : '1';
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function goTo(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      updateUI();
+    }
+
+    function next() {
+      if (current < slides.length - 1) {
+        goTo(current + 1);
+      }
+    }
+
+    function prev() {
+      if (current > 0) {
+        goTo(current - 1);
+      }
+    }
+
+    function toggleNotes(force) {
+      const shouldOpen = typeof force === 'boolean' ? force : !notesPanel.classList.contains('open');
+      notesPanel.classList.toggle('open', shouldOpen);
+    }
+
+    function toggleOverview(force) {
+      const shouldOpen = typeof force === 'boolean' ? force : !overview.classList.contains('open');
+      overview.classList.toggle('open', shouldOpen);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+        app.classList.add('fullscreen-mode');
+      } else {
+        document.exitFullscreen?.().catch(() => {});
+        app.classList.remove('fullscreen-mode');
+      }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        app.classList.remove('fullscreen-mode');
+      } else {
+        app.classList.add('fullscreen-mode');
+      }
+      updateUI();
+    });
+
+    buildNavigation();
+
+    const initialHash = Number.parseInt(location.hash.replace('#', ''), 10);
+    if (!Number.isNaN(initialHash) && initialHash >= 1 && initialHash <= slides.length) {
+      current = initialHash - 1;
+    }
+    updateUI();
+
+    prevBtn.addEventListener('click', prev);
+    nextBtn.addEventListener('click', next);
+    notesBtn.addEventListener('click', () => toggleNotes());
+    closeNotes.addEventListener('click', () => toggleNotes(false));
+    overviewBtn.addEventListener('click', () => toggleOverview());
+    closeOverview.addEventListener('click', () => toggleOverview(false));
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenSideBtn.addEventListener('click', toggleFullscreen);
+
+    floatPrevBtn.addEventListener('click', prev);
+    floatNextBtn.addEventListener('click', next);
+    floatNotesBtn.addEventListener('click', () => toggleNotes());
+    floatExitBtn.addEventListener('click', toggleFullscreen);
+
+    document.addEventListener('keydown', (e) => {
+      if (['input', 'textarea'].includes(document.activeElement.tagName.toLowerCase())) return;
+
+      if (['ArrowRight', 'PageDown', ' '].includes(e.key)) {
+        e.preventDefault();
+        next();
+      } else if (['ArrowLeft', 'PageUp'].includes(e.key)) {
+        e.preventDefault();
+        prev();
+      } else if (e.key === 'Home') {
+        goTo(0);
+      } else if (e.key === 'End') {
+        goTo(slides.length - 1);
+      } else if (e.key.toLowerCase() === 'n') {
+        toggleNotes();
+      } else if (e.key.toLowerCase() === 'o') {
+        toggleOverview();
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      } else if (e.key === 'Escape') {
+        toggleNotes(false);
+        toggleOverview(false);
+      }
+    });
+  </script>
+</body>
+</html>
