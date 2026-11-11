@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Correlação e Regressão Linear Simples</title>
+  
+  <!-- MathJax para renderização de fórmulas estatísticas -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --bg: #180509;               /* Vinho Escuro Profundo */
+      --panel: #ffffff;
+      --ink: #3f0713;              /* Vinho Quase Preto */
+      --ink-body: #4c0519;         /* Borgonha Escuro */
+      --muted: #881337;            /* Vinho Médio */
+      --line: #fecdd3;             /* Linha Delicada */
+      --primary: #be123c;          /* Vermelho Carmesim */
+      --primary-light: #fda4af;    /* Rosa Claro */
+      --primary-dark: #24070e;     /* Borgonha Noturno */
+      --secondary: #9f1239;        /* Vinho Elegante */
+      --accent: #fb7185;           /* Coral Rosado */
+      --amber: #b45309;            /* Ocre */
+      --soft: #fff5f5;             /* Branco Rosado Suave */
+      --shadow: 0 25px 50px -12px rgba(36, 7, 14, 0.45);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink-body);
+      background:
+        radial-gradient(circle at top left, rgba(190, 18, 60, 0.16), transparent 45rem),
+        radial-gradient(circle at bottom right, rgba(136, 19, 55, 0.14), transparent 40rem),
+        #fff1f2;
+      overflow: hidden;
+    }
+
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      height: 100vh;
+      width: 100vw;
+      transition: grid-template-columns 0.3s ease;
+    }
+
+    /* Backgrounds com Fotos em Alta Resolução e Filtros Escuros */
+    .slide.bg-photo {
+      background-color: var(--primary-dark) !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+      color: #ffffff !important;
+    }
+
+    .slide.bg-photo h2 { color: #ffffff !important; }
+
+    /* Capa: Laboratório / Células */
+    .slide.bg-cover {
+      background-image: 
+        linear-gradient(135deg, rgba(36, 7, 14, 0.94), rgba(159, 18, 57, 0.88)),
+        url('https://images.pexels.com/photos/3735709/pexels-photo-3735709.jpeg') !important;
+    }
+
+    /* Frasco / Dose / Cultura celular */
+    .slide.bg-cell {
+      background-image: 
+        linear-gradient(135deg, rgba(36, 7, 14, 0.88), rgba(76, 5, 25, 0.82)),
+        url('https://images.pexels.com/photos/2280547/pexels-photo-2280547.jpeg') !important;
+    }
+
+    /* Tela Cheia / Modo Apresentação Corrigido */
+    .app.fullscreen-mode {
+      display: block !important;
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+
+    .app.fullscreen-mode .sidebar,
+    .app.fullscreen-mode .topbar {
+      display: none !important;
+    }
+
+    .app.fullscreen-mode .stage {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+
+    .app.fullscreen-mode .slides {
+      position: relative !important;
+      flex: 1 1 auto !important;
+      width: 100% !important;
+      height: 100vh !important;
+      padding: 0 !important;
+      overflow-y: auto !important;
+    }
+
+    .app.fullscreen-mode .slide {
+      position: absolute !important;
+      top: 20px !important;
+      left: 32px !important;
+      right: 32px !important;
+      bottom: 20px !important;
+      width: auto !important;
+      height: auto !important;
+      max-height: calc(100vh - 40px) !important;
+      border-radius: 24px !important;
+      box-shadow: 0 30px 65px rgba(0, 0, 0, 0.35) !important;
+      padding: clamp(28px, 3.8vw, 52px) !important;
+      padding-bottom: 95px !important;
+      overflow-y: auto !important;
+      box-sizing: border-box !important;
+    }
+
+    /* Tipografia Ampliada (+20% padrão Death by PowerPoint) */
+    .app.fullscreen-mode .slide h2 {
+      font-size: clamp(2.6rem, 3.8vw, 3.8rem);
+      margin-bottom: 24px;
+    }
+
+    .app.fullscreen-mode .cover h2 {
+      font-size: clamp(3.6rem, 6vw, 5.8rem);
+      margin-bottom: 24px;
+    }
+
+    .app.fullscreen-mode .cover .lead {
+      font-size: clamp(1.8rem, 2.6vw, 2.4rem);
+      line-height: 1.5;
+      color: #fff1f2;
+    }
+
+    .app.fullscreen-mode .slide h3 {
+      font-size: 1.95rem;
+      margin-bottom: 16px;
+    }
+
+    .app.fullscreen-mode .slide p,
+    .app.fullscreen-mode .card p {
+      font-size: 1.65rem;
+      line-height: 1.65;
+    }
+
+    .app.fullscreen-mode .card li,
+    .app.fullscreen-mode .slide li {
+      font-size: 1.58rem;
+      line-height: 1.6;
+      margin: 14px 0;
+    }
+
+    .app.fullscreen-mode blockquote.big {
+      font-size: clamp(1.7rem, 2.5vw, 2.45rem);
+      line-height: 1.45;
+      padding: 30px 36px;
+    }
+
+    .app.fullscreen-mode .giant-takeaway {
+      font-size: 1.65rem;
+      padding: 24px 30px;
+    }
+
+    /* Barra Lateral */
+    .sidebar {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+      border-right: 1px solid var(--line);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 8px 20px rgba(190, 18, 60, 0.35);
+    }
+
+    .brand strong { display: block; font-size: 1.05rem; color: var(--ink); }
+    .brand small { color: var(--muted); font-size: 0.9rem; font-weight: 600; }
+
+    .agenda {
+      overflow-y: auto;
+      padding-right: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .agenda button {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink-body);
+      text-align: left;
+      border-radius: 10px;
+      padding: 8px 12px;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.92rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .agenda button span:first-child {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #ffe4e6;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+
+    .agenda button:hover { background: rgba(190, 18, 60, 0.08); color: var(--ink); }
+    .agenda button.active { background: var(--primary); color: #fff; font-weight: 700; }
+    .agenda button.active span:first-child { background: rgba(255,255,255,0.25); color: #fff; }
+
+    .side-footer { margin-top: auto; display: grid; gap: 8px; }
+
+    .ghost-btn, .icon-btn {
+      border: 0;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .ghost-btn {
+      padding: 12px 16px;
+      background: #ffe4e6;
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .ghost-btn:hover { background: #fecdd3; }
+
+    /* Palco */
+    .stage {
+      position: relative;
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto 4px minmax(0, 1fr);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 32px 12px;
+    }
+
+    #slideKicker {
+      color: var(--primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-size: 0.85rem;
+    }
+
+    #slideTitle {
+      margin: 2px 0 0;
+      font-size: clamp(1.2rem, 1.8vw, 1.65rem);
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .controls { display: flex; align-items: center; gap: 10px; }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1.6rem;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+    }
+    .icon-btn:hover { background: var(--secondary); }
+    .counter { color: var(--ink); font-weight: 800; font-size: 1rem; min-width: 65px; text-align: center; }
+
+    .progress { background: var(--line); }
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+
+    /* Slides */
+    .slides { position: relative; min-height: 0; padding: 24px 32px 32px; }
+
+    .slide {
+      position: absolute;
+      inset: 24px 32px 32px;
+      overflow-y: auto;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(28px, 4vw, 50px);
+      opacity: 0;
+      transform: translateY(12px) scale(0.99);
+      pointer-events: none;
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .slide h2 {
+      margin: 0 0 18px;
+      font-size: clamp(1.9rem, 3.2vw, 2.9rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .slide h3 { margin: 0 0 14px; font-size: 1.45rem; color: var(--ink); font-weight: 800; }
+    .slide p { line-height: 1.65; color: var(--ink-body); font-size: 1.35rem; }
+    .lead { font-size: clamp(1.3rem, 1.6vw, 1.6rem); color: var(--ink-body); font-weight: 500; max-width: 900px; margin-bottom: 22px; line-height: 1.55; }
+
+    .eyebrow {
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: #ffe4e6;
+      color: var(--primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.95rem;
+      border: 1px solid #fecdd3;
+    }
+
+    /* Capa */
+    .cover {
+      display: grid;
+      place-items: center;
+      color: #fff;
+      border: 0;
+    }
+    .cover-content { text-align: center; max-width: 960px; }
+    .cover h2 {
+      font-size: clamp(3.2rem, 5.8vw, 5.4rem);
+      color: #ffffff;
+      margin-bottom: 24px;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+    .cover .lead {
+      color: #fff1f2;
+      font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+      font-weight: 400;
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    /* Citações e Destaques */
+    blockquote {
+      margin: 22px 0;
+      padding: 20px 26px;
+      border-left: 6px solid var(--primary);
+      background: #fff1f2;
+      border-radius: 0 14px 14px 0;
+      color: #881337;
+      font-weight: 600;
+      line-height: 1.5;
+      font-size: 1.35rem;
+    }
+    blockquote.big {
+      font-size: clamp(1.5rem, 2.2vw, 2.1rem);
+      line-height: 1.45;
+      padding: 30px 36px;
+    }
+
+    /* Cartões */
+    .card {
+      background: #ffffff;
+      border: 1.5px solid var(--line);
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 6px 16px rgba(190, 18, 60, 0.04);
+    }
+    .card.accent { background: #fff5f5; border-color: #fda4af; }
+    .card.dark-card {
+      background: rgba(36, 7, 14, 0.9) !important;
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(254, 205, 211, 0.3) !important;
+      color: #ffffff !important;
+    }
+    .card.dark-card h3 { color: var(--primary-light) !important; }
+    .card.dark-card p, .card.dark-card li { color: #ffffff !important; font-weight: 500; }
+    .card.dark-card strong { color: #fed7aa !important; }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--primary);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+
+    .card.single-focus {
+      padding: 38px 44px;
+      border-radius: 20px;
+      border: 2px solid var(--line);
+      box-shadow: 0 10px 30px rgba(190, 18, 60, 0.05);
+      margin-top: 20px;
+    }
+    .card.single-focus.accent { background: #fff5f5; border-color: #fda4af; }
+
+    .large-list {
+      list-style: none;
+      padding-left: 0 !important;
+      margin: 20px 0 0 !important;
+    }
+    .large-list li {
+      position: relative;
+      padding-left: 40px;
+      margin: 18px 0 !important;
+      font-size: 1.4rem;
+      line-height: 1.6;
+    }
+    .large-list li::before {
+      content: "•";
+      position: absolute;
+      left: 12px;
+      top: -4px;
+      font-size: 2.3rem;
+      color: var(--primary);
+    }
+
+    .takeaway {
+      margin-top: 24px;
+      padding: 20px 28px;
+      border-radius: 14px;
+      background: #fff1f2;
+      border-left: 5px solid var(--primary);
+      color: #881337;
+      font-weight: 700;
+      font-size: 1.4rem;
+      line-height: 1.55;
+    }
+
+    .formula-box {
+      background: #24070e;
+      color: #fda4af;
+      border: 2px solid #be123c;
+      border-radius: 16px;
+      padding: 22px;
+      margin: 18px 0;
+      text-align: center;
+      font-size: 1.65rem;
+    }
+
+    /* Diagrama SVG com Altura Proporcional para não estourar a tela */
+    .svg-diagram-container {
+      width: 100%;
+      max-width: 860px;
+      max-height: 48vh;
+      margin: 12px auto;
+      background: #ffffff;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 18px;
+      box-shadow: 0 6px 20px rgba(190, 18, 60, 0.05);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    .svg-diagram {
+      width: 100%;
+      max-height: 44vh;
+      height: auto;
+      display: block;
+    }
+
+    /* Tabelas Comparativas */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      margin-top: 20px;
+      background: #fff;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 650px; }
+    th, td { padding: 18px 22px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); font-size: 1.25rem; }
+    th { background: #ffe4e6; color: var(--ink); font-weight: 800; border-bottom: 2px solid var(--line); font-size: 1.35rem; }
+    td { color: var(--ink-body); line-height: 1.6; }
+    tr:last-child td { border-bottom: 0; }
+
+    /* Floating Controls */
+    .floating-hover-zone {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      pointer-events: auto;
+    }
+
+    .floating-controls {
+      background: rgba(36, 7, 14, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(254, 205, 211, 0.3);
+      border-radius: 999px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .floating-hover-zone:hover .floating-controls {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .float-btn {
+      border: 0;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .float-btn:hover { background: rgba(255, 255, 255, 0.35); }
+    .float-btn.exit { background: var(--primary); }
+    .float-btn.exit:hover { background: var(--secondary); }
+    .float-counter { color: #ffffff; font-size: 1.1rem; font-weight: 800; min-width: 65px; text-align: center; }
+
+    /* Notas & Overview */
+    .notes-panel {
+      position: absolute;
+      right: 32px;
+      bottom: 32px;
+      width: min(450px, calc(100% - 64px));
+      max-height: 40%;
+      overflow-y: auto;
+      background: #24070e;
+      color: #fff;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 20px 24px;
+      transform: translateY(16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.2s ease;
+      z-index: 110;
+    }
+    .notes-panel.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .notes-head, .overview-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .notes-head button, .overview-head button {
+      border: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      color: inherit;
+    }
+    #notesText { margin: 0; font-size: 1.15rem; line-height: 1.6; color: #fff1f2; }
+
+    .overview {
+      position: absolute;
+      inset: 0;
+      z-index: 120;
+      background: rgba(255, 241, 242, 0.98);
+      backdrop-filter: blur(10px);
+      padding: 32px;
+      display: none;
+      overflow-y: auto;
+    }
+    .overview.open { display: block; }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .overview-grid button {
+      min-height: 110px;
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px;
+      text-align: left;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+    .overview-grid button.active { outline: 3px solid var(--primary); }
+    .overview-grid span { display: block; color: var(--primary); font-size: 0.85rem; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; }
+    .overview-grid strong { font-size: 1.05rem; color: var(--ink); line-height: 1.25; }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .app { grid-template-columns: 1fr; height: auto; }
+      .sidebar { display: none; }
+      .stage { min-height: 100vh; }
+      .slides { padding: 16px; }
+      .slide { inset: 16px; padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- Barra Lateral com Agenda -->
+    <aside class="sidebar" id="sidebar" aria-label="Roteiro da aula">
+      <div class="brand">
+        <span class="brand-mark">CR</span>
+        <div>
+          <strong>Correlação & Regressão</strong>
+          <small>Relação Bivariada</small>
+        </div>
+      </div>
+
+      <nav class="agenda" id="agenda" aria-label="Navegação dos slides"></nav>
+
+      <div class="side-footer">
+        <button class="ghost-btn" id="fullscreenSideBtn" type="button">⛶ Modo Apresentação (F)</button>
+        <button class="ghost-btn" id="overviewBtn" type="button">Visão Geral (O)</button>
+        <button class="ghost-btn" id="notesBtn" type="button">Notas do Professor (N)</button>
+      </div>
+    </aside>
+
+    <!-- Palco Principal -->
+    <main class="stage">
+      <header class="topbar">
+        <div class="slide-meta">
+          <span id="slideKicker">Bioestatística Introdutória</span>
+          <h1 id="slideTitle">Relação entre Variáveis Numéricas</h1>
+        </div>
+
+        <div class="controls" aria-label="Controles da apresentação">
+          <button class="ghost-btn" id="fullscreenBtn" type="button" title="Modo Apresentação (Tecla F)">⛶ Tela Cheia</button>
+          <button class="icon-btn" id="prevBtn" type="button" aria-label="Slide anterior">‹</button>
+          <span class="counter" id="counter">1 / --</span>
+          <button class="icon-btn" id="nextBtn" type="button" aria-label="Próximo slide">›</button>
+        </div>
+      </header>
+
+      <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+      <section class="slides" id="slides" aria-live="polite">
+        
+        <!-- Slide 1: Capa -->
+        <article class="slide cover active bg-photo bg-cover" data-title="Abertura" data-kicker="Dados Bivariados" data-notes="Peça aos alunos que imaginem um experimento biomédico real: duas variáveis contínuas sendo medidas na mesma placa ou paciente. Como sair do caos dos pontos para uma conclusão científica sólida?">
+          <div class="cover-content">
+            <span class="eyebrow" style="background: rgba(255,255,255,0.2); color:#fff; border-color:transparent;">Bioestatística Introdutória</span>
+            <h2>Correlação e Regressão Linear Simples</h2>
+            <p class="lead">Entendendo quando variáveis caminham juntas e como construir modelos matemáticos para previsão na Biomedicina.</p>
+          </div>
+        </article>
+
+        <!-- Slide 2: O Diagrama de Dispersão -->
+        <article class="slide" data-title="O Ponto de Partida" data-kicker="Visualização de Dados" data-notes="Provoque a imaginação: 'Você acabou de sair da leitora de placas com 30 pares de valores. Qual é o seu primeiro instinto?' Não é abrir fórmulas, é olhar a nuvem de pontos!">
+          <span class="eyebrow">Exploração Inicial</span>
+          <h2>O Diagrama de Dispersão (Scatterplot)</h2>
+          <div class="card single-focus">
+            <div class="card-icon">📈</div>
+            <h3>O Olhar Antes do Cálculo</h3>
+            <p>Antes de aplicar qualquer fórmula matemática, o pesquisador precisa <strong>enxergar a geometria biológica</strong> plotando cada par $(X, Y)$ como um ponto no plano cartesiano.</p>
+            <div class="takeaway">
+              A nuvem de pontos desperta duas perguntas fundamentais:<br>
+              <strong>1. Associação:</strong> Há um alinhamento mútuo ou padrão compartilhado? (Correlação)<br>
+              <strong>2. Previsão:</strong> Posso antecipar o desfecho sem ir à bancada? (Regressão)
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 3: Correlação: Situação-Problema -->
+        <article class="slide bg-photo bg-cell" data-title="Correlação: Problema" data-kicker="Associação Linear" data-notes="Enfatize a postura mental da correlação: não estamos tentando manipular o futuro nem criar fórmulas de dosagem ainda. Estamos apenas investigando se existe uma coreografia biológica entre as grandezas.">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.25); color:#fff; border-color:transparent;">Situação-Problema 01</span>
+          <h2>Dose do Fármaco & Respiração Celular</h2>
+          <blockquote class="big dark-card">
+            "Imagine o laboratório: vocês administram doses crescentes de uma molécula em culturas de células e medem a taxa de respiração mitocondrial. A inquietação neste momento não é prever um valor milimétrico, mas entender o comportamento: à medida que a dose sobe, as mitocôndrias respondem atenuando sua atividade, acelerando ou flutuando sem nenhum padrão?"
+          </blockquote>
+        </article>
+
+        <!-- Slide 4: O que a Correlação Faz? -->
+        <article class="slide" data-title="O que a Correlação Faz?" data-kicker="Conceito de Associação" data-notes="Destaque a simetria: na correlação, nenhuma variável manda na outra. É um aperto de mãos matemático entre duas grandezas.">
+          <span class="eyebrow">A Medida de Associação</span>
+          <h2>O que a Correlação Faz?</h2>
+          <div class="card single-focus">
+            <div class="card-icon">🤝</div>
+            <h3>Avaliando a Força e o Sentido Linear</h3>
+            <p>A correlação avalia a <strong>força</strong> e a <strong>direção</strong> da associação linear entre duas variáveis numéricas contínuas, sem assumir que uma causa a outra.</p>
+            <ul class="large-list">
+              <li><strong>Relação Simétrica:</strong> A correlação entre a Dose e a Respiração Celular é rigorosamente idêntica à correlação entre a Respiração e a Dose.</li>
+              <li><strong>Principal Output:</strong> O Coeficiente de Correlação Linear de Pearson ($r$).</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 5: O que o r Representa? -->
+        <article class="slide" data-title="O Coeficiente r" data-kicker="Métrica Padronizada" data-notes="Explique a beleza do r: ele é uma régua universal adimensional. Não importa se a dose está em miligramas e a respiração em micromoles de O2; o r resume a fidelidade da tendência linear de -1 a +1.">
+          <span class="eyebrow">O Índice de Pearson</span>
+          <h2>O que o Coeficiente $r$ Representa?</h2>
+          <div class="formula-box">
+            $$-1 \le r \le +1$$
+          </div>
+          <div class="card single-focus accent">
+            <h3>A Bússola da Associação:</h3>
+            <ul class="large-list">
+              <li><strong>$r \approx +1$ (Positiva Forte):</strong> As variáveis sobem juntas de forma sincronizada.</li>
+              <li><strong>$r \approx -1$ (Negativa Forte):</strong> Enquanto a dose aumenta, a respiração mitocondrial sofre declínio proporcional.</li>
+              <li><strong>$r \approx 0$ (Nula):</strong> A dispersão é amorfa; conhecer a dose não traz pista alguma sobre a respiração.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 6: Exemplo Gráfico 1 - Associação Positiva Realista (Slide Separado) -->
+        <article class="slide" data-title="Gráfico: Associação Positiva" data-kicker="Dispersão Realista 1/3" data-notes="Mostre como os dados biológicos reais se comportam: há maior densidade nas concentrações basais e pontos mais esparsos nas altas, mas a tendência positiva ascendente é inequívoca.">
+          <span class="eyebrow">Padrão 1: Tendência Positiva</span>
+          <h2>Biomarcador Sérico vs. Atividade Inflamatória</h2>
+          <div class="svg-diagram-container">
+            <svg class="svg-diagram" viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="grid-pos" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#fff1f2" stroke-width="1.5"/>
+                </pattern>
+                <filter id="shadow-box-pos" x="-5%" y="-5%" width="110%" height="115%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.14"/>
+                </filter>
+              </defs>
+              <rect x="90" y="25" width="680" height="295" fill="url(#grid-pos)" />
+              
+              <line x1="90" y1="320" x2="770" y2="320" stroke="#4c0519" stroke-width="3"/>
+              <line x1="90" y1="320" x2="90" y2="25" stroke="#4c0519" stroke-width="3"/>
+              
+              <text x="770" y="355" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#4c0519" text-anchor="end">X (Concentração de Biomarcador Sérico em ng/mL)</text>
+              <text x="65" y="25" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#4c0519" text-anchor="end" transform="rotate(-90 65,25)">Y (Atividade Inflamatória em U/L)</text>
+              
+              <!-- Pontos assimétricos (densidade maior na base, cauda alongada com variância crescente) -->
+              <circle cx="115" cy="285" r="6.5" fill="#be123c" opacity="0.85"/>
+              <circle cx="128" cy="265" r="6" fill="#be123c" opacity="0.8"/>
+              <circle cx="138" cy="295" r="6.5" fill="#be123c" opacity="0.85"/>
+              <circle cx="150" cy="250" r="6" fill="#be123c" opacity="0.8"/>
+              <circle cx="162" cy="272" r="6.5" fill="#be123c" opacity="0.85"/>
+              <circle cx="178" cy="235" r="6" fill="#be123c" opacity="0.8"/>
+              <circle cx="192" cy="260" r="6.5" fill="#be123c" opacity="0.85"/>
+              <circle cx="210" cy="225" r="6" fill="#be123c" opacity="0.8"/>
+              <circle cx="225" cy="245" r="6.5" fill="#be123c" opacity="0.85"/>
+              <circle cx="240" cy="205" r="6" fill="#be123c" opacity="0.8"/>
+              
+              <circle cx="275" cy="215" r="6.5" fill="#be123c" opacity="0.85"/>
+              <circle cx="305" cy="175" r="6" fill="#be123c" opacity="0.8"/>
+              <circle cx="330" cy="200" r="6.5" fill="#be123c" opacity="0.85"/>
+              <circle cx="365" cy="155" r="6" fill="#be123c" opacity="0.8"/>
+              <circle cx="390" cy="180" r="6.5" fill="#be123c" opacity="0.85"/>
+              <circle cx="425" cy="138" r="6" fill="#be123c" opacity="0.8"/>
+              <circle cx="460" cy="165" r="6.5" fill="#be123c" opacity="0.85"/>
+              
+              <circle cx="515" cy="118" r="6.5" fill="#be123c" opacity="0.85"/>
+              <circle cx="560" cy="145" r="6" fill="#be123c" opacity="0.8"/>
+              <circle cx="610" cy="85" r="6.5" fill="#be123c" opacity="0.85"/>
+              <circle cx="665" cy="110" r="6" fill="#be123c" opacity="0.8"/>
+              <circle cx="715" cy="58" r="6.5" fill="#be123c" opacity="0.85"/>
+              <circle cx="740" cy="88" r="6" fill="#be123c" opacity="0.8"/>
+
+              <g transform="translate(110, 45)" filter="url(#shadow-box-pos)">
+                <rect x="0" y="0" width="240" height="58" rx="10" fill="#ffffff" stroke="#be123c" stroke-width="1.8"/>
+                <text x="120" y="24" font-family="Inter, sans-serif" font-size="14" font-weight="900" fill="#be123c" text-anchor="middle">CORRELAÇÃO POSITIVA</text>
+                <text x="120" y="45" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#4c0519" text-anchor="middle">r ≈ +0,76 (Tendência Ascendente)</text>
+              </g>
+            </svg>
+          </div>
+          <div class="takeaway" style="margin-top: 14px;">
+            <strong>A Imaginação Estatística em Ação:</strong> Note a assimetria natural dos dados: a maioria dos pacientes concentra-se em valores basais baixos, com cauda mais dispersa em valores altos. O coeficiente $r = +0{,}76$ capta com segurança essa subida conjunta.
+          </div>
+        </article>
+
+        <!-- Slide 7: Exemplo Gráfico 2 - O Ensaio do Fármaco (Slide Separado) -->
+        <article class="slide" data-title="Gráfico: Ensaio do Fármaco" data-kicker="Dispersão Realista 2/3" data-notes="Este é o gráfico da Situação-Problema 1: dose do fármaco vs respiração mitocondrial. Os pontos não formam uma linha geométrica perfeita; há ruído metabólico entre as placas, mas a tendência negativa decrescente é evidente.">
+          <span class="eyebrow">Padrão 2: Tendência Negativa (Nosso Ensaio)</span>
+          <h2>Dose do Composto vs. Respiração Mitocondrial</h2>
+          <div class="svg-diagram-container">
+            <svg class="svg-diagram" viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="grid-neg" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#fff1f2" stroke-width="1.5"/>
+                </pattern>
+                <filter id="shadow-box-neg" x="-5%" y="-5%" width="110%" height="115%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.14"/>
+                </filter>
+              </defs>
+              <rect x="90" y="25" width="680" height="295" fill="url(#grid-neg)" />
+              
+              <line x1="90" y1="320" x2="770" y2="320" stroke="#4c0519" stroke-width="3"/>
+              <line x1="90" y1="320" x2="90" y2="25" stroke="#4c0519" stroke-width="3"/>
+              
+              <text x="770" y="355" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#4c0519" text-anchor="end">X (Dose do Fármaco em mg/mL)</text>
+              <text x="65" y="25" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#4c0519" text-anchor="end" transform="rotate(-90 65,25)">Y (Taxa de Respiração Mitocondrial em %)</text>
+              
+              <!-- Pontos assimétricos com ruído de bancada real -->
+              <circle cx="115" cy="55" r="6.5" fill="#881337" opacity="0.85"/>
+              <circle cx="130" cy="82" r="6" fill="#881337" opacity="0.8"/>
+              <circle cx="150" cy="62" r="6.5" fill="#881337" opacity="0.85"/>
+              <circle cx="172" cy="98" r="6" fill="#881337" opacity="0.8"/>
+              <circle cx="190" cy="74" r="6.5" fill="#881337" opacity="0.85"/>
+              <circle cx="215" cy="115" r="6" fill="#881337" opacity="0.8"/>
+              
+              <circle cx="250" cy="105" r="6.5" fill="#881337" opacity="0.85"/>
+              <circle cx="280" cy="142" r="6" fill="#881337" opacity="0.8"/>
+              <circle cx="310" cy="120" r="6.5" fill="#881337" opacity="0.85"/>
+              <circle cx="338" cy="165" r="6" fill="#881337" opacity="0.8"/>
+              <circle cx="370" cy="135" r="6.5" fill="#881337" opacity="0.85"/>
+              <circle cx="405" cy="182" r="6" fill="#881337" opacity="0.8"/>
+              <circle cx="440" cy="150" r="6.5" fill="#881337" opacity="0.85"/>
+              
+              <circle cx="485" cy="205" r="6.5" fill="#881337" opacity="0.85"/>
+              <circle cx="525" cy="188" r="6" fill="#881337" opacity="0.8"/>
+              <circle cx="565" cy="240" r="6.5" fill="#881337" opacity="0.85"/>
+              <circle cx="610" cy="215" r="6" fill="#881337" opacity="0.8"/>
+              <circle cx="655" cy="265" r="6.5" fill="#881337" opacity="0.85"/>
+              <circle cx="690" cy="245" r="6" fill="#881337" opacity="0.8"/>
+              <circle cx="725" cy="275" r="6.5" fill="#881337" opacity="0.85"/>
+              <circle cx="745" cy="255" r="6" fill="#881337" opacity="0.8"/>
+
+              <g transform="translate(480, 45)" filter="url(#shadow-box-neg)">
+                <rect x="0" y="0" width="270" height="58" rx="10" fill="#ffffff" stroke="#be123c" stroke-width="2"/>
+                <text x="135" y="24" font-family="Inter, sans-serif" font-size="14" font-weight="900" fill="#be123c" text-anchor="middle">NOSSO ENSAIO: FÁRMACO</text>
+                <text x="135" y="45" font-family="Inter, sans-serif" font-size="14" font-weight="800" fill="#4c0519" text-anchor="middle">r ≈ -0,81 (Associação Negativa)</text>
+              </g>
+            </svg>
+          </div>
+          <div class="takeaway" style="margin-top: 14px;">
+            <strong>O Resultado da Bancada:</strong> Cada ponto é uma placa celular real. Há heterogeneidade entre as réplicas, mas a tendência descendente é nítida ($r = -0{,}81$). Quanto maior a concentração do composto, menor a atividade respiratória celular.
+          </div>
+        </article>
+
+        <!-- Slide 8: Exemplo Gráfico 3 - Ausência de Associação (Slide Separado) -->
+        <article class="slide" data-title="Gráfico: Associação Nula" data-kicker="Dispersão Realista 3/3" data-notes="Mostre a ausência de padrão: pontos espalhados de forma irregular e assimétrica, sem linha imaginária ascendente ou descendente.">
+          <span class="eyebrow">Padrão 3: Ausência de Associação</span>
+          <h2>Aditivo Inerte vs. Sobrevivência Celular</h2>
+          <div class="svg-diagram-container">
+            <svg class="svg-diagram" viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="grid-nul" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#fff1f2" stroke-width="1.5"/>
+                </pattern>
+                <filter id="shadow-box-nul" x="-5%" y="-5%" width="110%" height="115%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.14"/>
+                </filter>
+              </defs>
+              <rect x="90" y="25" width="680" height="295" fill="url(#grid-nul)" />
+              
+              <line x1="90" y1="320" x2="770" y2="320" stroke="#4c0519" stroke-width="3"/>
+              <line x1="90" y1="320" x2="90" y2="25" stroke="#4c0519" stroke-width="3"/>
+              
+              <text x="770" y="355" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#4c0519" text-anchor="end">X (Concentração de Aditivo Inerte em mM)</text>
+              <text x="65" y="25" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#4c0519" text-anchor="end" transform="rotate(-90 65,25)">Y (Sobrevivência Celular em %)</text>
+              
+              <!-- Pontos com dispersão amorfa e assimétrica -->
+              <circle cx="120" cy="210" r="6" fill="#9f1239" opacity="0.7"/>
+              <circle cx="140" cy="115" r="6.5" fill="#9f1239" opacity="0.75"/>
+              <circle cx="155" cy="270" r="6" fill="#9f1239" opacity="0.7"/>
+              <circle cx="180" cy="165" r="6.5" fill="#9f1239" opacity="0.75"/>
+              <circle cx="210" cy="75" r="6" fill="#9f1239" opacity="0.7"/>
+              <circle cx="235" cy="245" r="6.5" fill="#9f1239" opacity="0.75"/>
+              <circle cx="260" cy="140" r="6" fill="#9f1239" opacity="0.7"/>
+              <circle cx="295" cy="190" r="6.5" fill="#9f1239" opacity="0.75"/>
+              <circle cx="320" cy="85" r="6" fill="#9f1239" opacity="0.7"/>
+              <circle cx="350" cy="280" r="6.5" fill="#9f1239" opacity="0.75"/>
+              <circle cx="385" cy="155" r="6" fill="#9f1239" opacity="0.7"/>
+              <circle cx="415" cy="225" r="6.5" fill="#9f1239" opacity="0.75"/>
+              <circle cx="450" cy="110" r="6" fill="#9f1239" opacity="0.7"/>
+              <circle cx="480" cy="175" r="6.5" fill="#9f1239" opacity="0.75"/>
+              <circle cx="510" cy="265" r="6" fill="#9f1239" opacity="0.7"/>
+              <circle cx="545" cy="95" r="6.5" fill="#9f1239" opacity="0.75"/>
+              <circle cx="580" cy="205" r="6" fill="#9f1239" opacity="0.7"/>
+              <circle cx="615" cy="145" r="6.5" fill="#9f1239" opacity="0.75"/>
+              <circle cx="650" cy="250" r="6" fill="#9f1239" opacity="0.7"/>
+              <circle cx="685" cy="120" r="6.5" fill="#9f1239" opacity="0.75"/>
+              <circle cx="720" cy="180" r="6" fill="#9f1239" opacity="0.7"/>
+
+              <g transform="translate(110, 45)" filter="url(#shadow-box-nul)">
+                <rect x="0" y="0" width="250" height="58" rx="10" fill="#ffffff" stroke="#9f1239" stroke-width="1.8"/>
+                <text x="125" y="24" font-family="Inter, sans-serif" font-size="14" font-weight="900" fill="#be123c" text-anchor="middle">AUSÊNCIA DE ASSOCIAÇÃO</text>
+                <text x="125" y="45" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#4c0519" text-anchor="middle">r ≈ -0,03 (Nuvem Sem Tendência)</text>
+              </g>
+            </svg>
+          </div>
+          <div class="takeaway" style="margin-top: 14px;">
+            <strong>Nuvem Sem Direção ($r \approx -0{,}03$):</strong> Os pontos oscilam de modo totalmente aleatório e assimétrico pelo plano. Aumentar ou diminuir a concentração do aditivo inerte não dá nenhuma informação sobre a viabilidade celular.
+          </div>
+        </article>
+
+        <!-- Slide 9: Correlação NÃO é Causalidade -->
+        <article class="slide" data-title="Correlação ≠ Causa" data-kicker="Cuidado Epistemológico" data-notes="Alerta essencial: duas grandezas podem caminhar juntas por coincidência ou porque ambas respondem a uma variável oculta comum.">
+          <span class="eyebrow" style="background:#fee2e2; color:#991b1b; border-color:#fca5a5;">Armadilha Metodológica</span>
+          <h2>Correlação NÃO Implica Causalidade</h2>
+          <blockquote class="big">
+            A correlação quantifica o "caminhar junto", mas não prova quem comanda quem — ou se existe uma terceira variável oculta regendo o sistema.
+          </blockquote>
+          <div class="card single-focus" style="margin-top: 24px;">
+            <h3>O Caso do Café e Doença Coronariana:</h3>
+            <p>Observar que o consumo de café se correlaciona fortemente com problemas cardíacos não prova causalidade. Historicamente, pacientes que consumiam mais café também fumavam mais; o tabaco era a variável de confusão oculta que realmente provocava o desfecho.</p>
+          </div>
+        </article>
+
+        <!-- Slide 10: Premissas da Correlação de Pearson -->
+        <article class="slide" data-title="Premissas da Correlação" data-kicker="Rigor Estatístico 1/2" data-notes="Explique aos alunos que o r de Pearson não pode ser aplicado cegamente. Se a relação for curva (ex: curva dose-resposta sigmoide) ou se houver outliers bizarros, o r se torna inválido. Nesses casos, usamos correlações não-paramétricas como Spearman.">
+          <span class="eyebrow">Critérios de Validade</span>
+          <h2>Premissas da Correlação de Pearson</h2>
+          <div class="card single-focus">
+            <div class="card-icon">📋</div>
+            <h3>Quando o Coeficiente $r$ é Realmente Válido?</h3>
+            <ul class="large-list">
+              <li><strong>1. Linearidade:</strong> A relação entre as duas variáveis deve ser genuinamente linear (o $r$ falha em detectar relações curvilíneas ou em U).</li>
+              <li><strong>2. Normalidade Bivariada:</strong> Ambas as variáveis devem apresentar distribuição aproximadamente normal na população.</li>
+              <li><strong>3. Ausência de Outliers Extremos:</strong> Um único ponto atípico distante pode inflar artificialmente ou anular o valor de $r$.</li>
+              <li><strong>4. Independência dos Pares:</strong> Cada par de dados $(X, Y)$ deve provir de uma unidade biológica independente (sem medidas repetidas disfarçadas).</li>
+            </ul>
+            <div class="takeaway">
+              Se as premissas de normalidade ou linearidade forem violadas, a bioestatística recorre a testes não paramétricos, como o <strong>Coeficiente de Spearman ($\rho$)</strong>.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 11: Regressão Linear: Situação-Problema -->
+        <article class="slide bg-photo bg-cell" data-title="Regressão: Problema" data-kicker="Linha de Previsão" data-notes="Agora mudamos a postura mental: somos convocados a decidir. Um paciente precisa de uma dose intermediária que não testamos. O que fazer?">
+          <span class="eyebrow" style="background: rgba(255,255,255,0.25); color:#fff; border-color:transparent;">Situação-Problema 02</span>
+          <h2>A Necessidade Prática de Prever Valores</h2>
+          <blockquote class="big dark-card">
+            "Avançando na pesquisa, vocês agora são chamados para desenhar o protocolo clínico. O médico pergunta: 'Qual será a taxa de respiração celular esperada se administrarmos exatamente 3,5 mg/mL?' Essa dose nunca foi testada nas placas de bancada! Como responder com respaldo matemático sem depender de adivinhações?"
+          </blockquote>
+        </article>
+
+        <!-- Slide 12: O que a Regressão Faz? -->
+        <article class="slide" data-title="O que a Regressão Faz?" data-kicker="Modelagem Matemática" data-notes="Enfatize a assimetria: a dose é o volante (X), a respiração é a velocidade do carro (Y). A regressão traça a ponte matemática de previsão.">
+          <span class="eyebrow">Construção do Modelo</span>
+          <h2>O que a Regressão Linear Simples Faz?</h2>
+          <div class="card single-focus">
+            <div class="card-icon">📐</div>
+            <h3>Assimetria Lógica & Previsão</h3>
+            <p>Diferente da correlação, aqui assumimos uma assimetria: a dose atua como <strong>variável explicativa</strong> ($X$) para prever o comportamento da <strong>variável de resposta</strong> ($Y$).</p>
+            <ul class="large-list">
+              <li><strong>O Teste Ajusta:</strong> A melhor linha reta que atravessa a nuvem de pontos minimizando as distâncias verticais (erros residuais).</li>
+              <li><strong>Principal Output:</strong> Um modelo preditivo resumido na equação da reta:</li>
+            </ul>
+            <div class="formula-box">
+              $$\hat{Y} = a + bX$$
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 13: O que é Testado na Regressão? -->
+        <article class="slide" data-title="O que é Testado?" data-kicker="Hipótese da Regressão" data-notes="Pergunte: 'Se a reta for perfeitamente deitada (horizontal), o que acontece quando aumento a dose?' Nada! Por isso testamos se b é diferente de zero.">
+          <span class="eyebrow">Teste de Hipótese na Reta</span>
+          <h2>O que é Testado na Regressão Simples?</h2>
+          <div class="card single-focus accent">
+            <div class="card-icon">⚖️</div>
+            <h3>A Inclinação Fornece Informação Real?</h3>
+            <p>O teste avalia fundamentalmente se a variável explicativa contribui de forma estatisticamente válida para prever o desfecho celular.</p>
+            <div class="formula-box">
+              $$H_0: b = 0 \quad (\text{reta horizontal / sem efeito preditivo})$$
+              $$H_1: b \neq 0 \quad (\text{inclinação estatisticamente válida})$$
+            </div>
+            <div class="takeaway">
+              Se a inclinação for nula ($b = 0$), conhecer a dose é inútil. Rejeitar $H_0$ prova que a dose tem impacto mensurável e valida o modelo preditivo.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 14: Componentes da Reta: Intercepto (a) -->
+        <article class="slide" data-title="Intercepto: Altura da Reta" data-kicker="Parâmetros da Reta 1/2" data-notes="Mostre que o intercepto é o estado basal da biologia quando o estímulo é zero. Mas alerte que às vezes o zero é só uma âncora matemática.">
+          <span class="eyebrow">Componente 01</span>
+          <h2>A Altura da Reta (Intercepto, $a$)</h2>
+          <div class="card single-focus">
+            <div class="card-icon">📍</div>
+            <h3>O Ponto de Partida ($X = 0$)</h3>
+            <p>Representa o valor esperado para a variável de resposta ($Y$) quando a variável explicativa ($X$) é exatamente zero.</p>
+            <ul class="large-list">
+              <li><strong>Interpretação Biológica:</strong> A taxa basal de respiração das células quando nenhuma dose do composto foi aplicada.</li>
+              <li><strong>Cuidado Prático:</strong> Se o valor 'zero' não existe na realidade fisiológica (ex.: peso corporal zero), o intercepto atua apenas como âncora de suporte da reta.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Slide 15: Componentes da Reta: Inclinação (b) -->
+        <article class="slide" data-title="Inclinação: Coeficiente Angular" data-kicker="Parâmetros da Reta 2/2" data-notes="A inclinação é a sensibilidade do sistema biológico. Para cada miligrama adicional de droga, quanto a respiração cai?">
+          <span class="eyebrow">Componente 02</span>
+          <h2>A Inclinação da Reta (Coeficiente Angular, $b$)</h2>
+          <div class="card single-focus accent">
+            <div class="card-icon">⚡</div>
+            <h3>A Taxa de Mudança / Sensibilidade</h3>
+            <p>Representa a taxa de impacto direto: quantas unidades de resposta sobem ou descem, em média, a cada 1 unidade a mais na dose administrada.</p>
+            <div class="takeaway">
+              Se no nosso modelo $b = -12$, significa que a cada $1\text{ mg/mL}$ a mais de fármaco aplicado, a respiração mitocondrial decai, em média, $12$ unidades.
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 16: Visualização dos Componentes no Diagrama -->
+        <article class="slide" data-title="Visualização da Reta" data-kicker="Diagrama do Modelo" data-notes="Conecte a matemática com a geometria visual: o intercepto ancorando a reta no eixo vertical e o triângulo de inclinação demonstrando o declínio passo a passo.">
+          <span class="eyebrow">Geometria do Modelo</span>
+          <h2>Anatomia Visual da Regressão Linear</h2>
+          
+          <div class="svg-diagram-container">
+            <svg class="svg-diagram" viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg">
+              <line x1="80" y1="320" x2="740" y2="320" stroke="#4c0519" stroke-width="3" />
+              <line x1="80" y1="320" x2="80" y2="30" stroke="#4c0519" stroke-width="3" />
+              <text x="740" y="355" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#4c0519" text-anchor="end">X (Dose do Fármaco)</text>
+              <text x="60" y="30" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#4c0519" text-anchor="end" transform="rotate(-90 60,30)">Y (Respiração Celular)</text>
+
+              <line x1="80" y1="260" x2="680" y2="70" stroke="#be123c" stroke-width="4" stroke-linecap="round"/>
+
+              <circle cx="160" cy="220" r="7" fill="#9f1239" opacity="0.85"/>
+              <circle cx="230" cy="230" r="7" fill="#9f1239" opacity="0.85"/>
+              <circle cx="310" cy="170" r="7" fill="#9f1239" opacity="0.85"/>
+              <circle cx="400" cy="180" r="7" fill="#9f1239" opacity="0.85"/>
+              <circle cx="490" cy="115" r="7" fill="#9f1239" opacity="0.85"/>
+              <circle cx="580" cy="120" r="7" fill="#9f1239" opacity="0.85"/>
+              <circle cx="640" cy="75" r="7" fill="#9f1239" opacity="0.85"/>
+
+              <circle cx="80" cy="260" r="8" fill="#b45309" />
+              <text x="98" y="266" font-family="Inter, sans-serif" font-size="18" font-weight="800" fill="#b45309">Intercepto (a): valor em X = 0</text>
+
+              <line x1="380" y1="165" x2="480" y2="165" stroke="#881337" stroke-width="2" stroke-dasharray="4 4"/>
+              <line x1="480" y1="165" x2="480" y2="133" stroke="#881337" stroke-width="2" stroke-dasharray="4 4"/>
+              <text x="430" y="190" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#881337" text-anchor="middle">+1 unidade em X</text>
+              <text x="495" y="152" font-family="Inter, sans-serif" font-size="14" font-weight="800" fill="#be123c">ΔY = b</text>
+            </svg>
+          </div>
+        </article>
+
+        <!-- Slide 17: Exemplo Gráfico de Previsão na Regressão com Dispersão Realista -->
+        <article class="slide" data-title="Previsão na Prática" data-kicker="Aplicação do Modelo" data-notes="Mostre a resolução mágica da Situação-Problema 2: mesmo com o ruído real dos pontos em torno da reta, a linha ajustada permite ao biomédico projetar X = 3,5 mg/mL e prever Y = 58 com segurança clínica!">
+          <span class="eyebrow">A Solução da Situação-Problema</span>
+          <h2>Previsão no Ensaio: Dose Inédita de $3{,}5\text{ mg/mL}$</h2>
+          <div class="svg-diagram-container">
+            <svg class="svg-diagram" viewBox="0 0 820 410" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="grid2" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#fff1f2" stroke-width="1.5"/>
+                </pattern>
+                <filter id="shadow-box2" x="-5%" y="-5%" width="110%" height="115%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.14"/>
+                </filter>
+              </defs>
+              
+              <rect x="90" y="30" width="670" height="315" fill="url(#grid2)" />
+              
+              <line x1="90" y1="345" x2="760" y2="345" stroke="#4c0519" stroke-width="3" />
+              <line x1="90" y1="345" x2="90" y2="30" stroke="#4c0519" stroke-width="3" />
+              
+              <text x="760" y="380" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#4c0519" text-anchor="end">X (Dose do Fármaco em mg/mL)</text>
+              <text x="65" y="30" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="#4c0519" text-anchor="end" transform="rotate(-90 65,30)">Y (Taxa de Respiração Mitocondrial)</text>
+              
+              <text x="90" y="365" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#881337" text-anchor="middle">0</text>
+              <text x="195" y="365" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#881337" text-anchor="middle">1</text>
+              <text x="300" y="365" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#881337" text-anchor="middle">2</text>
+              <text x="405" y="365" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#881337" text-anchor="middle">3</text>
+              <text x="457.5" y="370" font-family="Inter, sans-serif" font-size="15" font-weight="900" fill="#b45309" text-anchor="middle">3,5 ★</text>
+              <text x="510" y="365" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#881337" text-anchor="middle">4</text>
+              <text x="615" y="365" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#881337" text-anchor="middle">5</text>
+              <text x="720" y="365" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#881337" text-anchor="middle">6</text>
+              
+              <text x="80" y="350" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#881337" text-anchor="end">0</text>
+              <text x="80" y="293" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#881337" text-anchor="end">20</text>
+              <text x="80" y="238" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#881337" text-anchor="end">40</text>
+              <text x="80" y="188" font-family="Inter, sans-serif" font-size="15" font-weight="900" fill="#b45309" text-anchor="end">58 ★</text>
+              <text x="80" y="128" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#881337" text-anchor="end">80</text>
+              <text x="80" y="72" font-family="Inter, sans-serif" font-size="15" font-weight="800" fill="#be123c" text-anchor="end">100 (a)</text>
+              
+              <!-- Reta de Regressão: Ŷ = 100 - 12*X -->
+              <line x1="90" y1="68" x2="720" y2="266" stroke="#be123c" stroke-width="4.5" stroke-linecap="round"/>
+              
+              <!-- Nuvem de Pontos com Dispersão Orgânica Assimétrica Realista -->
+              <circle cx="105" cy="52" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="120" cy="82" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="150" cy="65" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="180" cy="110" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="195" cy="85" r="6" fill="#9f1239" opacity="0.8"/>
+              
+              <circle cx="230" cy="125" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="260" cy="98" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="280" cy="148" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="315" cy="118" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="340" cy="162" r="6" fill="#9f1239" opacity="0.8"/>
+              
+              <circle cx="380" cy="140" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="410" cy="185" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="430" cy="155" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="490" cy="215" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="520" cy="180" r="6" fill="#9f1239" opacity="0.8"/>
+              
+              <circle cx="560" cy="235" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="585" cy="202" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="620" cy="250" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="650" cy="225" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="690" cy="275" r="6" fill="#9f1239" opacity="0.8"/>
+              <circle cx="715" cy="248" r="6" fill="#9f1239" opacity="0.8"/>
+
+              <circle cx="90" cy="68" r="8" fill="#be123c" stroke="#ffffff" stroke-width="2.5"/>
+              
+              <!-- Projeção tracejada para a dose 3,5 mg/mL -->
+              <line x1="457.5" y1="345" x2="457.5" y2="183.5" stroke="#b45309" stroke-width="3" stroke-dasharray="6 6"/>
+              <line x1="457.5" y1="183.5" x2="90" y2="183.5" stroke="#b45309" stroke-width="3" stroke-dasharray="6 6"/>
+              <circle cx="457.5" cy="183.5" r="9" fill="#b45309" stroke="#ffffff" stroke-width="2.5"/>
+
+              <g transform="translate(485, 80)" filter="url(#shadow-box2)">
+                <rect x="0" y="0" width="255" height="85" rx="12" fill="#ffffff" stroke="#b45309" stroke-width="2"/>
+                <text x="127" y="24" font-family="Inter, sans-serif" font-size="12" font-weight="900" fill="#b45309" text-anchor="middle">A IMAGINAÇÃO ESTATÍSTICA</text>
+                <text x="127" y="44" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#4c0519" text-anchor="middle">Previsão para dose não testada: 3,5 mg/mL</text>
+                <text x="127" y="68" font-family="Inter, sans-serif" font-size="16" font-weight="900" fill="#be123c" text-anchor="middle">Respiração Esperada Ŷ = 58</text>
+              </g>
+            </svg>
+          </div>
+          <div class="takeaway" style="margin-top: 14px;">
+            <strong>A Imaginação Estatística em Ação:</strong> Embora os pontos reais oscilem em torno da reta (ruído biológico), a equação $\hat{Y} = 100 - 12 \times (3{,}5) = \mathbf{58\text{ unidades}}$ preenche com rigor a lacuna experimental, orientando a decisão clínica com dados sólidos.
+          </div>
+        </article>
+
+        <!-- Slide 18: Premissas da Regressão Linear Simples -->
+        <article class="slide" data-title="Premissas da Regressão" data-kicker="Rigor Estatístico 2/2" data-notes="Enfatize que na regressão não exigimos normalidade da dose X, mas sim o comportamento dos ERROS (resíduos em torno da reta). Os resíduos devem ser homocedásticos, independentes e normais. Se a variância aumentar com a dose (formato de funil), a reta perde validade inferencial.">
+          <span class="eyebrow">Diagnóstico do Modelo</span>
+          <h2>Premissas da Regressão Linear Simples</h2>
+          <div class="card single-focus accent">
+            <div class="card-icon">🔬</div>
+            <h3>O Comportamento dos Erros em Torno da Reta</h3>
+            <ul class="large-list">
+              <li><strong>1. Linearidade dos Parâmetros:</strong> A relação média entre a resposta $Y$ e a preditora $X$ é adequadamente descrita por uma linha reta.</li>
+              <li><strong>2. Independência dos Resíduos:</strong> O erro de uma placa ou paciente não pode ter relação com o erro do seguinte (amostragem independente).</li>
+              <li><strong>3. Homocedasticidade dos Resíduos:</strong> A dispersão dos pontos em torno da reta deve ser constante ao longo de todo o eixo $X$ (sem padrão de cone ou funil).</li>
+              <li><strong>4. Normalidade dos Resíduos:</strong> Os desvios em torno da reta esperada devem seguir uma curva gaussiana (normal) de média zero.</li>
+            </ul>
+            <div class="takeaway">
+              Na regressão, o rigor não está na variável explicativa $X$, mas na qualidade dos <strong>resíduos</strong> (o que a reta não conseguiu explicar).
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 19: Comparativo Direto: Correlação vs. Regressão -->
+        <article class="slide" data-title="Comparativo Direto" data-kicker="Síntese Conceitual" data-notes="Feche a aula com esta síntese de alto impacto: quando usar correlação (simétrica, associação) e quando usar regressão (assimétrica, modelo preditivo).">
+          <span class="eyebrow">Diferença Fundamental</span>
+          <h2>Correlação vs. Regressão: Lado a Lado</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 50%;">Correlação Linear ($r$)</th>
+                  <th style="width: 50%;">Regressão Linear ($\hat{Y} = a + bX$)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Objetivo:</strong> Medir força e direção da associação linear.</td>
+                  <td><strong>Objetivo:</strong> Modelar a relação e prever desfechos numéricos.</td>
+                </tr>
+                <tr>
+                  <td><strong>Relação:</strong> Simétrica (tanto faz quem é $X$ ou $Y$).</td>
+                  <td><strong>Relação:</strong> Assimétrica ($X$ é a causa/estímulo, $Y$ é o desfecho).</td>
+                </tr>
+                <tr>
+                  <td><strong>Output:</strong> Coeficiente $r$ (adimensional, entre -1 e +1).</td>
+                  <td><strong>Output:</strong> Equação da reta com intercepto ($a$) e inclinação ($b$).</td>
+                </tr>
+                <tr>
+                  <td><strong>Pergunta:</strong> <em>"As variáveis caminham juntas?"</em></td>
+                  <td><strong>Pergunta:</strong> <em>"Quanto $Y$ muda se eu aplicar uma dose $X$?"</em></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- Zona de Ativação por Hover + Painel Flutuante Invisível -->
+      <div class="floating-hover-zone">
+        <div class="floating-controls" id="floatingControls">
+          <button class="float-btn" id="floatPrevBtn" title="Slide anterior (←)">‹</button>
+          <span class="float-counter" id="floatCounter">1 / 19</span>
+          <button class="float-btn" id="floatNextBtn" title="Próximo slide (→ / Espaço)">›</button>
+          <button class="float-btn" id="floatNotesBtn" title="Notas (N)">Notas</button>
+          <button class="float-btn exit" id="floatExitBtn" title="Sair da Tela Cheia (Esc)">✕ Sair</button>
+        </div>
+      </div>
+
+      <!-- Painel de Notas -->
+      <aside class="notes-panel" id="notesPanel" aria-label="Notas do professor">
+        <div class="notes-head">
+          <strong>Notas do Professor</strong>
+          <button id="closeNotes" type="button" aria-label="Fechar notas">×</button>
+        </div>
+        <p id="notesText"></p>
+      </aside>
+
+      <!-- Visão Geral / Grid de Slides -->
+      <div class="overview" id="overview" aria-label="Visão geral dos slides">
+        <div class="overview-head">
+          <strong>Visão Geral da Apresentação</strong>
+          <button id="closeOverview" type="button" aria-label="Fechar visão geral">×</button>
+        </div>
+        <div class="overview-grid" id="overviewGrid"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const app = document.getElementById('app');
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const agenda = document.getElementById('agenda');
+    const overview = document.getElementById('overview');
+    const overviewGrid = document.getElementById('overviewGrid');
+    const notesPanel = document.getElementById('notesPanel');
+    const notesText = document.getElementById('notesText');
+    const slideTitle = document.getElementById('slideTitle');
+    const slideKicker = document.getElementById('slideKicker');
+    const counter = document.getElementById('counter');
+    const progressBar = document.getElementById('progressBar');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const notesBtn = document.getElementById('notesBtn');
+    const closeNotes = document.getElementById('closeNotes');
+    const overviewBtn = document.getElementById('overviewBtn');
+    const closeOverview = document.getElementById('closeOverview');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const fullscreenSideBtn = document.getElementById('fullscreenSideBtn');
+
+    const floatPrevBtn = document.getElementById('floatPrevBtn');
+    const floatNextBtn = document.getElementById('floatNextBtn');
+    const floatCounter = document.getElementById('floatCounter');
+    const floatNotesBtn = document.getElementById('floatNotesBtn');
+    const floatExitBtn = document.getElementById('floatExitBtn');
+
+    let current = 0;
+
+    function buildNavigation() {
+      agenda.innerHTML = '';
+      overviewGrid.innerHTML = '';
+
+      slides.forEach((slide, index) => {
+        const title = slide.dataset.title || `Slide ${index + 1}`;
+
+        const agendaBtn = document.createElement('button');
+        agendaBtn.type = 'button';
+        agendaBtn.innerHTML = `<span>${index + 1}</span><span>${title}</span>`;
+        agendaBtn.addEventListener('click', () => goTo(index));
+        agenda.appendChild(agendaBtn);
+
+        const ovBtn = document.createElement('button');
+        ovBtn.type = 'button';
+        ovBtn.innerHTML = `<span>${slide.dataset.kicker || 'Slide'}</span><strong>${index + 1}. ${title}</strong>`;
+        ovBtn.addEventListener('click', () => {
+          goTo(index);
+          toggleOverview(false);
+        });
+        overviewGrid.appendChild(ovBtn);
+      });
+    }
+
+    function updateUI() {
+      slides.forEach((slide, index) => slide.classList.toggle('active', index === current));
+      Array.from(agenda.children).forEach((btn, index) => btn.classList.toggle('active', index === current));
+      Array.from(overviewGrid.children).forEach((btn, index) => btn.classList.toggle('active', index === current));
+
+      const slide = slides[current];
+      const title = slide.dataset.title || `Slide ${current + 1}`;
+      slideTitle.textContent = title;
+      slideKicker.textContent = slide.dataset.kicker || 'Bioestatística';
+      
+      const countStr = `${current + 1} / ${slides.length}`;
+      counter.textContent = countStr;
+      floatCounter.textContent = countStr;
+      
+      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      notesText.textContent = slide.dataset.notes || 'Sem notas para este slide.';
+      document.title = `${title} · Correlação & Regressão`;
+      history.replaceState(null, '', `#${current + 1}`);
+
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+      prevBtn.style.opacity = prevBtn.disabled ? '0.4' : '1';
+      nextBtn.style.opacity = nextBtn.disabled ? '0.4' : '1';
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function goTo(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      updateUI();
+    }
+
+    function next() {
+      if (current < slides.length - 1) {
+        goTo(current + 1);
+      }
+    }
+
+    function prev() {
+      if (current > 0) {
+        goTo(current - 1);
+      }
+    }
+
+    function toggleNotes(force) {
+      const shouldOpen = typeof force === 'boolean' ? force : !notesPanel.classList.contains('open');
+      notesPanel.classList.toggle('open', shouldOpen);
+    }
+
+    function toggleOverview(force) {
+      const shouldOpen = typeof force === 'boolean' ? force : !overview.classList.contains('open');
+      overview.classList.toggle('open', shouldOpen);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+        app.classList.add('fullscreen-mode');
+      } else {
+        document.exitFullscreen?.().catch(() => {});
+        app.classList.remove('fullscreen-mode');
+      }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        app.classList.remove('fullscreen-mode');
+      } else {
+        app.classList.add('fullscreen-mode');
+      }
+      updateUI();
+    });
+
+    buildNavigation();
+
+    const initialHash = Number.parseInt(location.hash.replace('#', ''), 10);
+    if (!Number.isNaN(initialHash) && initialHash >= 1 && initialHash <= slides.length) {
+      current = initialHash - 1;
+    }
+    updateUI();
+
+    prevBtn.addEventListener('click', prev);
+    nextBtn.addEventListener('click', next);
+    notesBtn.addEventListener('click', () => toggleNotes());
+    closeNotes.addEventListener('click', () => toggleNotes(false));
+    overviewBtn.addEventListener('click', () => toggleOverview());
+    closeOverview.addEventListener('click', () => toggleOverview(false));
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenSideBtn.addEventListener('click', toggleFullscreen);
+
+    floatPrevBtn.addEventListener('click', prev);
+    floatNextBtn.addEventListener('click', next);
+    floatNotesBtn.addEventListener('click', () => toggleNotes());
+    floatExitBtn.addEventListener('click', toggleFullscreen);
+
+    document.addEventListener('keydown', (e) => {
+      if (['input', 'textarea'].includes(document.activeElement.tagName.toLowerCase())) return;
+
+      if (['ArrowRight', 'PageDown', ' '].includes(e.key)) {
+        e.preventDefault();
+        next();
+      } else if (['ArrowLeft', 'PageUp'].includes(e.key)) {
+        e.preventDefault();
+        prev();
+      } else if (e.key === 'Home') {
+        goTo(0);
+      } else if (e.key === 'End') {
+        goTo(slides.length - 1);
+      } else if (e.key.toLowerCase() === 'n') {
+        toggleNotes();
+      } else if (e.key.toLowerCase() === 'o') {
+        toggleOverview();
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      } else if (e.key === 'Escape') {
+        toggleNotes(false);
+        toggleOverview(false);
+      }
+    });
+  </script>
+</body>
+</html>
